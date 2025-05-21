@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "openai": "^4.101.0"
+  },
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4"
+  }
+}
