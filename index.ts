@@ -4,6 +4,7 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from "openai/src/resources/index.js";
+import { getUserAgenda } from "./agenda";
 import { getUserInfo } from "./user";
 import { getWeatherInfo } from "./weather";
 
@@ -52,6 +53,30 @@ const tools: ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_user_agenda",
+      description:
+        "Retrieves agenda days containing events within a specified date range.",
+      strict: true,
+      parameters: {
+        type: "object",
+        required: ["from", "to"],
+        properties: {
+          from: {
+            type: "string",
+            description: "Start date for retrieving agenda in ISO 8601 format",
+          },
+          to: {
+            type: "string",
+            description: "End date for retrieving agenda in ISO 8601 format",
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
 ];
 
 const toolHandlers: {
@@ -59,6 +84,7 @@ const toolHandlers: {
 } = {
   get_user_info: getUserInfo,
   get_weather_info: getWeatherInfo,
+  get_user_agenda: getUserAgenda,
 };
 
 async function runAssistant() {
@@ -70,7 +96,7 @@ async function runAssistant() {
     },
     {
       role: "user",
-      content: "What’s the weather like where I am?",
+      content: "What’s my agenda for next month?",
     },
   ];
 
@@ -94,9 +120,9 @@ async function runAssistant() {
 
       console.log(`Calling tool: ${name} with args:`, args);
 
-      const result = await toolHandlers[
-        name as "get_user_info" | "get_current_weather"
-      ](args);
+      const result = await toolHandlers[name as keyof typeof toolHandlers](
+        args
+      );
 
       console.log(`Tool ${name} returned:`, result);
 
