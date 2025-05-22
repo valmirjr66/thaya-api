@@ -1,41 +1,19 @@
-# Node.js dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# TypeScript compiled output
-dist/
-out/
-build/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Logs
-logs/
-*.log
-logs/*.log
-
-# Environment variables
+.next
+**/*.db
+yarn-error.*
 .env
-.env.*.local
 
-# IDEs and editors
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+**/node_modules
+**/dist
+**/build
+**/storage
 
-# MacOS
-.DS_Store
+# MongoDB
+**/data
 
-# Linux
-*.pid
+# Jest coverage report
+**/coverage
 
-# Windows
-Thumbs.db
-ehthumbs.db
+# GCP files
+credentials.json
+token.json
