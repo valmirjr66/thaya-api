@@ -145,6 +145,7 @@ export default class AssistantService extends BaseService {
             content: prettifiedTextContent,
             role: 'assistant',
             references: decoratedAnnotations,
+            chatId: chatId,
         });
 
         return new SendMessageResponseModel(
