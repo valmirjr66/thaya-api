@@ -110,7 +110,7 @@ function updateEnvFile(key: string, value: string, envFilePath = '.env') {
     }
 }
 
-async function runSetup() {
+async function resetAssistant() {
     const assistantsList = await OPENAI_CLIENT.beta.assistants.list();
 
     const existingAssistant = assistantsList.data.find(
@@ -142,4 +142,4 @@ async function runSetup() {
     console.log('.env file updated');
 }
 
-runSetup();
+resetAssistant();
