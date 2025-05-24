@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client with User Input</title>
+</head>
+
+<body style="background-color: black; color: white;">
+  <h1>WebSocket Client Example</h1>
+
+  <label for="serverAddress">Server Address:</label>
+  <input type="text" id="serverAddress" value="http://localhost:4000">
+  <br><br>
+
+  <label for="userId">User ID:</label>
+  <input type="text" id="userId" value="valmir">
+  <br><br>
+
+  <label for="message">Message:</label>
+  <input type="text" id="message" value="What is the temperatura right now?">
+  <br><br>
+
+  <button id="connectButton">Connect to Server</button>
+  <button id="sendMessageButton" disabled>Send Message</button>
+
+  <p>Check the console for communication logs.</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+
+  <script>
+    let clientWS;
+
+    const connectButton = document.getElementById('connectButton');
+    const sendMessageButton = document.getElementById('sendMessageButton');
+
+    connectButton.addEventListener('click', () => {
+      const serverAddress = document.getElementById('serverAddress').value;
+      const userId = document.getElementById('userId').value;
+
+      if (!serverAddress || !userId) {
+        console.error("Please provide both the server address and user ID.");
+        return;
+      }
+
+      clientWS = window.io(serverAddress, {
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
+        extraHeaders: {
+          userId,
+        },
+      });
+
+      clientWS.on("connect", () => {
+        console.log("Connected to the WebSocket server.");
+        console.log("User ID:", userId);
+        sendMessageButton.disabled = false;
+      });
+
+      clientWS.on("disconnect", () => {
+        console.log("Disconnected from the WebSocket server.");
+        sendMessageButton.disabled = true;
+      });
+
+      clientWS.on("message", (data) => {
+        console.log("Received message:", data);
+      });
+    });
+
+    sendMessageButton.addEventListener('click', () => {
+      const messageContent = document.getElementById('message').value;
+
+      if (!messageContent) {
+        console.error("Please enter a message to send.");
+        return;
+      }
+
+      const message = {
+        content: messageContent,
+      };
+      clientWS.emit('message', message);
+      console.log("Message sent:", message);
+    });
+  </script>
+</body>
+
+</html>
