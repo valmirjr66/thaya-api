@@ -54,7 +54,6 @@ export default class AssistantService extends BaseService {
 
         if (chatMessages.length === 0) {
             this.logger.log(`No messages found for userId: ${userId}`);
-            return null;
         }
 
         this.logger.log(
