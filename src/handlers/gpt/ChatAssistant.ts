@@ -1,11 +1,12 @@
 import { Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages.mjs';
+import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
+import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/threads/runs/runs.js';
 import { Annotation } from 'src/types/gpt';
+import { getUserAgenda } from './AgendaTool';
 import { getUserInfo } from './UserInfoTool';
 import { getWeatherInfo } from './WeatherTool';
-import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
-import { getUserAgenda } from './AgendaTool';
 
 export class TextResponse {
     constructor(content: string, annotations?: Annotation[]) {
@@ -47,7 +48,7 @@ export default class ChatAssistant {
             },
         );
 
-        const context: Record<string, any> = {}; // Store intermediate outputs like location
+        const context: Record<string, any> = {};
 
         while (
             run.status === 'requires_action' &&
@@ -59,45 +60,7 @@ export default class ChatAssistant {
             const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
 
             for (const call of toolCalls) {
-                const args = JSON.parse(call.function.arguments);
-
-                if (call.function.name === 'get_user_info') {
-                    const userInfo = await getUserInfo();
-
-                    context.userInfo = userInfo;
-
-                    toolOutputs.push({
-                        tool_call_id: call.id,
-                        output: JSON.stringify(userInfo),
-                    });
-                } else if (call.function.name === 'get_weather_info') {
-                    const latitude: string =
-                        context.userInfo?.currentLocation.latitute ||
-                        args.location?.latitute;
-
-                    const longitude: string =
-                        context.userInfo?.currentLocation.longitude ||
-                        args.location?.longitude;
-
-                    const weatherInfo = await getWeatherInfo({
-                        latitude: Number(latitude),
-                        longitude: Number(longitude),
-                    });
-
-                    toolOutputs.push({
-                        tool_call_id: call.id,
-                        output: JSON.stringify(weatherInfo),
-                    });
-                } else if (call.function.name === 'get_user_agenda') {
-                    const userAgenda = await getUserAgenda(args);
-
-                    toolOutputs.push({
-                        tool_call_id: call.id,
-                        output: JSON.stringify(userAgenda),
-                    });
-                } else {
-                    throw new Error(`Unknown function: ${call.function.name}`);
-                }
+                await this.executeToolCall(call, context, toolOutputs);
             }
 
             run =
@@ -152,9 +115,9 @@ export default class ChatAssistant {
             content: message,
         });
 
-        let response: TextResponse;
+        let response: TextResponse | undefined;
 
-        const run = this.openaiClient.beta.threads.runs
+        const runStream = this.openaiClient.beta.threads.runs
             .stream(threadId, {
                 assistant_id: this.assistantId,
             })
@@ -185,8 +148,105 @@ export default class ChatAssistant {
                 );
             });
 
-        await run.done();
+        await runStream.done();
+
+        let run = await runStream.finalRun();
+
+        const context: Record<string, any> = {};
+
+        while (
+            run.status === 'requires_action' &&
+            run.required_action?.type === 'submit_tool_outputs'
+        ) {
+            const toolCalls =
+                run.required_action.submit_tool_outputs.tool_calls;
+
+            const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
+
+            for (const call of toolCalls) {
+                await this.executeToolCall(call, context, toolOutputs);
+            }
+
+            run =
+                await this.openaiClient.beta.threads.runs.submitToolOutputsAndPoll(
+                    threadId,
+                    run.id,
+                    { tool_outputs: toolOutputs },
+                );
+        }
+
+        if (!response) {
+            const finalMessages =
+                await this.openaiClient.beta.threads.messages.list(threadId);
+
+            const finalContent = finalMessages.data[0]?.content;
+
+            if (
+                !finalContent ||
+                finalContent.length !== 1 ||
+                finalContent[0].type !== 'text'
+            ) {
+                throw new Error('No valid response after tool calls');
+            }
+
+            response = new TextResponse(
+                finalContent[0].text.value,
+                finalContent[0].text.annotations as Annotation[],
+            );
+
+            streamingCallback(
+                finalContent[0].text.value,
+                finalContent[0].text.annotations as Annotation[],
+                true,
+            );
+        }
 
         return response;
+    }
+
+    private async executeToolCall(
+        toolCall: RequiredActionFunctionToolCall,
+        context: Record<string, any>,
+        toolOutputs: RunSubmitToolOutputsParams.ToolOutput[],
+    ) {
+        const args = JSON.parse(toolCall.function.arguments);
+
+        if (toolCall.function.name === 'get_user_info') {
+            const userInfo = await getUserInfo();
+
+            context.userInfo = userInfo;
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify(userInfo),
+            });
+        } else if (toolCall.function.name === 'get_weather_info') {
+            const latitude: string =
+                context.userInfo?.currentLocation.latitute ||
+                args.location?.latitute;
+
+            const longitude: string =
+                context.userInfo?.currentLocation.longitude ||
+                args.location?.longitude;
+
+            const weatherInfo = await getWeatherInfo({
+                latitude: Number(latitude),
+                longitude: Number(longitude),
+            });
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify(weatherInfo),
+            });
+        } else if (toolCall.function.name === 'get_user_agenda') {
+            const userAgenda = await getUserAgenda(args);
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify(userAgenda),
+            });
+        } else {
+            throw new Error(`Unknown function: ${toolCall.function.name}`);
+        }
     }
 }
