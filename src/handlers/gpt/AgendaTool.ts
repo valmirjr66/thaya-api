@@ -14,6 +14,76 @@ export type Month = {
 };
 
 const calendar: Record<string, Month> = {
+    '2025-01': {
+        number: 1,
+        days: [
+            {
+                date: new Date('2025-01-10'),
+                occurrences: [
+                    {
+                        time: new Date('2025-01-10T10:00:00'),
+                        description: 'New Year team planning',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-02': {
+        number: 2,
+        days: [
+            {
+                date: new Date('2025-02-14'),
+                occurrences: [
+                    {
+                        time: new Date('2025-02-14T20:00:00'),
+                        description: 'Valentine dinner',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-03': {
+        number: 3,
+        days: [
+            {
+                date: new Date('2025-03-05'),
+                occurrences: [
+                    {
+                        time: new Date('2025-03-05T15:00:00'),
+                        description: 'Budget review',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-04': {
+        number: 4,
+        days: [
+            {
+                date: new Date('2025-04-22'),
+                occurrences: [
+                    {
+                        time: new Date('2025-04-22T09:00:00'),
+                        description: 'Earth Day campaign',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-05': {
+        number: 5,
+        days: [
+            {
+                date: new Date('2025-05-12'),
+                occurrences: [
+                    {
+                        time: new Date('2025-05-12T13:00:00'),
+                        description: 'Team outing',
+                    },
+                ],
+            },
+        ],
+    },
     '2025-06': {
         number: 6,
         days: [
@@ -36,6 +106,90 @@ const calendar: Record<string, Month> = {
                     {
                         time: new Date('2025-06-02T11:00:00'),
                         description: 'Project deadline',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-07': {
+        number: 7,
+        days: [
+            {
+                date: new Date('2025-07-04'),
+                occurrences: [
+                    {
+                        time: new Date('2025-07-04T18:00:00'),
+                        description: 'Independence Day BBQ',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-08': {
+        number: 8,
+        days: [
+            {
+                date: new Date('2025-08-15'),
+                occurrences: [
+                    {
+                        time: new Date('2025-08-15T10:00:00'),
+                        description: 'Mid-year review',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-09': {
+        number: 9,
+        days: [
+            {
+                date: new Date('2025-09-01'),
+                occurrences: [
+                    {
+                        time: new Date('2025-09-01T08:00:00'),
+                        description: 'Back to work after break',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-10': {
+        number: 10,
+        days: [
+            {
+                date: new Date('2025-10-31'),
+                occurrences: [
+                    {
+                        time: new Date('2025-10-31T19:00:00'),
+                        description: 'Halloween party',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-11': {
+        number: 11,
+        days: [
+            {
+                date: new Date('2025-11-24'),
+                occurrences: [
+                    {
+                        time: new Date('2025-11-24T16:00:00'),
+                        description: 'Thanksgiving prep',
+                    },
+                ],
+            },
+        ],
+    },
+    '2025-12': {
+        number: 12,
+        days: [
+            {
+                date: new Date('2025-12-25'),
+                occurrences: [
+                    {
+                        time: new Date('2025-12-25T00:00:00'),
+                        description: 'Christmas celebration',
                     },
                 ],
             },
