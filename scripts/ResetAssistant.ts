@@ -15,7 +15,7 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
         function: {
             name: 'get_user_info',
             description:
-                'Retrieves user information including fullname, nickname, email, age, languages, origin, current location and current datetime',
+                'Retrieves user information including fullname, nickname (optional), email, birthdate, current location and its datetime.',
             strict: false,
             parameters: {
                 type: 'object',
