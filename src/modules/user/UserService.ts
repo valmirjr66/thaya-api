@@ -3,8 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import BaseService from '../../BaseService';
+import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetUserInfoResponseModel from './model/GetUserInfoResponseModel';
 import InsertUserRequestModel from './model/InsertUserRequestModel';
+import UpdateUserRequestModel from './model/UpdateUserRequestModel';
+import { Credential } from './schemas/CredentialSchema';
 import { User } from './schemas/UserSchema';
 
 @Injectable()
@@ -14,8 +17,41 @@ export default class UserService extends BaseService {
     constructor(
         @InjectModel(User.name)
         private readonly userModel: Model<User>,
+        @InjectModel(Credential.name)
+        private readonly credentialModel: Model<Credential>,
     ) {
         super();
+    }
+
+    async authenticateUser(
+        model: AuthenticateUserRequestModel,
+    ): Promise<'authenticated' | 'invalid credentials' | 'email not found'> {
+        this.logger.log(
+            `Authenticating user with email "${model.email}" and password "${model.password}"`,
+        );
+
+        const credential = await this.credentialModel.findOne({
+            email: model.email,
+        });
+
+        if (credential) {
+            this.logger.log(`Credential found for email: ${model.email}`);
+
+            if (credential.password === model.password) {
+                this.logger.log(
+                    `User with email ${model.email} authenticated successfully`,
+                );
+                return 'authenticated';
+            } else {
+                this.logger.warn(
+                    `Invalid credentials for email: ${model.email}`,
+                );
+                return 'invalid credentials';
+            }
+        } else {
+            this.logger.warn(`Email not found: ${model.email}`);
+            return 'email not found';
+        }
     }
 
     async getUserInfo(email: string): Promise<GetUserInfoResponseModel | null> {
@@ -50,7 +86,7 @@ export default class UserService extends BaseService {
             return 'existing email';
         }
 
-        const newUser = new this.userModel({
+        await this.userModel.create({
             _id: uuidv4(),
             fullname: user.fullname,
             email: user.email,
@@ -60,12 +96,19 @@ export default class UserService extends BaseService {
             updatedAt: new Date(),
         });
 
-        await newUser.save();
+        await this.credentialModel.create({
+            _id: uuidv4(),
+            email: user.email,
+            password: user.password,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
         this.logger.log(`User with email ${user.email} inserted successfully`);
     }
 
     async updateUser(
-        model: InsertUserRequestModel,
+        model: UpdateUserRequestModel,
     ): Promise<'invalid email' | 'updated'> {
         const email = model.email;
 
@@ -80,14 +123,22 @@ export default class UserService extends BaseService {
             return 'invalid email';
         }
 
-        await this.userModel.updateOne({
-            _id: user._id,
-            fullname: model.fullname,
-            email: model.email,
-            birthdate: model.birthdate,
-            nickname: model.nickname,
-            updatedAt: new Date(),
-        });
+        await this.userModel.updateOne(
+            {
+                _id: user._id,
+            },
+            {
+                fullname: model.fullname,
+                birthdate: model.birthdate,
+                nickname: model.nickname,
+                updatedAt: new Date(),
+            },
+        );
+
+        await this.credentialModel.updateOne(
+            { email: model.email },
+            { password: model.password, updatedAt: new Date() },
+        );
 
         this.logger.log(`User with email ${user.email} updated successfully`);
 

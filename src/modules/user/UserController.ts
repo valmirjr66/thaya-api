@@ -9,6 +9,7 @@ import {
     Put,
 } from '@nestjs/common';
 import {
+    ApiBadRequestResponse,
     ApiConflictResponse,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
@@ -18,6 +19,7 @@ import {
 import ResponseDescriptions from 'src/constants/ResponseDescriptions';
 import BaseController from '../../BaseController';
 import UserService from './UserService';
+import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
 import UpdateUserRequestModel from './model/UpdateUserRequestModel';
@@ -27,6 +29,34 @@ import UpdateUserRequestModel from './model/UpdateUserRequestModel';
 export default class UserController extends BaseController {
     constructor(private readonly userService: UserService) {
         super();
+    }
+
+    @Post('/authenticate')
+    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiBadRequestResponse({
+        description: ResponseDescriptions.BAD_REQUEST,
+    })
+    @ApiInternalServerErrorResponse({
+        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+    })
+    async authenticateUser(
+        @Body() dto: AuthenticateUserRequestDto,
+    ): Promise<void> {
+        const response = await this.userService.authenticateUser(dto);
+
+        if (response === 'invalid credentials') {
+            throw new HttpException(
+                'Invalid credentials',
+                HttpStatus.BAD_REQUEST,
+            );
+        } else if (response === 'authenticated') {
+            return;
+        } else {
+            throw new HttpException(
+                'E-mail is not registered',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
     }
 
     @Get('/info')
