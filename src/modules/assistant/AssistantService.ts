@@ -2,7 +2,7 @@ import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import ChatAssistant from 'src/handlers/gpt/ChatAssistant';
-import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
+import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserEmailResponseModel';
 import { Annotation } from 'src/types/gpt';
 import { v4 as uuidv4 } from 'uuid';
 import BaseService from '../../BaseService';
@@ -31,10 +31,10 @@ export default class AssistantService extends BaseService {
         super();
     }
 
-    async getChatByUserId(
-        userId: string,
+    async getChatByUserEmail(
+        userEmail: string,
     ): Promise<GetConversationResponseModel> {
-        let chat = await this.chatModel.findOne({ userId });
+        let chat = await this.chatModel.findOne({ userEmail });
 
         if (!chat) {
             const threadId = await this.chatAssistant.startThread();
@@ -43,7 +43,7 @@ export default class AssistantService extends BaseService {
                 _id: uuidv4(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                userId,
+                userEmail,
                 threadId,
             });
         }
@@ -53,14 +53,17 @@ export default class AssistantService extends BaseService {
         });
 
         if (chatMessages.length === 0) {
-            this.logger.log(`No messages found for userId: ${userId}`);
+            this.logger.log(`No messages found for userEmail: ${userEmail}`);
         }
 
         this.logger.log(
-            `Found ${chatMessages.length} messages for userId: ${userId}`,
+            `Found ${chatMessages.length} messages for userEmail: ${userEmail}`,
         );
 
-        const response = new GetConversationResponseModel(userId, chatMessages);
+        const response = new GetConversationResponseModel(
+            userEmail,
+            chatMessages,
+        );
 
         return response;
     }
@@ -68,13 +71,13 @@ export default class AssistantService extends BaseService {
     async sendMessage(
         model: SendMessageRequestModel,
         streamingCallback?: (
-            userId: string,
+            userEmail: string,
             textSnapshot: string,
             decoratedAnnotations?: FileMetadata[],
             finished?: boolean,
         ) => void,
     ): Promise<SendMessageResponseModel> {
-        let chat = await this.chatModel.findOne({ userId: model.userId });
+        let chat = await this.chatModel.findOne({ userEmail: model.userEmail });
 
         if (!chat) {
             const threadId = await this.chatAssistant.startThread();
@@ -83,7 +86,7 @@ export default class AssistantService extends BaseService {
                 _id: uuidv4(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                userId: model.userId,
+                userEmail: model.userEmail,
                 threadId,
             });
         }
@@ -108,7 +111,7 @@ export default class AssistantService extends BaseService {
                           annotationsSnapshot,
                       );
 
-                      streamingCallback(model.userId, prettifiedTextContent);
+                      streamingCallback(model.userEmail, prettifiedTextContent);
                   },
               )
             : await this.chatAssistant.addMessageToThread(
@@ -127,7 +130,7 @@ export default class AssistantService extends BaseService {
 
         if (streamingCallback) {
             streamingCallback(
-                model.userId,
+                model.userEmail,
                 prettifiedTextContent,
                 decoratedAnnotations,
                 true,

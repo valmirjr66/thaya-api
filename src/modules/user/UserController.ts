@@ -65,9 +65,9 @@ export default class UserController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async getUserInfo(
-        @Headers('email') email?: string,
+        @Headers('userEmail') userEmail: string,
     ): Promise<GetUserInfoResponseDto> {
-        const response = await this.userService.getUserInfo(email);
+        const response = await this.userService.getUserInfoByEmail(userEmail);
         this.validateGetResponse(response);
         return response;
     }

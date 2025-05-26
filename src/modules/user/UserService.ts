@@ -54,7 +54,9 @@ export default class UserService extends BaseService {
         }
     }
 
-    async getUserInfo(email: string): Promise<GetUserInfoResponseModel | null> {
+    async getUserInfoByEmail(
+        email: string,
+    ): Promise<GetUserInfoResponseModel | null> {
         this.logger.log(`Fetching user info for email: ${email}`);
 
         const user = await this.userModel.findOne({ email }).exec();

@@ -1,8 +1,8 @@
 import { Message } from '../schemas/MessageSchema';
 
-export default class GetChatByUserIdResponseModel {
+export default class GetChatByUserEmailResponseDto {
     constructor(
-        public id: string,
+        public userEmail: string,
         public messages: Message[],
     ) {}
 }

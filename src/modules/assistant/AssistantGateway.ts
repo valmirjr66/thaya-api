@@ -27,18 +27,18 @@ export class AssistantGateway
         this.logger.log(`Handling message from client: ${client.id}`);
 
         const messageModel = new SendMessageRequestModel(
-            client.handshake.headers.userid as string,
+            client.handshake.headers.userEmail as string,
             payload.content,
         );
 
         const streamingCallback = (
-            userId: string,
+            userEmail: string,
             textSnapshot: string,
             decoratedAnnotations?: FileMetadata[],
             finished?: boolean,
         ) => {
             this.server.emit('message', {
-                userId,
+                userEmail,
                 textSnapshot,
                 decoratedAnnotations,
                 finished,

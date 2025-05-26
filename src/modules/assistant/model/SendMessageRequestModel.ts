@@ -1,6 +1,6 @@
 export default class SendMessageRequestModel {
     constructor(
-        public userId: string,
+        public userEmail: string,
         public content: string,
     ) {}
 }

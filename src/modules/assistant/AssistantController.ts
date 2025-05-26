@@ -9,7 +9,7 @@ import {
 import ResponseDescriptions from 'src/constants/ResponseDescriptions';
 import BaseController from '../../BaseController';
 import AssistantService from './AssistantService';
-import GetChatByUserIdResponseDto from './dto/GetChatByUserIdResponseDto';
+import GetChatByUserEmailResponseDto from './dto/GetChatByUserEmailResponseDto';
 import SendMessageRequestDto from './dto/SendMessageRequestDto';
 import SendMessageResponseDto from './dto/SendMessageResponseDto';
 
@@ -27,9 +27,10 @@ export default class AssistantController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async getChat(
-        @Headers('userId') userId?: string,
-    ): Promise<GetChatByUserIdResponseDto> {
-        const response = await this.assistantService.getChatByUserId(userId);
+        @Headers('userEmail') userEmail: string,
+    ): Promise<GetChatByUserEmailResponseDto> {
+        const response =
+            await this.assistantService.getChatByUserEmail(userEmail);
         this.validateGetResponse(response);
         return response;
     }
@@ -43,11 +44,11 @@ export default class AssistantController extends BaseController {
     })
     async sendMessage(
         @Body() dto: SendMessageRequestDto,
-        @Headers('userId') userId?: string,
+        @Headers('userEmail') userEmail: string,
     ): Promise<SendMessageResponseDto> {
         const response = await this.assistantService.sendMessage({
-            ...dto,
-            userId: userId || 'anonymous',
+            content: dto.content,
+            userEmail,
         });
 
         this.validateGetResponse(response);

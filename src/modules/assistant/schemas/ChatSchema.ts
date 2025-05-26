@@ -7,7 +7,7 @@ export type ChatDocument = HydratedDocument<Chat>;
 @Schema({ timestamps: true })
 export class Chat extends BaseSchema {
     @Prop({ required: true })
-    userId: string;
+    userEmail: string;
 
     @Prop({ required: true })
     threadId: string;

@@ -13,5 +13,5 @@ export type Annotation = {
 
 export type SimplifiedConversation = Omit<
     Chat,
-    'messages' | 'references' | 'threadId' | 'userId'
+    'messages' | 'references' | 'threadId' | 'userEmail'
 >;

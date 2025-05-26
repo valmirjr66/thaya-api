@@ -14,8 +14,8 @@
   <input type="text" id="serverAddress" value="http://localhost:4000">
   <br><br>
 
-  <label for="userId">User ID:</label>
-  <input type="text" id="userId" value="valmir">
+  <label for="userEmail">User e-mail:</label>
+  <input type="text" id="userEmail" value="valmirgmj@gmail.com">
   <br><br>
 
   <label for="message">Message:</label>
@@ -37,10 +37,10 @@
 
     connectButton.addEventListener('click', () => {
       const serverAddress = document.getElementById('serverAddress').value;
-      const userId = document.getElementById('userId').value;
+      const userEmail = document.getElementById('userEmail').value;
 
-      if (!serverAddress || !userId) {
-        console.error("Please provide both the server address and user ID.");
+      if (!serverAddress || !userEmail) {
+        console.error("Please provide both the server address and user email.");
         return;
       }
 
@@ -50,13 +50,13 @@
         reconnectionDelayMax: 5000,
         reconnectionAttempts: Infinity,
         extraHeaders: {
-          userId,
+          userEmail,
         },
       });
 
       clientWS.on("connect", () => {
         console.log("Connected to the WebSocket server.");
-        console.log("User ID:", userId);
+        console.log("User email:", userEmail);
         sendMessageButton.disabled = false;
       });
 
