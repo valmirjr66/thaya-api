@@ -1,16 +1,8 @@
 export type UserInfo = {
     fullname: string;
-    nickname: string;
+    nickname?: string;
     email: string;
-    age: number;
-    languages: string[];
-    origin: {
-        country: string;
-        state: string;
-        city: string;
-        longitude: number;
-        latitute: number;
-    };
+    birthdate: string;
     currentLocation: {
         country: string;
         state: string;
@@ -26,15 +18,7 @@ export async function getUserInfo(): Promise<UserInfo> {
         fullname: 'Valmir Júnior',
         nickname: 'Val',
         email: 'valmirgmj@gmail.com',
-        age: 25,
-        languages: ['Portuguese', 'English'],
-        origin: {
-            country: 'Brazil',
-            state: 'Minas Gerais',
-            city: 'Itaúna',
-            longitude: -44.5960667,
-            latitute: -20.0880499,
-        },
+        birthdate: '2000-04-13',
         currentLocation: {
             country: 'Brazil',
             state: 'Bahia',

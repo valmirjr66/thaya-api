@@ -5,4 +5,5 @@ export default {
     CREATED: 'Created',
     OK: 'Ok',
     INTERNAL_SERVER_ERROR: 'Internal server error',
+    CONFLICT: 'Conflict',
 };

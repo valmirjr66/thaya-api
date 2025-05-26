@@ -1,8 +1,8 @@
-import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'dotenv/config';
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 import { AppModule } from './app.module';
 
@@ -14,12 +14,13 @@ async function bootstrap() {
     app.setGlobalPrefix('api').useGlobalPipes(new ValidationPipe());
 
     const config = new DocumentBuilder()
-        .setTitle('Generic Generative AI API')
+        .setTitle('Thaya Assistant API')
         .setDescription(
-            'This is a RESTful API created to interface with a generic gen AI',
+            "This is a RESTful API created to interface with Thaya's intelligence.",
         )
         .setVersion('1.0')
         .addTag('Assistant')
+        .addTag('User')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
