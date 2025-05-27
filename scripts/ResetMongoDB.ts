@@ -25,7 +25,7 @@ async function resetMongoDB() {
 
         await db.collection('credentials').insertOne({
             email: 'valmirgmj@gmail.com',
-            password: 'a',
+            password: '123',
         });
 
         await db.collection('users').insertOne({
