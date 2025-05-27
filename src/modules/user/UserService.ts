@@ -54,6 +54,29 @@ export default class UserService extends BaseService {
         }
     }
 
+    async changePassword(
+        email: string,
+        newPassword: string,
+    ): Promise<'updated' | 'email not found'> {
+        this.logger.log(`Updating password for user with email: ${email}`);
+
+        const credentials = await this.credentialModel.findOne({ email });
+
+        if (!credentials) {
+            this.logger.error(`User with email ${email} not found`);
+            return 'email not found';
+        }
+
+        await this.credentialModel.updateOne(
+            { email },
+            { email, password: newPassword, updatedAt: new Date() },
+        );
+
+        this.logger.log(`Password updated for user with email: ${email}`);
+
+        return 'updated';
+    }
+
     async getUserInfoByEmail(
         email: string,
     ): Promise<GetUserInfoResponseModel | null> {
@@ -133,13 +156,9 @@ export default class UserService extends BaseService {
                 fullname: model.fullname,
                 birthdate: model.birthdate,
                 nickname: model.nickname,
+                email: model.email,
                 updatedAt: new Date(),
             },
-        );
-
-        await this.credentialModel.updateOne(
-            { email: model.email },
-            { password: model.password, updatedAt: new Date() },
         );
 
         this.logger.log(`User with email ${user.email} updated successfully`);

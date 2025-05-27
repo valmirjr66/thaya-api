@@ -7,6 +7,7 @@ import {
     HttpStatus,
     Post,
     Put,
+    Query,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
@@ -22,7 +23,7 @@ import UserService from './UserService';
 import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
-import UpdateUserRequestModel from './model/UpdateUserRequestModel';
+import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
 
 @ApiTags('User')
 @Controller('user')
@@ -57,6 +58,33 @@ export default class UserController extends BaseController {
                 HttpStatus.BAD_REQUEST,
             );
         }
+    }
+
+    @Post('/change-password')
+    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiBadRequestResponse({
+        description: ResponseDescriptions.BAD_REQUEST,
+    })
+    @ApiInternalServerErrorResponse({
+        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+    })
+    async changePassword(
+        @Headers('userEmail') userEmail: string,
+        @Query('newPassword') newPassword: string,
+    ) {
+        const response = await this.userService.changePassword(
+            userEmail,
+            newPassword,
+        );
+
+        if (response === 'email not found') {
+            throw new HttpException(
+                'E-mail is not registered',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        return;
     }
 
     @Get('/info')
@@ -96,8 +124,15 @@ export default class UserController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
-    async updateUser(@Body() body: UpdateUserRequestModel): Promise<void> {
-        const response = await this.userService.updateUser(body);
+    async updateUser(
+        @Headers('userEmail') userEmail: string,
+        @Body() body: UpdateUserRequestDto,
+    ): Promise<void> {
+        const response = await this.userService.updateUser({
+            ...body,
+            email: userEmail,
+        });
+
         if (response === 'invalid email') {
             throw new HttpException(
                 'E-mail already has an assigned account',
