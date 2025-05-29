@@ -135,7 +135,7 @@ export default class UserController extends BaseController {
 
         if (response === 'invalid email') {
             throw new HttpException(
-                'E-mail already has an assigned account',
+                "E-mail doesn't have an assigned account",
                 HttpStatus.CONFLICT,
             );
         } else if (response === 'updated') {
