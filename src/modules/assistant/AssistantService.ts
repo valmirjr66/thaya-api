@@ -1,6 +1,6 @@
 import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import ChatAssistant from 'src/handlers/gpt/ChatAssistant';
 import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserEmailResponseModel';
 import { Annotation } from 'src/types/gpt';
@@ -39,6 +39,7 @@ export default class AssistantService extends BaseService {
             const threadId = await this.chatAssistant.startThread();
 
             chat = await this.chatModel.create({
+                _id: new mongoose.Types.ObjectId(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 userEmail,
@@ -81,6 +82,7 @@ export default class AssistantService extends BaseService {
             const threadId = await this.chatAssistant.startThread();
 
             chat = await this.chatModel.create({
+                _id: new mongoose.Types.ObjectId(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 userEmail: model.userEmail,
@@ -92,6 +94,7 @@ export default class AssistantService extends BaseService {
         const chatId = chat._id;
 
         await this.messageModel.create({
+            _id: new mongoose.Types.ObjectId(),
             content: model.content,
             role: 'user',
             chatId: chatId,
@@ -139,6 +142,7 @@ export default class AssistantService extends BaseService {
         );
 
         const response = await this.messageModel.create({
+            _id: new mongoose.Types.ObjectId(),
             content: prettifiedTextContent,
             role: 'assistant',
             references: decoratedAnnotations,

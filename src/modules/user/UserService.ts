@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import BaseService from '../../BaseService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetUserInfoResponseModel from './model/GetUserInfoResponseModel';
@@ -111,6 +111,7 @@ export default class UserService extends BaseService {
         }
 
         await this.userModel.create({
+            _id: new mongoose.Types.ObjectId(),
             fullname: user.fullname,
             email: user.email,
             birthdate: user.birthdate,
@@ -120,6 +121,7 @@ export default class UserService extends BaseService {
         });
 
         await this.credentialModel.create({
+            _id: new mongoose.Types.ObjectId(),
             email: user.email,
             password: user.password,
             createdAt: new Date(),
