@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Role } from 'src/types/gpt';
 import { BaseSchema } from '../../../BaseSchema';
 import { FileMetadata } from './FileMetadataSchema';
@@ -15,7 +15,7 @@ export class Message extends BaseSchema {
     role: Role;
 
     @Prop({ required: true })
-    chatId: string;
+    chatId: mongoose.Types.ObjectId;
 
     @Prop()
     references: FileMetadata[];
