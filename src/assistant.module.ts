@@ -9,7 +9,7 @@ import {
     MessageSchema,
 } from './modules/assistant/schemas/MessageSchema';
 
-import AgendaTool from './handlers/gpt/AgendaTool';
+import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
 import WeatherTool from './handlers/gpt/WeatherTool';
@@ -25,7 +25,7 @@ import {
         ChatAssistant,
         UserInfoTool,
         WeatherTool,
-        AgendaTool,
+        CalendarTool,
         AssistantGateway,
     ],
     imports: [

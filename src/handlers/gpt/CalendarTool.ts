@@ -200,7 +200,7 @@ const calendar: Record<string, Month> = {
 };
 
 @Injectable()
-export default class AgendaTool {
+export default class CalendarTool {
     async getUserAgenda(args: { from: string; to: string }): Promise<Day[]> {
         const from = new Date(args.from);
         const to = new Date(args.to);

@@ -4,7 +4,7 @@ import { TextContentBlock } from 'openai/resources/beta/threads/messages.mjs';
 import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
 import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/threads/runs/runs.js';
 import { Annotation } from 'src/types/gpt';
-import AgendaTool from './AgendaTool';
+import CalendarTool from './CalendarTool';
 import UserInfoTool from './UserInfoTool';
 import WeatherTool from './WeatherTool';
 
@@ -27,7 +27,7 @@ export default class ChatAssistant {
     constructor(
         private readonly weatherTool: WeatherTool,
         private readonly userInfoTool: UserInfoTool,
-        private readonly agendaTool: AgendaTool,
+        private readonly calendarTool: CalendarTool,
     ) {}
 
     public async startThread(): Promise<string> {
@@ -255,7 +255,7 @@ export default class ChatAssistant {
                 output: JSON.stringify(weatherInfo),
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
-            const userAgenda = await this.agendaTool.getUserAgenda(args);
+            const userAgenda = await this.calendarTool.getUserAgenda(args);
 
             toolOutputs.push({
                 tool_call_id: toolCall.id,
