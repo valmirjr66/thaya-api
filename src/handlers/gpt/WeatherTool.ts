@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 export type WeatherInfo = {
     currentTemperature: number;
@@ -8,6 +8,8 @@ export type WeatherInfo = {
 
 @Injectable()
 export default class WeatherTool {
+    private readonly logger: Logger = new Logger('WeatherTool');
+
     async getWeatherInfo(args: {
         latitude: number;
         longitude: number;
@@ -17,6 +19,10 @@ export default class WeatherTool {
         if (typeof latitude !== 'number' || typeof longitude !== 'number') {
             throw new Error('Latitude and longitude must be numbers');
         }
+
+        this.logger.log(
+            `Fetching user info for latitude ${latitude} and longitude ${longitude}`,
+        );
 
         const apiURL = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,apparent_temperature,rain,precipitation_probability&timezone=America%2FSao_Paulo&past_days=1&forecast_days=1`;
         const response = await fetch(apiURL);

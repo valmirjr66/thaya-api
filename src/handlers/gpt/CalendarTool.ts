@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 export type Occurrence = {
     time: Date;
@@ -201,6 +201,14 @@ const calendar: Record<string, Month> = {
 
 @Injectable()
 export default class CalendarTool {
+    private readonly logger: Logger = new Logger('CalendarTool');
+
+    async getCurrentDatetime() {
+        this.logger.log('Fetching current datetime');
+
+        return { currentDatetime: new Date() };
+    }
+
     async getUserAgenda(args: { from: string; to: string }): Promise<Day[]> {
         const from = new Date(args.from);
         const to = new Date(args.to);
@@ -208,6 +216,8 @@ export default class CalendarTool {
         if (isNaN(from.getTime()) || isNaN(to.getTime())) {
             throw new Error('Invalid date format. Please use ISO 8601 format.');
         }
+
+        this.logger.log(`Fetching user's agenda from ${from} to ${to}`);
 
         const fromYear = from.getFullYear();
         const fromMonth = from.getMonth() + 1;

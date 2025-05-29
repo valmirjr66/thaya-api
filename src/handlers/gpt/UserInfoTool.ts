@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 export type UserInfo = {
     fullname: string;
@@ -16,7 +16,11 @@ export type UserInfo = {
 
 @Injectable()
 export default class UserInfoTool {
+    private readonly logger: Logger = new Logger('UserInfoTool');
+
     async getUserInfo(userEmail: string): Promise<UserInfo> {
+        this.logger.log(`Fetching user info for email: ${userEmail}`);
+
         const response = await fetch(
             `${process.env.USER_MODULE_ADDRESS}/info`,
             {

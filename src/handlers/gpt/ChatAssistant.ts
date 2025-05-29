@@ -261,6 +261,14 @@ export default class ChatAssistant {
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(userAgenda),
             });
+        } else if (toolCall.function.name === 'get_current_datetime') {
+            const currentDateTime =
+                await this.calendarTool.getCurrentDatetime();
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify(currentDateTime),
+            });
         } else {
             throw new Error(`Unknown function: ${toolCall.function.name}`);
         }
