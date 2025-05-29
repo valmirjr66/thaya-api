@@ -118,7 +118,7 @@ export default class UserController extends BaseController {
         }
     }
 
-    @Put()
+    @Put('/info')
     @ApiOkResponse({ description: ResponseDescriptions.OK })
     @ApiConflictResponse({ description: ResponseDescriptions.CONFLICT })
     @ApiInternalServerErrorResponse({
