@@ -17,9 +17,12 @@ export type UserInfo = {
 @Injectable()
 export default class UserInfoTool {
     async getUserInfo(userEmail: string): Promise<UserInfo> {
-        const response = await fetch('USER_MODULE_ADDRESS', {
-            headers: { userEmail },
-        });
+        const response = await fetch(
+            `${process.env.USER_MODULE_ADDRESS}/info`,
+            {
+                headers: { userEmail },
+            },
+        );
 
         const info = await response.json();
 
