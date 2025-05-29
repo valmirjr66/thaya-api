@@ -1,4 +1,4 @@
-import { Injectable, Logger, Optional } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import ChatAssistant from 'src/handlers/gpt/ChatAssistant';
@@ -16,10 +16,7 @@ export default class AssistantService extends BaseService {
     private readonly logger: Logger = new Logger('AssistantService');
 
     constructor(
-        @Optional()
-        private readonly chatAssistant: ChatAssistant = new ChatAssistant(
-            process.env.ASSISTANT_ID,
-        ),
+        private readonly chatAssistant: ChatAssistant,
         @InjectModel(Message.name)
         private readonly messageModel: Model<Message>,
         @InjectModel(Chat.name)
@@ -104,6 +101,7 @@ export default class AssistantService extends BaseService {
             ? await this.chatAssistant.addMessageToThreadByStream(
                   threadId,
                   model.content,
+                  model.userEmail,
                   (textSnapshot: string, annotationsSnapshot: Annotation[]) => {
                       const prettifiedTextContent = this.prettifyText(
                           textSnapshot,
@@ -116,6 +114,7 @@ export default class AssistantService extends BaseService {
             : await this.chatAssistant.addMessageToThread(
                   threadId,
                   model.content,
+                  model.userEmail,
               );
 
         const prettifiedTextContent = this.prettifyText(

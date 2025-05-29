@@ -9,6 +9,10 @@ import {
     MessageSchema,
 } from './modules/assistant/schemas/MessageSchema';
 
+import AgendaTool from './handlers/gpt/AgendaTool';
+import ChatAssistant from './handlers/gpt/ChatAssistant';
+import UserInfoTool from './handlers/gpt/UserInfoTool';
+import WeatherTool from './handlers/gpt/WeatherTool';
 import {
     FileMetadata,
     FileMetadataSchema,
@@ -16,7 +20,14 @@ import {
 
 @Module({
     controllers: [AssistantController],
-    providers: [AssistantService, AssistantGateway],
+    providers: [
+        AssistantService,
+        ChatAssistant,
+        UserInfoTool,
+        WeatherTool,
+        AgendaTool,
+        AssistantGateway,
+    ],
     imports: [
         MongooseModule.forFeature([
             { name: Message.name, schema: MessageSchema },

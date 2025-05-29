@@ -1,12 +1,12 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages.mjs';
 import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
 import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/threads/runs/runs.js';
 import { Annotation } from 'src/types/gpt';
-import { getUserAgenda } from './AgendaTool';
-import { getUserInfo } from './UserInfoTool';
-import { getWeatherInfo } from './WeatherTool';
+import AgendaTool from './AgendaTool';
+import UserInfoTool from './UserInfoTool';
+import WeatherTool from './WeatherTool';
 
 export class TextResponse {
     constructor(content: string, annotations?: Annotation[]) {
@@ -18,14 +18,17 @@ export class TextResponse {
     annotations?: Annotation[];
 }
 
+@Injectable()
 export default class ChatAssistant {
     private readonly logger: Logger = new Logger('ChatAssistant');
-    private readonly assistantId: string;
+    private readonly assistantId: string = process.env.ASSISTANT_ID;
     private readonly openaiClient: OpenAI = new OpenAI();
 
-    constructor(assistantId: string) {
-        this.assistantId = assistantId;
-    }
+    constructor(
+        private readonly weatherTool: WeatherTool,
+        private readonly userInfoTool: UserInfoTool,
+        private readonly agendaTool: AgendaTool,
+    ) {}
 
     public async startThread(): Promise<string> {
         const thread = await this.openaiClient.beta.threads.create();
@@ -35,6 +38,7 @@ export default class ChatAssistant {
     public async addMessageToThread(
         threadId: string,
         message: string,
+        userEmail: string,
     ): Promise<TextResponse> {
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
@@ -60,7 +64,12 @@ export default class ChatAssistant {
             const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
 
             for (const call of toolCalls) {
-                await this.executeToolCall(call, context, toolOutputs);
+                await this.executeToolCall(
+                    call,
+                    context,
+                    toolOutputs,
+                    userEmail,
+                );
             }
 
             run =
@@ -104,6 +113,7 @@ export default class ChatAssistant {
     public async addMessageToThreadByStream(
         threadId: string,
         message: string,
+        userEmail: string,
         streamingCallback: (
             textSnapshot: string,
             annotationsSnapshot: Annotation[],
@@ -164,7 +174,12 @@ export default class ChatAssistant {
             const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
 
             for (const call of toolCalls) {
-                await this.executeToolCall(call, context, toolOutputs);
+                await this.executeToolCall(
+                    call,
+                    context,
+                    toolOutputs,
+                    userEmail,
+                );
             }
 
             run =
@@ -208,11 +223,12 @@ export default class ChatAssistant {
         toolCall: RequiredActionFunctionToolCall,
         context: Record<string, any>,
         toolOutputs: RunSubmitToolOutputsParams.ToolOutput[],
+        userEmail: string,
     ) {
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get_user_info') {
-            const userInfo = await getUserInfo();
+            const userInfo = await this.userInfoTool.getUserInfo(userEmail);
 
             context.userInfo = userInfo;
 
@@ -229,7 +245,7 @@ export default class ChatAssistant {
                 context.userInfo?.currentLocation.longitude ||
                 args.location?.longitude;
 
-            const weatherInfo = await getWeatherInfo({
+            const weatherInfo = await this.weatherTool.getWeatherInfo({
                 latitude: Number(latitude),
                 longitude: Number(longitude),
             });
@@ -239,7 +255,7 @@ export default class ChatAssistant {
                 output: JSON.stringify(weatherInfo),
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
-            const userAgenda = await getUserAgenda(args);
+            const userAgenda = await this.agendaTool.getUserAgenda(args);
 
             toolOutputs.push({
                 tool_call_id: toolCall.id,

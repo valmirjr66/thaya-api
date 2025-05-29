@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 export type Occurrence = {
     time: Date;
     description: string;
@@ -197,42 +199,42 @@ const calendar: Record<string, Month> = {
     },
 };
 
-export async function getUserAgenda(args: {
-    from: string;
-    to: string;
-}): Promise<Day[]> {
-    const from = new Date(args.from);
-    const to = new Date(args.to);
+@Injectable()
+export default class AgendaTool {
+    async getUserAgenda(args: { from: string; to: string }): Promise<Day[]> {
+        const from = new Date(args.from);
+        const to = new Date(args.to);
 
-    if (isNaN(from.getTime()) || isNaN(to.getTime())) {
-        throw new Error('Invalid date format. Please use ISO 8601 format.');
-    }
+        if (isNaN(from.getTime()) || isNaN(to.getTime())) {
+            throw new Error('Invalid date format. Please use ISO 8601 format.');
+        }
 
-    const fromYear = from.getFullYear();
-    const fromMonth = from.getMonth() + 1;
+        const fromYear = from.getFullYear();
+        const fromMonth = from.getMonth() + 1;
 
-    const toYear = to.getFullYear();
-    const toMonth = to.getMonth() + 1;
+        const toYear = to.getFullYear();
+        const toMonth = to.getMonth() + 1;
 
-    const days: Day[] = [];
+        const days: Day[] = [];
 
-    for (let year = fromYear; year <= toYear; year++) {
-        const startMonth = year === fromYear ? fromMonth : 1;
-        const endMonth = year === toYear ? toMonth : 12;
+        for (let year = fromYear; year <= toYear; year++) {
+            const startMonth = year === fromYear ? fromMonth : 1;
+            const endMonth = year === toYear ? toMonth : 12;
 
-        for (let month = startMonth; month <= endMonth; month++) {
-            const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-            const monthData = calendar[monthKey];
+            for (let month = startMonth; month <= endMonth; month++) {
+                const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+                const monthData = calendar[monthKey];
 
-            if (monthData) {
-                for (const day of monthData.days) {
-                    if (day.date >= from && day.date <= to) {
-                        days.push(day);
+                if (monthData) {
+                    for (const day of monthData.days) {
+                        if (day.date >= from && day.date <= to) {
+                            days.push(day);
+                        }
                     }
                 }
             }
         }
-    }
 
-    return days;
+        return days;
+    }
 }

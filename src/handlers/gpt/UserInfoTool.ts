@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 export type UserInfo = {
     fullname: string;
     nickname?: string;
@@ -10,22 +12,26 @@ export type UserInfo = {
         longitude: number;
         latitute: number;
     };
-    currentDatetime: Date;
 };
 
-export async function getUserInfo(): Promise<UserInfo> {
-    return {
-        fullname: 'Valmir Júnior',
-        nickname: 'Val',
-        email: 'valmirgmj@gmail.com',
-        birthdate: '2000-04-13',
-        currentLocation: {
-            country: 'Brazil',
-            state: 'Bahia',
-            city: 'Salvador',
-            longitude: -38.4812772,
-            latitute: -12.9822499,
-        },
-        currentDatetime: new Date(),
-    };
+@Injectable()
+export default class UserInfoTool {
+    async getUserInfo(userEmail: string): Promise<UserInfo> {
+        const response = await fetch('USER_MODULE_ADDRESS', {
+            headers: { userEmail },
+        });
+
+        const info = await response.json();
+
+        return {
+            ...info,
+            currentLocation: {
+                country: 'Brazil',
+                state: 'Bahia',
+                city: 'Salvador',
+                longitude: -38.4812772,
+                latitute: -12.9822499,
+            },
+        };
+    }
 }
