@@ -1,8 +1,8 @@
+import GenericCollectionResponse from 'src/types/generic';
 import { Message } from '../schemas/MessageSchema';
 
-export default class GetChatByUserEmailResponseDto {
-    constructor(
-        public userEmail: string,
-        public messages: Message[],
-    ) {}
+export default class GetChatByUserEmailResponseDto extends GenericCollectionResponse<Message> {
+    constructor(public items: Message[]) {
+        super(items);
+    }
 }

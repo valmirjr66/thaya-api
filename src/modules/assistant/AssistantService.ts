@@ -56,10 +56,7 @@ export default class AssistantService extends BaseService {
             `Found ${chatMessages.length} messages for userEmail: ${userEmail}`,
         );
 
-        const response = new GetConversationResponseModel(
-            userEmail,
-            chatMessages,
-        );
+        const response = new GetConversationResponseModel(chatMessages);
 
         return response;
     }

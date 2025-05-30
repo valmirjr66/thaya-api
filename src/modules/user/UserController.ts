@@ -14,13 +14,16 @@ import {
     ApiConflictResponse,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
 import ResponseDescriptions from 'src/constants/ResponseDescriptions';
 import BaseController from '../../BaseController';
+import CalendarService from './CalendarService';
 import UserService from './UserService';
 import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
+import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
 import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
@@ -28,7 +31,10 @@ import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
 @ApiTags('User')
 @Controller('user')
 export default class UserController extends BaseController {
-    constructor(private readonly userService: UserService) {
+    constructor(
+        private readonly userService: UserService,
+        private readonly calendarService: CalendarService,
+    ) {
         super();
     }
 
@@ -141,5 +147,27 @@ export default class UserController extends BaseController {
         } else if (response === 'updated') {
             return;
         }
+    }
+
+    @Get('/calendar')
+    @ApiNoContentResponse({ description: ResponseDescriptions.NO_CONTENT })
+    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiInternalServerErrorResponse({
+        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+    })
+    async getUserCalendar(
+        @Headers('userEmail') userEmail: string,
+        @Query('month') month: string,
+        @Query('year') year: string,
+    ): Promise<GetUserCalendarResponseDto> {
+        const response = await this.calendarService.getUserCalendarByEmail(
+            userEmail,
+            Number(month),
+            Number(year),
+        );
+
+        this.validateGetResponse(response);
+
+        return response;
     }
 }

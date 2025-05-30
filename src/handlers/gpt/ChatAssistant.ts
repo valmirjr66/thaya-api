@@ -255,7 +255,10 @@ export default class ChatAssistant {
                 output: JSON.stringify(weatherInfo),
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
-            const userAgenda = await this.calendarTool.getUserAgenda(args);
+            const userAgenda = await this.calendarTool.getUserAgenda(
+                userEmail,
+                args,
+            );
 
             toolOutputs.push({
                 tool_call_id: toolCall.id,
