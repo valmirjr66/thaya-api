@@ -46,7 +46,7 @@ export default class CalendarService extends BaseService {
             });
 
         this.logger.log(
-            `For user with email ${userEmail} got ${filteredRecords.length} records filtering my month ${month} and year ${year}`,
+            `For user with email ${userEmail} got ${filteredRecords.length} records filtering by month ${month} and year ${year}`,
         );
 
         return new GetUserCalendarResponseModel(filteredRecords);
