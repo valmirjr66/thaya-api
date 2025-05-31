@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Occurrence } from 'src/types/calendar';
 import BaseService from '../../BaseService';
 import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
+import InsertCalendarOccurenceRequestModel from './model/InsertCalendarOccurenceRequestModel';
 import { Calendar } from './schemas/CalendarSchema';
 
 @Injectable()
@@ -50,5 +51,24 @@ export default class CalendarService extends BaseService {
         );
 
         return new GetUserCalendarResponseModel(filteredRecords);
+    }
+
+    async insertCalendarOccurrence(model: InsertCalendarOccurenceRequestModel) {
+        this.logger.log(
+            `Insert calendar occurrence for user with email ${model.userEmail}`,
+        );
+
+        const { userEmail, datetime, description } = model;
+
+        await this.calendarModel.create({
+            _id: new mongoose.Types.ObjectId(),
+            record: {
+                datetime,
+                description,
+            },
+            userEmail,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
     }
 }

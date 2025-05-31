@@ -25,6 +25,7 @@ import UserService from './UserService';
 import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
 import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
+import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
 import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
 
@@ -169,5 +170,21 @@ export default class UserController extends BaseController {
         this.validateGetResponse(response);
 
         return response;
+    }
+
+    @Post('/calendar')
+    @ApiBadRequestResponse({ description: ResponseDescriptions.BAD_REQUEST })
+    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiInternalServerErrorResponse({
+        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+    })
+    async insertCalendarOccurrence(
+        @Headers('x-user-email') userEmail: string,
+        @Body() body: InsertCalendarOccurenceRequestDto,
+    ): Promise<void> {
+        await this.calendarService.insertCalendarOccurrence({
+            ...body,
+            userEmail,
+        });
     }
 }
