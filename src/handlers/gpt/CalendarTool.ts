@@ -51,7 +51,7 @@ export default class CalendarTool {
 
             fetches.push(
                 fetch(url, {
-                    headers: { userEmail },
+                    headers: { 'x-user-email': userEmail },
                 }).then(async (res) => {
                     if (res.status === 204) {
                         return {

@@ -27,7 +27,7 @@ export default class AssistantController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async getChat(
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
     ): Promise<GetChatByUserEmailResponseDto> {
         const response =
             await this.assistantService.getChatByUserEmail(userEmail);
@@ -44,7 +44,7 @@ export default class AssistantController extends BaseController {
     })
     async sendMessage(
         @Body() dto: SendMessageRequestDto,
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
     ): Promise<SendMessageResponseDto> {
         const response = await this.assistantService.sendMessage({
             content: dto.content,

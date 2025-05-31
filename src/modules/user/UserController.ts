@@ -75,7 +75,7 @@ export default class UserController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async changePassword(
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
         @Query('newPassword') newPassword: string,
     ) {
         const response = await this.userService.changePassword(
@@ -99,7 +99,7 @@ export default class UserController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async getUserInfo(
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
     ): Promise<GetUserInfoResponseDto> {
         const response = await this.userService.getUserInfoByEmail(userEmail);
         this.validateGetResponse(response);
@@ -131,7 +131,7 @@ export default class UserController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async updateUser(
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
         @Body() body: UpdateUserRequestDto,
     ): Promise<void> {
         const response = await this.userService.updateUser({
@@ -156,7 +156,7 @@ export default class UserController extends BaseController {
         description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
     })
     async getUserCalendar(
-        @Headers('userEmail') userEmail: string,
+        @Headers('x-user-email') userEmail: string,
         @Query('month') month: string,
         @Query('year') year: string,
     ): Promise<GetUserCalendarResponseDto> {

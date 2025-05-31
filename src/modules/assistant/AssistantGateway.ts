@@ -27,7 +27,7 @@ export class AssistantGateway
         this.logger.log(`Handling message from client: ${client.id}`);
 
         const messageModel = new SendMessageRequestModel(
-            client.handshake.headers.useremail as string,
+            client.handshake.headers['x-user-email'] as string,
             payload.content,
         );
 
