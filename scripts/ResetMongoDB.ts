@@ -264,20 +264,6 @@ async function resetMongoDB() {
             {
                 userEmail: DEFAULT_USER_EMAIL,
                 record: {
-                    datetime: new Date('2025-09-09'),
-                    description: 'Encontro com cliente internacional',
-                },
-            },
-            {
-                userEmail: DEFAULT_USER_EMAIL,
-                record: {
-                    datetime: new Date('2025-09-26'),
-                    description: 'Palestra de boas práticas de gestão',
-                },
-            },
-            {
-                userEmail: DEFAULT_USER_EMAIL,
-                record: {
                     datetime: new Date('2025-10-04'),
                     description: 'Consulta com nutricionista',
                 },

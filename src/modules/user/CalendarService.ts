@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Occurrence } from 'src/types/calendar';
 import BaseService from '../../BaseService';
 import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
 import { Calendar } from './schemas/CalendarSchema';
@@ -36,7 +37,7 @@ export default class CalendarService extends BaseService {
         }
 
         const filteredRecords = userCalendar
-            .map((item) => item.record)
+            .map((item) => item.record as Occurrence)
             .filter((item) => {
                 return (
                     item.datetime.getUTCFullYear() === year &&

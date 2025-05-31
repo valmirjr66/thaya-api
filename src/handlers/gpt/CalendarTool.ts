@@ -1,203 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-
-export type Occurrence = {
-    time: Date;
-    description: string;
-};
-
-export type Day = {
-    date: Date;
-    occurrences: Occurrence[];
-};
-
-export type Month = {
-    number: number;
-    days: Day[];
-};
-
-const calendar: Record<string, Month> = {
-    '2025-01': {
-        number: 1,
-        days: [
-            {
-                date: new Date('2025-01-10'),
-                occurrences: [
-                    {
-                        time: new Date('2025-01-10T10:00:00'),
-                        description: 'New Year team planning',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-02': {
-        number: 2,
-        days: [
-            {
-                date: new Date('2025-02-14'),
-                occurrences: [
-                    {
-                        time: new Date('2025-02-14T20:00:00'),
-                        description: 'Valentine dinner',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-03': {
-        number: 3,
-        days: [
-            {
-                date: new Date('2025-03-05'),
-                occurrences: [
-                    {
-                        time: new Date('2025-03-05T15:00:00'),
-                        description: 'Budget review',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-04': {
-        number: 4,
-        days: [
-            {
-                date: new Date('2025-04-22'),
-                occurrences: [
-                    {
-                        time: new Date('2025-04-22T09:00:00'),
-                        description: 'Earth Day campaign',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-05': {
-        number: 5,
-        days: [
-            {
-                date: new Date('2025-05-12'),
-                occurrences: [
-                    {
-                        time: new Date('2025-05-12T13:00:00'),
-                        description: 'Team outing',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-06': {
-        number: 6,
-        days: [
-            {
-                date: new Date('2025-06-01'),
-                occurrences: [
-                    {
-                        time: new Date('2025-06-01T09:00:00'),
-                        description: 'Meeting with team',
-                    },
-                    {
-                        time: new Date('2025-06-01T14:00:00'),
-                        description: 'Doctor appointment',
-                    },
-                ],
-            },
-            {
-                date: new Date('2025-06-02'),
-                occurrences: [
-                    {
-                        time: new Date('2025-06-02T11:00:00'),
-                        description: 'Project deadline',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-07': {
-        number: 7,
-        days: [
-            {
-                date: new Date('2025-07-04'),
-                occurrences: [
-                    {
-                        time: new Date('2025-07-04T18:00:00'),
-                        description: 'Independence Day BBQ',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-08': {
-        number: 8,
-        days: [
-            {
-                date: new Date('2025-08-15'),
-                occurrences: [
-                    {
-                        time: new Date('2025-08-15T10:00:00'),
-                        description: 'Mid-year review',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-09': {
-        number: 9,
-        days: [
-            {
-                date: new Date('2025-09-01'),
-                occurrences: [
-                    {
-                        time: new Date('2025-09-01T08:00:00'),
-                        description: 'Back to work after break',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-10': {
-        number: 10,
-        days: [
-            {
-                date: new Date('2025-10-31'),
-                occurrences: [
-                    {
-                        time: new Date('2025-10-31T19:00:00'),
-                        description: 'Halloween party',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-11': {
-        number: 11,
-        days: [
-            {
-                date: new Date('2025-11-24'),
-                occurrences: [
-                    {
-                        time: new Date('2025-11-24T16:00:00'),
-                        description: 'Thanksgiving prep',
-                    },
-                ],
-            },
-        ],
-    },
-    '2025-12': {
-        number: 12,
-        days: [
-            {
-                date: new Date('2025-12-25'),
-                occurrences: [
-                    {
-                        time: new Date('2025-12-25T00:00:00'),
-                        description: 'Christmas celebration',
-                    },
-                ],
-            },
-        ],
-    },
-};
+import { Occurrence } from 'src/types/calendar';
 
 @Injectable()
 export default class CalendarTool {
@@ -209,42 +11,86 @@ export default class CalendarTool {
         return { currentDatetime: new Date() };
     }
 
-    async getUserAgenda(args: { from: string; to: string }): Promise<Day[]> {
-        const from = new Date(args.from);
-        const to = new Date(args.to);
+    async getUserAgenda(
+        userEmail: string,
+        args: {
+            from: { month: number; year: number };
+            to: { month: number; year: number };
+        },
+    ): Promise<Occurrence[]> {
+        const { from, to } = args;
 
-        if (isNaN(from.getTime()) || isNaN(to.getTime())) {
-            throw new Error('Invalid date format. Please use ISO 8601 format.');
+        if (
+            !from ||
+            !to ||
+            typeof from.month !== 'number' ||
+            typeof from.year !== 'number' ||
+            typeof to.month !== 'number' ||
+            typeof to.year !== 'number'
+        ) {
+            throw new Error('Invalid date range');
         }
 
-        this.logger.log(`Fetching user's agenda from ${from} to ${to}`);
+        const fromDate = new Date(from.year, from.month);
+        const toDate = new Date(to.year, to.month);
 
-        const fromYear = from.getFullYear();
-        const fromMonth = from.getMonth() + 1;
+        if (fromDate > toDate) {
+            throw new Error('"from" date must be before or equal to "to" date');
+        }
 
-        const toYear = to.getFullYear();
-        const toMonth = to.getMonth() + 1;
+        const fetches: Promise<any>[] = [];
 
-        const days: Day[] = [];
+        let currentYear = from.year;
+        let currentMonth = from.month;
 
-        for (let year = fromYear; year <= toYear; year++) {
-            const startMonth = year === fromYear ? fromMonth : 1;
-            const endMonth = year === toYear ? toMonth : 12;
+        while (
+            currentYear < to.year ||
+            (currentYear === to.year && currentMonth <= to.month)
+        ) {
+            const url = `${process.env.USER_MODULE_ADDRESS}/calendar?month=${currentMonth}&year=${currentYear}`;
 
-            for (let month = startMonth; month <= endMonth; month++) {
-                const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-                const monthData = calendar[monthKey];
-
-                if (monthData) {
-                    for (const day of monthData.days) {
-                        if (day.date >= from && day.date <= to) {
-                            days.push(day);
-                        }
+            fetches.push(
+                fetch(url, {
+                    headers: { userEmail },
+                }).then(async (res) => {
+                    if (res.status === 204) {
+                        return {
+                            items: [],
+                        };
                     }
+
+                    if (!res.ok) {
+                        throw new Error(
+                            `Failed to fetch calendar for ${currentMonth}/${currentYear}`,
+                        );
+                    }
+
+                    return res.json();
+                }),
+            );
+
+            currentMonth++;
+
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+
+        const occurrences: Occurrence[] = [];
+
+        const results = (await Promise.all(fetches)) as {
+            items: Occurrence[];
+        }[];
+
+        for (const result of results) {
+            if (result) {
+                if (result.items.length) {
+                    occurrences.push(...result.items);
                 }
             }
         }
 
-        return days;
+        return occurrences;
     }
 }

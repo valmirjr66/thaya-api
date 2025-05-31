@@ -15,7 +15,7 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
         function: {
             name: 'get_user_info',
             description:
-                'Retrieves user information including fullname, nickname (optional), email, birthdate, current location and its datetime',
+                'Retrieves user information including fullname, nickname (optional), email, birthdate and its current location',
             strict: false,
             parameters: {
                 type: 'object',
@@ -73,14 +73,38 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
                 required: ['from', 'to'],
                 properties: {
                     from: {
-                        type: 'string',
-                        description:
-                            'Start date for retrieving agenda in ISO 8601 format',
+                        type: 'object',
+                        required: ['month', 'year'],
+                        description: 'Start date for retrieving agenda',
+                        properties: {
+                            month: {
+                                type: 'number',
+                                description:
+                                    'Start month for retrieving agenda (January is month number 0)',
+                            },
+                            year: {
+                                type: 'number',
+                                description: 'Start year for retrieving agenda',
+                            },
+                        },
+                        additionalProperties: false,
                     },
                     to: {
-                        type: 'string',
-                        description:
-                            'End date for retrieving agenda in ISO 8601 format',
+                        type: 'object',
+                        required: ['month', 'year'],
+                        description: 'End date for retrieving agenda',
+                        properties: {
+                            month: {
+                                type: 'number',
+                                description:
+                                    'End month for retrieving agenda (January is month number 0)',
+                            },
+                            year: {
+                                type: 'number',
+                                description: 'End year for retrieving agenda',
+                            },
+                        },
+                        additionalProperties: false,
                     },
                 },
                 additionalProperties: false,
