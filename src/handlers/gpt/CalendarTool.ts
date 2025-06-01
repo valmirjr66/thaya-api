@@ -6,9 +6,11 @@ export default class CalendarTool {
     private readonly logger: Logger = new Logger('CalendarTool');
 
     async getCurrentDatetime() {
-        this.logger.log('Fetching current datetime');
+        const currentDatetime = new Date();
 
-        return { currentDatetime: new Date() };
+        this.logger.log(`Fetching current datetime: ${currentDatetime}`);
+
+        return { currentDatetime };
     }
 
     async getUserAgenda(
@@ -31,8 +33,12 @@ export default class CalendarTool {
             throw new Error('Invalid date range');
         }
 
-        const fromDate = new Date(from.year, from.month);
-        const toDate = new Date(to.year, to.month);
+        this.logger.log(
+            `Fetching user's agenda with following args: ${JSON.stringify(args)}`,
+        );
+
+        const fromDate = new Date(from.year, from.month - 1);
+        const toDate = new Date(to.year, to.month - 1);
 
         if (fromDate > toDate) {
             throw new Error('"from" date must be before or equal to "to" date');
@@ -41,7 +47,7 @@ export default class CalendarTool {
         const fetches: Promise<any>[] = [];
 
         let currentYear = from.year;
-        let currentMonth = from.month;
+        let currentMonth = from.month - 1;
 
         while (
             currentYear < to.year ||
