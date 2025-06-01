@@ -24,7 +24,7 @@ export default class UserInfoTool {
         const response = await fetch(
             `${process.env.USER_MODULE_ADDRESS}/info`,
             {
-                headers: { userEmail },
+                headers: { 'x-user-email': userEmail },
             },
         );
 
