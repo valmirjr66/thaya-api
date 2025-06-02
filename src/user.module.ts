@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import BlobStorageManager from './handlers/cloud/BlobStorageManager';
 import CalendarService from './modules/user/CalendarService';
 import UserController from './modules/user/UserController';
 import UserService from './modules/user/UserService';
@@ -15,7 +16,7 @@ import { User, UserSchema } from './modules/user/schemas/UserSchema';
 
 @Module({
     controllers: [UserController],
-    providers: [UserService, CalendarService],
+    providers: [UserService, CalendarService, BlobStorageManager],
     imports: [
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([

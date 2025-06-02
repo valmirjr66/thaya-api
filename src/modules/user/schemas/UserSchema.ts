@@ -12,6 +12,9 @@ export class User extends BaseSchema {
     @Prop()
     nickname?: string;
 
+    @Prop()
+    profilePicFileName?: string;
+
     @Prop({ required: true })
     email: string;
 

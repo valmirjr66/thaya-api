@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import { v4 as uuidv4 } from 'uuid';
 import BaseService from '../../BaseService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetUserInfoResponseModel from './model/GetUserInfoResponseModel';
@@ -18,6 +20,7 @@ export default class UserService extends BaseService {
         private readonly userModel: Model<User>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
+        public readonly blobStorageManager: BlobStorageManager,
     ) {
         super();
     }
@@ -92,6 +95,7 @@ export default class UserService extends BaseService {
             user.fullname,
             user.email,
             user.birthdate,
+            user.profilePicFileName,
             user.nickname,
         );
     }
@@ -163,5 +167,34 @@ export default class UserService extends BaseService {
         this.logger.log(`User with email ${user.email} updated successfully`);
 
         return 'updated';
+    }
+
+    async changeProfilePicture(
+        userEmail: string,
+        profilePicture: Express.Multer.File,
+    ) {
+        const user = await this.userModel.findOne({ email: userEmail }).exec();
+
+        if (!user) {
+            this.logger.error(`User with email ${userEmail} not found`);
+            return 'invalid email';
+        }
+
+        const fileExtension = profilePicture.originalname.split('.').pop();
+        const profilePicFileName = `${uuidv4()}.${fileExtension}`;
+
+        await this.blobStorageManager.write(
+            `profile_pics/${profilePicFileName}`,
+            profilePicture.buffer,
+        );
+
+        await this.userModel.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    profilePicFileName,
+                },
+            },
+        );
     }
 }

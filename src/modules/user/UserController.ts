@@ -8,10 +8,15 @@ import {
     Post,
     Put,
     Query,
+    UploadedFiles,
+    UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
     ApiBadRequestResponse,
+    ApiBody,
     ApiConflictResponse,
+    ApiConsumes,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
@@ -23,6 +28,7 @@ import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import UserService from './UserService';
 import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
+import ChangeProfilePictureRequestDto from './dto/ChangeProfilePictureRequestDto';
 import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
@@ -105,6 +111,34 @@ export default class UserController extends BaseController {
         const response = await this.userService.getUserInfoByEmail(userEmail);
         this.validateGetResponse(response);
         return response;
+    }
+
+    @Put('/profile-picture')
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(
+        FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
+    )
+    @ApiBody({
+        type: ChangeProfilePictureRequestDto,
+    })
+    @ApiCreatedResponse({ description: ResponseDescriptions.CREATED })
+    @ApiBadRequestResponse({ description: ResponseDescriptions.BAD_REQUEST })
+    @ApiInternalServerErrorResponse({
+        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+    })
+    async processArtifact(
+        @Headers('x-user-email') userEmail: string,
+        @UploadedFiles()
+        files: {
+            profilePicture: Express.Multer.File[];
+        },
+    ): Promise<void> {
+        const { profilePicture } = files;
+
+        await this.userService.changeProfilePicture(
+            userEmail,
+            profilePicture[0],
+        );
     }
 
     @Post()

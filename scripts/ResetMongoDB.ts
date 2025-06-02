@@ -34,6 +34,7 @@ async function resetMongoDB() {
             email: DEFAULT_USER_EMAIL,
             birthdate: '2000-04-13',
             nickname: 'Val',
+            profilePicFileName: 'sample1.jpg',
         });
 
         await db.collection('calendars').insertMany([
