@@ -23,7 +23,7 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import ResponseDescriptions from 'src/constants/ResponseDescriptions';
+import { RESPONSE_DESCRIPTIONS } from 'src/constants';
 import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import UserService from './UserService';
@@ -46,12 +46,12 @@ export default class UserController extends BaseController {
     }
 
     @Post('/authenticate')
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiBadRequestResponse({
-        description: ResponseDescriptions.BAD_REQUEST,
+        description: RESPONSE_DESCRIPTIONS.BAD_REQUEST,
     })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async authenticateUser(
         @Body() dto: AuthenticateUserRequestDto,
@@ -74,12 +74,12 @@ export default class UserController extends BaseController {
     }
 
     @Post('/change-password')
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiBadRequestResponse({
-        description: ResponseDescriptions.BAD_REQUEST,
+        description: RESPONSE_DESCRIPTIONS.BAD_REQUEST,
     })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async changePassword(
         @Headers('x-user-email') userEmail: string,
@@ -101,9 +101,9 @@ export default class UserController extends BaseController {
     }
 
     @Get('/info')
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getUserInfo(
         @Headers('x-user-email') userEmail: string,
@@ -121,10 +121,10 @@ export default class UserController extends BaseController {
     @ApiBody({
         type: ChangeProfilePictureRequestDto,
     })
-    @ApiCreatedResponse({ description: ResponseDescriptions.CREATED })
-    @ApiBadRequestResponse({ description: ResponseDescriptions.BAD_REQUEST })
+    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async processArtifact(
         @Headers('x-user-email') userEmail: string,
@@ -142,10 +142,10 @@ export default class UserController extends BaseController {
     }
 
     @Post()
-    @ApiCreatedResponse({ description: ResponseDescriptions.CREATED })
-    @ApiConflictResponse({ description: ResponseDescriptions.CONFLICT })
+    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
+    @ApiConflictResponse({ description: RESPONSE_DESCRIPTIONS.CONFLICT })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async insertUser(@Body() body: InsertUserRequestDto): Promise<void> {
         const response = await this.userService.insertUser(body);
@@ -160,10 +160,10 @@ export default class UserController extends BaseController {
     }
 
     @Put('/info')
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
-    @ApiConflictResponse({ description: ResponseDescriptions.CONFLICT })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiConflictResponse({ description: RESPONSE_DESCRIPTIONS.CONFLICT })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async updateUser(
         @Headers('x-user-email') userEmail: string,
@@ -185,10 +185,10 @@ export default class UserController extends BaseController {
     }
 
     @Get('/calendar')
-    @ApiNoContentResponse({ description: ResponseDescriptions.NO_CONTENT })
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getUserCalendar(
         @Headers('x-user-email') userEmail: string,
@@ -207,10 +207,10 @@ export default class UserController extends BaseController {
     }
 
     @Post('/calendar')
-    @ApiBadRequestResponse({ description: ResponseDescriptions.BAD_REQUEST })
-    @ApiOkResponse({ description: ResponseDescriptions.OK })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
-        description: ResponseDescriptions.INTERNAL_SERVER_ERROR,
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async insertCalendarOccurrence(
         @Headers('x-user-email') userEmail: string,

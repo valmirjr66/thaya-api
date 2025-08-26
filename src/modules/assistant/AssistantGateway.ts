@@ -8,6 +8,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserChatOrigin } from 'src/types/gpt';
 import AssistantService from './AssistantService';
 import SendMessageRequestPayload from './events/payloads/SendMessageRequestPayload';
 import SendMessageRequestModel from './model/SendMessageRequestModel';
@@ -28,6 +29,7 @@ export class AssistantGateway
 
         const messageModel = new SendMessageRequestModel(
             client.handshake.headers['x-user-email'] as string,
+            client.handshake.headers['x-user-chat-origin'] as UserChatOrigin,
             payload.content,
         );
 

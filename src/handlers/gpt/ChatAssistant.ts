@@ -39,10 +39,11 @@ export default class ChatAssistant {
         threadId: string,
         message: string,
         userEmail: string,
+        enrichWithMarkdown: boolean,
     ): Promise<TextResponse> {
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
-            content: message,
+            content: this.composeMessage(message, enrichWithMarkdown),
         });
 
         let run = await this.openaiClient.beta.threads.runs.createAndPoll(
@@ -114,6 +115,7 @@ export default class ChatAssistant {
         threadId: string,
         message: string,
         userEmail: string,
+        enrichWithMarkdown: boolean,
         streamingCallback: (
             textSnapshot: string,
             annotationsSnapshot: Annotation[],
@@ -122,7 +124,7 @@ export default class ChatAssistant {
     ): Promise<TextResponse> {
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
-            content: message,
+            content: this.composeMessage(message, enrichWithMarkdown),
         });
 
         let response: TextResponse | undefined;
@@ -133,7 +135,7 @@ export default class ChatAssistant {
             })
             .on('textCreated', () =>
                 this.logger.log(
-                    `TextCreated for thread '${threadId}' with following incoming message '${message}'`,
+                    `TextCreated for thread '${threadId}' with following incoming message '${message}' (markdown enriched: ${enrichWithMarkdown})`,
                 ),
             )
             .on('textDelta', (_textDelta, snapshot) =>
@@ -217,6 +219,21 @@ export default class ChatAssistant {
         }
 
         return response;
+    }
+
+    private composeMessage(
+        message: string,
+        enrichWithMarkdown: boolean,
+    ): string {
+        let composedMessage = message;
+
+        if (enrichWithMarkdown) {
+            composedMessage += '\n\n--------------------------\n\n';
+            composedMessage +=
+                '<<<Your answer must be rich in markdown format. Make sure to use headings, subheadings and bullet points when suitable.>>>';
+        }
+
+        return composedMessage;
     }
 
     private async executeToolCall(

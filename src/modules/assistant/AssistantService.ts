@@ -92,6 +92,7 @@ export default class AssistantService extends BaseService {
             content: model.content,
             role: 'user',
             chatId: chatId,
+            userChatOrigin: model.userChatOrigin,
         });
 
         const messageAddedToThread = streamingCallback
@@ -99,6 +100,7 @@ export default class AssistantService extends BaseService {
                   threadId,
                   model.content,
                   model.userEmail,
+                  model.userChatOrigin === 'ui',
                   (textSnapshot: string, annotationsSnapshot: Annotation[]) => {
                       const prettifiedTextContent = this.prettifyText(
                           textSnapshot,
@@ -112,6 +114,7 @@ export default class AssistantService extends BaseService {
                   threadId,
                   model.content,
                   model.userEmail,
+                  model.userChatOrigin === 'ui',
               );
 
         const prettifiedTextContent = this.prettifyText(
@@ -143,6 +146,7 @@ export default class AssistantService extends BaseService {
             role: 'assistant',
             references: decoratedAnnotations,
             chatId: chatId,
+            userChatOrigin: model.userChatOrigin,
         });
 
         return new SendMessageResponseModel(
