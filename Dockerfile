@@ -3,7 +3,7 @@ FROM node:22-alpine AS base
 FROM base AS build
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install
 COPY . .
 RUN yarn run build
 
@@ -17,7 +17,7 @@ ENV BUILD_DATE=${BUILD_DATE}
 
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile && yarn cache clean
+RUN yarn install && yarn cache clean
 COPY --from=build /usr/src/app/src ./src
 COPY --from=build /usr/src/app/dist ./dist
 EXPOSE 8080
