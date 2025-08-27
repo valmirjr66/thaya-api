@@ -3,7 +3,7 @@ FROM node:22-alpine AS base
 FROM base AS build
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn
 COPY . .
 RUN yarn run build
 
