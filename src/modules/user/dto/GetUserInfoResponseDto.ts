@@ -2,6 +2,7 @@ export default class GetUserInfoResponseDto {
     constructor(
         public fullname: string,
         public email: string,
+        public phoneNumber: string,
         public birthdate: string,
         public profilePicFileName?: string,
         public nickname?: string,

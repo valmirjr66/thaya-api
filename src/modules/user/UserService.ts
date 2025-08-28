@@ -94,6 +94,7 @@ export default class UserService extends BaseService {
         return new GetUserInfoResponseModel(
             user.fullname,
             user.email,
+            user.phoneNumber,
             user.birthdate,
             user.profilePicFileName,
             user.nickname,
@@ -102,22 +103,32 @@ export default class UserService extends BaseService {
 
     async insertUser(
         user: InsertUserRequestModel,
-    ): Promise<'existing email' | 'inserted'> {
+    ): Promise<'existing email' | 'existing phone number' | 'inserted'> {
         this.logger.log(`Inserting user with email: ${user.email}`);
 
-        const existingUser = await this.userModel
+        const userWithSameEmail = await this.userModel
             .findOne({ email: user.email })
             .exec();
 
-        if (existingUser) {
+        const userWithSamePhoneNumber = await this.userModel
+            .findOne({ phoneNumber: user.phoneNumber })
+            .exec();
+
+        if (userWithSameEmail) {
             this.logger.warn(`User with email ${user.email} already exists`);
             return 'existing email';
+        } else if (userWithSamePhoneNumber) {
+            this.logger.warn(
+                `User with phone number ${user.phoneNumber} already exists`,
+            );
+            return 'existing phone number';
         }
 
         await this.userModel.create({
             _id: new mongoose.Types.ObjectId(),
             fullname: user.fullname,
             email: user.email,
+            phoneNumber: user.phoneNumber,
             birthdate: user.birthdate,
             nickname: user.nickname,
             createdAt: new Date(),
@@ -160,6 +171,7 @@ export default class UserService extends BaseService {
                 birthdate: model.birthdate,
                 nickname: model.nickname,
                 email: model.email,
+                phoneNumber: model.phoneNumber,
                 updatedAt: new Date(),
             },
         );

@@ -19,6 +19,9 @@ export class User extends BaseSchema {
     email: string;
 
     @Prop({ required: true })
+    phoneNumber: string;
+
+    @Prop({ required: true })
     birthdate: string;
 }
 
