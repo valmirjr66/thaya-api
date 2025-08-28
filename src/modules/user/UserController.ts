@@ -184,6 +184,18 @@ export default class UserController extends BaseController {
         }
     }
 
+    @Get('/list')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async listUsers(): Promise<GetUserInfoResponseDto[]> {
+        const response = await this.userService.listUsers();
+        this.validateGetResponse(response);
+        return response;
+    }
+
     @Get('/calendar')
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })

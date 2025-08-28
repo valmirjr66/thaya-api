@@ -181,6 +181,29 @@ export default class UserService extends BaseService {
         return 'updated';
     }
 
+    async listUsers(): Promise<GetUserInfoResponseModel[]> {
+        this.logger.log('Listing all users');
+
+        const users = await this.userModel.find().exec();
+
+        if (users.length === 0) {
+            this.logger.warn('No users found');
+            return [];
+        }
+
+        return users.map(
+            (user) =>
+                new GetUserInfoResponseModel(
+                    user.fullname,
+                    user.email,
+                    user.phoneNumber,
+                    user.birthdate,
+                    user.profilePicFileName,
+                    user.nickname,
+                ),
+        );
+    }
+
     async changeProfilePicture(
         userEmail: string,
         profilePicture: Express.Multer.File,
