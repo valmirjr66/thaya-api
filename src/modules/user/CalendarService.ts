@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
+import CalendarUtils from 'src/utils/CalendarUtils';
 import BaseService from '../../BaseService';
 import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
 import InsertCalendarOccurenceRequestModel from './model/InsertCalendarOccurenceRequestModel';
@@ -37,7 +38,7 @@ export default class CalendarService extends BaseService {
             return new GetUserCalendarResponseModel([]);
         }
 
-        const monthNumber = this.mapMonthAbbreviationToNumber(month);
+        const monthNumber = CalendarUtils.mapMonthAbbreviationToNumber(month);
 
         const filteredRecords = userCalendar
             .map((item) => item.record as Occurrence)
@@ -72,24 +73,5 @@ export default class CalendarService extends BaseService {
             createdAt: new Date(),
             updatedAt: new Date(),
         });
-    }
-
-    private mapMonthAbbreviationToNumber(month: AbbreviatedMonth): number {
-        const monthMap: Record<string, number> = {
-            jan: 0,
-            feb: 1,
-            mar: 2,
-            apr: 3,
-            may: 4,
-            jun: 5,
-            jul: 6,
-            aug: 7,
-            sep: 8,
-            oct: 9,
-            nov: 10,
-            dec: 11,
-        };
-
-        return monthMap[month];
     }
 }

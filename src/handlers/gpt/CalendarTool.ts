@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Occurrence } from 'src/types/calendar';
+import { MONTHS_ABBREVIATION } from 'src/constants';
+import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
+import CalendarUtils from 'src/utils/CalendarUtils';
 
 @Injectable()
 export default class CalendarTool {
@@ -16,8 +18,8 @@ export default class CalendarTool {
     async getUserAgenda(
         userEmail: string,
         args: {
-            from: { month: number; year: number };
-            to: { month: number; year: number };
+            from: { month: AbbreviatedMonth; year: number };
+            to: { month: AbbreviatedMonth; year: number };
         },
     ): Promise<Occurrence[]> {
         const { from, to } = args;
@@ -25,9 +27,9 @@ export default class CalendarTool {
         if (
             !from ||
             !to ||
-            typeof from.month !== 'number' ||
-            typeof from.year !== 'number' ||
-            typeof to.month !== 'number' ||
+            !MONTHS_ABBREVIATION.includes(from.month) ||
+            typeof from.year !== 'string' ||
+            !MONTHS_ABBREVIATION.includes(to.month) ||
             typeof to.year !== 'number'
         ) {
             throw new Error('Invalid date range');
@@ -37,8 +39,15 @@ export default class CalendarTool {
             `Fetching user's agenda with following args: ${JSON.stringify(args)}`,
         );
 
-        const fromDate = new Date(from.year, from.month - 1);
-        const toDate = new Date(to.year, to.month - 1);
+        const fromDate = new Date(
+            from.year,
+            CalendarUtils.mapMonthAbbreviationToNumber(from.month),
+        );
+
+        const toDate = new Date(
+            to.year,
+            CalendarUtils.mapMonthAbbreviationToNumber(to.month),
+        );
 
         if (fromDate > toDate) {
             throw new Error('"from" date must be before or equal to "to" date');
@@ -47,11 +56,15 @@ export default class CalendarTool {
         const fetches: Promise<any>[] = [];
 
         let currentYear = from.year;
-        let currentMonth = from.month - 1;
+        let currentMonth = CalendarUtils.mapMonthAbbreviationToNumber(
+            from.month,
+        );
 
         while (
             currentYear < to.year ||
-            (currentYear === to.year && currentMonth <= to.month)
+            (currentYear === to.year &&
+                currentMonth <=
+                    CalendarUtils.mapMonthAbbreviationToNumber(to.month))
         ) {
             const url = `${process.env.USER_MODULE_ADDRESS}/calendar?month=${currentMonth}&year=${currentYear}`;
 

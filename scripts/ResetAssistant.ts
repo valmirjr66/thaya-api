@@ -78,9 +78,9 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
                         description: 'Start date for retrieving agenda',
                         properties: {
                             month: {
-                                type: 'number',
+                                type: 'string',
                                 description:
-                                    'Start month for retrieving agenda (January is month number 1)',
+                                    'Start month for retrieving agenda (jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)',
                             },
                             year: {
                                 type: 'number',
@@ -95,9 +95,9 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
                         description: 'End date for retrieving agenda',
                         properties: {
                             month: {
-                                type: 'number',
+                                type: 'string',
                                 description:
-                                    'End month for retrieving agenda (January is month number 1)',
+                                    'End month for retrieving agenda (jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)',
                             },
                             year: {
                                 type: 'number',
