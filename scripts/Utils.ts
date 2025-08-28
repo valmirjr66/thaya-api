@@ -522,6 +522,29 @@ export const OCCURRENCES = [
             description: 'Reunião de avaliação de fornecedor',
         },
     },
+    // 2025-09-05
+    {
+        userEmail: DEFAULT_USER_EMAIL,
+        record: {
+            datetime: new Date('2025-09-05T10:00:00'),
+            description: 'Sessão de treinamento em liderança',
+        },
+    },
+    {
+        userEmail: DEFAULT_USER_EMAIL,
+        record: {
+            datetime: new Date('2025-09-05T15:00:00'),
+            description: 'Reunião de desenvolvimento de liderança',
+        },
+    },
+    // 2025-09-12
+    {
+        userEmail: DEFAULT_USER_EMAIL,
+        record: {
+            datetime: new Date('2025-09-12T09:30:00'),
+            description: 'Consulta com endocrinologista',
+        },
+    },
     // 2025-10-04
     {
         userEmail: DEFAULT_USER_EMAIL,
