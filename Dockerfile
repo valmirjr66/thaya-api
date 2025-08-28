@@ -22,4 +22,4 @@ COPY --from=build /usr/src/app/package-lock.json ./
 COPY --from=build /usr/src/app/src ./src
 COPY --from=build /usr/src/app/dist ./dist
 EXPOSE 8080
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "dist/src/main.js" ]
