@@ -32,6 +32,7 @@ async function resetMongoDB() {
         await db.collection('users').insertOne({
             fullname: 'Valmir G. Martins Júnior',
             email: DEFAULT_USER_EMAIL,
+            phoneNumber: '5537998014263',
             birthdate: '2000-04-13',
             nickname: 'Val',
             profilePicFileName: 'sample1.jpg',
