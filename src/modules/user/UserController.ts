@@ -23,7 +23,7 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import { RESPONSE_DESCRIPTIONS } from 'src/constants';
+import { MONTHS_ABBREVIATION, RESPONSE_DESCRIPTIONS } from 'src/constants';
 import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import UserService from './UserService';
@@ -34,6 +34,7 @@ import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
 import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
+import { AbbreviatedMonth } from 'src/types/calendar';
 
 @ApiTags('User')
 @Controller('user')
@@ -207,9 +208,16 @@ export default class UserController extends BaseController {
         @Query('month') month: string,
         @Query('year') year: string,
     ): Promise<GetUserCalendarResponseDto> {
+        if (!MONTHS_ABBREVIATION.includes(month as AbbreviatedMonth)) {
+            throw new HttpException(
+                'Month must be a valid abbreviated month (e.g., jan, feb, mar, etc.)',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
         const response = await this.calendarService.getUserCalendarByEmail(
             userEmail,
-            Number(month),
+            month as AbbreviatedMonth,
             Number(year),
         );
 
