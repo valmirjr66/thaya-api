@@ -7,6 +7,7 @@ import BaseService from '../../BaseService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetUserInfoResponseModel from './model/GetUserInfoResponseModel';
 import InsertUserRequestModel from './model/InsertUserRequestModel';
+import ListUsersResponseModel from './model/ListUsersResponseModel';
 import UpdateUserRequestModel from './model/UpdateUserRequestModel';
 import { Credential } from './schemas/CredentialSchema';
 import { User } from './schemas/UserSchema';
@@ -181,26 +182,28 @@ export default class UserService extends BaseService {
         return 'updated';
     }
 
-    async listUsers(): Promise<GetUserInfoResponseModel[]> {
+    async listUsers(): Promise<ListUsersResponseModel> {
         this.logger.log('Listing all users');
 
         const users = await this.userModel.find().exec();
 
         if (users.length === 0) {
             this.logger.warn('No users found');
-            return [];
+            return new ListUsersResponseModel([]);
         }
 
-        return users.map(
-            (user) =>
-                new GetUserInfoResponseModel(
-                    user.fullname,
-                    user.email,
-                    user.phoneNumber,
-                    user.birthdate,
-                    user.profilePicFileName,
-                    user.nickname,
-                ),
+        return new ListUsersResponseModel(
+            users.map(
+                (user) =>
+                    new GetUserInfoResponseModel(
+                        user.fullname,
+                        user.email,
+                        user.phoneNumber,
+                        user.birthdate,
+                        user.profilePicFileName,
+                        user.nickname,
+                    ),
+            ),
         );
     }
 

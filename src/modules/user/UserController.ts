@@ -24,6 +24,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { MONTHS_ABBREVIATION, RESPONSE_DESCRIPTIONS } from 'src/constants';
+import { AbbreviatedMonth } from 'src/types/calendar';
 import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import UserService from './UserService';
@@ -33,8 +34,8 @@ import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
 import InsertUserRequestDto from './dto/InsertUserRequestDto';
+import ListUsersResponseDto from './dto/ListUsersResponseDto';
 import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
-import { AbbreviatedMonth } from 'src/types/calendar';
 
 @ApiTags('User')
 @Controller('user')
@@ -191,7 +192,7 @@ export default class UserController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async listUsers(): Promise<GetUserInfoResponseDto[]> {
+    async listUsers(): Promise<ListUsersResponseDto> {
         const response = await this.userService.listUsers();
         this.validateGetResponse(response);
         return response;
