@@ -28,6 +28,16 @@ export default class AssistantController extends BaseController {
         super();
     }
 
+    @Post('telegram-webhook')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async telegramWebhook(@Body() dto: any): Promise<string> {
+        console.log(dto);
+        return 'telegram webhook received';
+    }
+
     @Get('/chat')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
