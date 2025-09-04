@@ -82,7 +82,7 @@ export default class CalendarTool {
                             };
                         }
 
-                        if (status < 200 || res.status >= 300) {
+                        if (status < 200 || status >= 300) {
                             throw new Error(
                                 `Failed to fetch calendar for ${currentMonth}/${currentYear}`,
                             );
