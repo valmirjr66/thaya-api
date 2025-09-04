@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 
 export type UserInfo = {
     fullname: string;
@@ -21,17 +22,15 @@ export default class UserInfoTool {
     async getUserInfo(userEmail: string): Promise<UserInfo> {
         this.logger.log(`Fetching user info for email: ${userEmail}`);
 
-        const response = await fetch(
+        const { data } = await axios.get(
             `${process.env.USER_MODULE_ADDRESS}/info`,
             {
                 headers: { 'x-user-email': userEmail },
             },
         );
 
-        const info = await response.json();
-
         return {
-            ...info,
+            ...data,
             currentLocation: {
                 country: 'Brazil',
                 state: 'Bahia',

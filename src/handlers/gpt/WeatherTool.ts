@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 
 export type WeatherInfo = {
     currentTemperature: number;
@@ -25,15 +26,13 @@ export default class WeatherTool {
         );
 
         const apiURL = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,apparent_temperature,rain,precipitation_probability&timezone=America%2FSao_Paulo&past_days=1&forecast_days=1`;
-        const response = await fetch(apiURL);
+        const { status, data } = await axios.get(apiURL);
 
-        if (!response.ok) {
+        if (status !== 200) {
             throw new Error(
-                `Error fetching weather data: ${response.statusText}`,
+                `Error fetching weather data with following status code: ${status}`,
             );
         }
-
-        const data = await response.json();
 
         const currentDatetime = new Date();
 

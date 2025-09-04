@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 import { MONTHS_ABBREVIATION } from 'src/constants';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
 import CalendarUtils from 'src/utils/CalendarUtils';
@@ -69,23 +70,26 @@ export default class CalendarTool {
             const url = `${process.env.USER_MODULE_ADDRESS}/calendar?month=${currentMonth}&year=${currentYear}`;
 
             fetches.push(
-                fetch(url, {
-                    headers: { 'x-user-email': userEmail },
-                }).then(async (res) => {
-                    if (res.status === 204) {
-                        return {
-                            items: [],
-                        };
-                    }
+                axios
+                    .get(url, {
+                        headers: { 'x-user-email': userEmail },
+                        validateStatus: () => true,
+                    })
+                    .then(({ data, status }) => {
+                        if (status === 204) {
+                            return {
+                                items: [],
+                            };
+                        }
 
-                    if (!res.ok) {
-                        throw new Error(
-                            `Failed to fetch calendar for ${currentMonth}/${currentYear}`,
-                        );
-                    }
+                        if (status < 200 || res.status >= 300) {
+                            throw new Error(
+                                `Failed to fetch calendar for ${currentMonth}/${currentYear}`,
+                            );
+                        }
 
-                    return res.json();
-                }),
+                        return data;
+                    }),
             );
 
             currentMonth++;
