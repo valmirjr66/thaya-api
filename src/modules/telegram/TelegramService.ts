@@ -81,7 +81,7 @@ export default class TelegramService extends BaseService {
         } else {
             await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
                 chat_id: model.chatId,
-                text: "Hey, mate! It look like you haven't linked your Telegram account yet. Please do so in order to use this bot.",
+                text: "Hey, mate! It looks like you haven't linked your Telegram account yet. Please do so in order to use this bot.",
             });
         }
     }
