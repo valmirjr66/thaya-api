@@ -28,7 +28,7 @@ export default class WeatherTool {
         const apiURL = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,apparent_temperature,rain,precipitation_probability&timezone=America%2FSao_Paulo&past_days=1&forecast_days=1`;
         const { status, data } = await axios.get(apiURL);
 
-        if (status !== 200) {
+        if (status < 200 || status >= 300) {
             throw new Error(
                 `Error fetching weather data with following status code: ${status}`,
             );
