@@ -1,0 +1,39 @@
+import { Body, Controller, Post } from '@nestjs/common';
+import {
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
+import { RESPONSE_DESCRIPTIONS } from 'src/constants';
+import BaseController from '../../BaseController';
+import TelegramService from './TelegramService';
+import IncomingMessageDto from './dto/IncomingMessageDto';
+import IncomingMessageModel from './model/IncomingMessageModel';
+
+@ApiTags('Telegram')
+@Controller('telegram-webhook')
+export default class TelegramController extends BaseController {
+    constructor(private readonly telegramService: TelegramService) {
+        super();
+    }
+
+    @Post()
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async telegramWebhook(@Body() dto: IncomingMessageDto): Promise<void> {
+        await this.telegramService.handleMessage(
+            new IncomingMessageModel(
+                dto.update_id,
+                dto.message.message_id,
+                dto.message.from.id,
+                dto.message.from.is_bot,
+                dto.message.chat.id,
+                dto.message.chat.type,
+                dto.message.date,
+                dto.message.text,
+            ),
+        );
+    }
+}

@@ -1,6 +1,6 @@
 export const MESSAGE_ROLES = ['system', 'user', 'assistant', 'tool'] as const;
 
-export const USER_CHAT_ORIGINS = ['ui', 'whatsapp'] as const;
+export const USER_CHAT_ORIGINS = ['ui', 'telegram'] as const;
 
 export const MONTHS_ABBREVIATION = [
     'jan',
@@ -26,3 +26,10 @@ export const RESPONSE_DESCRIPTIONS = {
     INTERNAL_SERVER_ERROR: 'Internal server error',
     CONFLICT: 'Conflict',
 };
+
+export const TELEGRAM_CHAT_TYPES = [
+    'private',
+    'group',
+    'supergroup',
+    'channel',
+] as const;

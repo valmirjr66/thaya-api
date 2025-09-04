@@ -23,6 +23,8 @@ export class User extends BaseSchema {
 
     @Prop({ required: true })
     birthdate: string;
+
+    telegramUserId?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
