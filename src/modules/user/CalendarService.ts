@@ -24,54 +24,93 @@ export default class CalendarService extends BaseService {
         month: AbbreviatedMonth,
         year: number,
     ): Promise<GetUserCalendarResponseModel | null> {
-        this.logger.log(`Fetching user calendar for email: ${userEmail}`);
-
-        const userCalendar = await this.calendarModel
-            .find({ userEmail })
-            .exec();
-
         this.logger.log(
-            `For user with email ${userEmail} found ${userCalendar.length} records`,
+            `[getUserCalendarByEmail] Fetching calendar for email: ${userEmail}, month: ${month}, year: ${year}`,
         );
 
-        if (!userCalendar) {
-            return new GetUserCalendarResponseModel([]);
-        }
+        try {
+            const userCalendar = await this.calendarModel
+                .find({ userEmail })
+                .exec();
 
-        const monthNumber = CalendarUtils.mapMonthAbbreviationToNumber(month);
+            this.logger.debug(
+                `[getUserCalendarByEmail] Raw records: ${JSON.stringify(userCalendar)}`,
+            );
 
-        const filteredRecords = userCalendar
-            .map((item) => item.record as Occurrence)
-            .filter((item) => {
-                return (
-                    item.datetime.getUTCFullYear() === year &&
-                    item.datetime.getUTCMonth() === monthNumber
+            this.logger.log(
+                `[getUserCalendarByEmail] Found ${userCalendar.length} records for user ${userEmail}`,
+            );
+
+            if (!userCalendar) {
+                this.logger.warn(
+                    `[getUserCalendarByEmail] No calendar records found for user ${userEmail}`,
                 );
-            });
+                return new GetUserCalendarResponseModel([]);
+            }
 
-        this.logger.log(
-            `For user with email ${userEmail} got ${filteredRecords.length} records filtering by month '${month}' and year '${year}'`,
-        );
+            const monthNumber =
+                CalendarUtils.mapMonthAbbreviationToNumber(month);
 
-        return new GetUserCalendarResponseModel(filteredRecords);
+            const filteredRecords = userCalendar
+                .map((item) => item.record as Occurrence)
+                .filter((item) => {
+                    const match =
+                        item.datetime.getUTCFullYear() === year &&
+                        item.datetime.getUTCMonth() === monthNumber;
+                    this.logger.debug(
+                        `[getUserCalendarByEmail] Checking record: ${JSON.stringify(item)}, match: ${match}`,
+                    );
+                    return match;
+                });
+
+            this.logger.log(
+                `[getUserCalendarByEmail] Filtered ${filteredRecords.length} records for month '${month}' and year '${year}'`,
+            );
+
+            return new GetUserCalendarResponseModel(filteredRecords);
+        } catch (error) {
+            this.logger.error(
+                `[getUserCalendarByEmail] Error fetching calendar for ${userEmail}: ${error.message}`,
+                error.stack,
+            );
+            throw error;
+        }
     }
 
     async insertCalendarOccurrence(model: InsertCalendarOccurenceRequestModel) {
         this.logger.log(
-            `Insert calendar occurrence for user with email ${model.userEmail}`,
+            `[insertCalendarOccurrence] Inserting occurrence for user: ${model.userEmail}, datetime: ${model.datetime}, description: ${model.description}`,
         );
 
-        const { userEmail, datetime, description } = model;
+        try {
+            const { userEmail, datetime, description } = model;
 
-        await this.calendarModel.create({
-            _id: new mongoose.Types.ObjectId(),
-            record: {
-                datetime,
-                description,
-            },
-            userEmail,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
+            const newOccurrence = {
+                _id: new mongoose.Types.ObjectId(),
+                record: {
+                    datetime,
+                    description,
+                },
+                userEmail,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+
+            this.logger.debug(
+                `[insertCalendarOccurrence] Occurrence payload: ${JSON.stringify(newOccurrence)}`,
+            );
+
+            await this.calendarModel.create(newOccurrence);
+
+            this.logger.log(
+                `[insertCalendarOccurrence] Successfully inserted occurrence for user: ${userEmail}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `[insertCalendarOccurrence] Error inserting occurrence for ${model.userEmail}: ${error.message}`,
+                error.stack,
+            );
+            throw error;
+        }
     }
 }

@@ -31,7 +31,9 @@ export default class ChatAssistant {
     ) {}
 
     public async startThread(): Promise<string> {
+        this.logger.log('Starting new thread...');
         const thread = await this.openaiClient.beta.threads.create();
+        this.logger.log(`Thread started with id: ${thread.id}`);
         return thread.id;
     }
 
@@ -41,6 +43,9 @@ export default class ChatAssistant {
         userEmail: string,
         enrichWithMarkdown: boolean,
     ): Promise<TextResponse> {
+        this.logger.log(
+            `Adding message to thread ${threadId}: "${message}" (markdown: ${enrichWithMarkdown})`,
+        );
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
             content: this.composeMessage(message, enrichWithMarkdown),
@@ -59,12 +64,18 @@ export default class ChatAssistant {
             run.status === 'requires_action' &&
             run.required_action?.type === 'submit_tool_outputs'
         ) {
+            this.logger.log(
+                `Run requires action: submit_tool_outputs on thread ${threadId}`,
+            );
             const toolCalls =
                 run.required_action.submit_tool_outputs.tool_calls;
 
             const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
 
             for (const call of toolCalls) {
+                this.logger.log(
+                    `Executing tool call: ${call.function.name} (id: ${call.id})`,
+                );
                 await this.executeToolCall(
                     call,
                     context,
@@ -73,6 +84,9 @@ export default class ChatAssistant {
                 );
             }
 
+            this.logger.log(
+                `Submitting tool outputs for thread ${threadId}: ${JSON.stringify(toolOutputs)}`,
+            );
             run =
                 await this.openaiClient.beta.threads.runs.submitToolOutputsAndPoll(
                     threadId,
@@ -82,6 +96,7 @@ export default class ChatAssistant {
         }
 
         if (run.status === 'completed') {
+            this.logger.log(`Run completed for thread ${threadId}`);
             const messages = await this.openaiClient.beta.threads.messages.list(
                 run.thread_id,
             );
@@ -94,17 +109,22 @@ export default class ChatAssistant {
                 responseContent.length > 1 ||
                 responseContent[0].type !== 'text'
             ) {
+                this.logger.error(
+                    `Unknown response format for thread ${threadId}: ${JSON.stringify(responseContent)}`,
+                );
                 throw new Error('Unknown response format');
             }
 
+            this.logger.log(
+                `Returning response for thread ${threadId}: "${responseContent[0].text.value}"`,
+            );
             return new TextResponse(
                 responseContent[0].text.value,
                 responseContent[0].text.annotations as Annotation[],
             );
         } else {
-            this.logger.log(
-                `Run status was: '${run.status}' on thread ${threadId}.
-                Error is as following: ${run.last_error}`,
+            this.logger.error(
+                `Run status was: '${run.status}' on thread ${threadId}. Error: ${JSON.stringify(run.last_error)}`,
             );
 
             throw new Error("Run wasn't completed");
@@ -122,6 +142,9 @@ export default class ChatAssistant {
             finished: boolean,
         ) => void,
     ): Promise<TextResponse> {
+        this.logger.log(
+            `Adding message to thread ${threadId} (stream): "${message}" (markdown: ${enrichWithMarkdown})`,
+        );
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
             content: this.composeMessage(message, enrichWithMarkdown),
@@ -135,19 +158,24 @@ export default class ChatAssistant {
             })
             .on('textCreated', () =>
                 this.logger.log(
-                    `TextCreated for thread '${threadId}' with following incoming message '${message}' (markdown enriched: ${enrichWithMarkdown})`,
+                    `TextCreated for thread '${threadId}' with incoming message '${message}' (markdown enriched: ${enrichWithMarkdown})`,
                 ),
             )
-            .on('textDelta', (_textDelta, snapshot) =>
+            .on('textDelta', (_textDelta, snapshot) => {
+                this.logger.log(
+                    `Received text delta for thread ${threadId}: "${snapshot.value}"`,
+                );
                 streamingCallback(
                     snapshot.value,
                     snapshot.annotations as Annotation[],
                     false,
-                ),
-            )
+                );
+            })
             .on('messageDone', async (message) => {
                 const textContent = message.content[0] as TextContentBlock;
-
+                this.logger.log(
+                    `Message done for thread ${threadId}: "${textContent.text.value}"`,
+                );
                 streamingCallback(
                     textContent.text.value,
                     textContent.text.annotations as Annotation[],
@@ -170,12 +198,18 @@ export default class ChatAssistant {
             run.status === 'requires_action' &&
             run.required_action?.type === 'submit_tool_outputs'
         ) {
+            this.logger.log(
+                `Run requires action: submit_tool_outputs on thread ${threadId} (stream)`,
+            );
             const toolCalls =
                 run.required_action.submit_tool_outputs.tool_calls;
 
             const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = [];
 
             for (const call of toolCalls) {
+                this.logger.log(
+                    `Executing tool call: ${call.function.name} (id: ${call.id})`,
+                );
                 await this.executeToolCall(
                     call,
                     context,
@@ -184,6 +218,9 @@ export default class ChatAssistant {
                 );
             }
 
+            this.logger.log(
+                `Submitting tool outputs for thread ${threadId} (stream): ${JSON.stringify(toolOutputs)}`,
+            );
             run =
                 await this.openaiClient.beta.threads.runs.submitToolOutputsAndPoll(
                     threadId,
@@ -193,6 +230,9 @@ export default class ChatAssistant {
         }
 
         if (!response) {
+            this.logger.warn(
+                `No response from stream for thread ${threadId}, fetching final messages...`,
+            );
             const finalMessages =
                 await this.openaiClient.beta.threads.messages.list(threadId);
 
@@ -203,9 +243,15 @@ export default class ChatAssistant {
                 finalContent.length !== 1 ||
                 finalContent[0].type !== 'text'
             ) {
+                this.logger.error(
+                    `No valid response after tool calls for thread ${threadId}: ${JSON.stringify(finalContent)}`,
+                );
                 throw new Error('No valid response after tool calls');
             }
 
+            this.logger.log(
+                `Returning final response for thread ${threadId}: "${finalContent[0].text.value}"`,
+            );
             response = new TextResponse(
                 finalContent[0].text.value,
                 finalContent[0].text.annotations as Annotation[],
@@ -242,6 +288,9 @@ export default class ChatAssistant {
         toolOutputs: RunSubmitToolOutputsParams.ToolOutput[],
         userEmail: string,
     ) {
+        this.logger.log(
+            `Executing tool call function: ${toolCall.function.name} (id: ${toolCall.id}) with args: ${toolCall.function.arguments}`,
+        );
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get_user_info') {
@@ -249,6 +298,9 @@ export default class ChatAssistant {
 
             context.userInfo = userInfo;
 
+            this.logger.log(
+                `get_user_info result: ${JSON.stringify(userInfo)}`,
+            );
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(userInfo),
@@ -262,34 +314,51 @@ export default class ChatAssistant {
                 context.userInfo?.currentLocation.longitude ||
                 args.location?.longitude;
 
+            this.logger.log(
+                `get_weather_info with latitude: ${latitude}, longitude: ${longitude}`,
+            );
             const weatherInfo = await this.weatherTool.getWeatherInfo({
                 latitude: Number(latitude),
                 longitude: Number(longitude),
             });
 
+            this.logger.log(
+                `get_weather_info result: ${JSON.stringify(weatherInfo)}`,
+            );
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(weatherInfo),
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
+            this.logger.log(
+                `get_user_agenda for user: ${userEmail} with args: ${JSON.stringify(args)}`,
+            );
             const userAgenda = await this.calendarTool.getUserAgenda(
                 userEmail,
                 args,
             );
 
+            this.logger.log(
+                `get_user_agenda result: ${JSON.stringify(userAgenda)}`,
+            );
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(userAgenda),
             });
         } else if (toolCall.function.name === 'get_current_datetime') {
+            this.logger.log(`get_current_datetime called`);
             const currentDateTime =
                 await this.calendarTool.getCurrentDatetime();
 
+            this.logger.log(
+                `get_current_datetime result: ${JSON.stringify(currentDateTime)}`,
+            );
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(currentDateTime),
             });
         } else {
+            this.logger.error(`Unknown function: ${toolCall.function.name}`);
             throw new Error(`Unknown function: ${toolCall.function.name}`);
         }
     }

@@ -33,27 +33,34 @@ export default class UserService extends BaseService {
             `Authenticating user with email "${model.email}" and password "${model.password}"`,
         );
 
-        const credential = await this.credentialModel.findOne({
-            email: model.email,
-        });
+        try {
+            const credential = await this.credentialModel.findOne({
+                email: model.email,
+            });
 
-        if (credential) {
-            this.logger.log(`Credential found for email: ${model.email}`);
+            if (credential) {
+                this.logger.log(`Credential found for email: ${model.email}`);
 
-            if (credential.password === model.password) {
-                this.logger.log(
-                    `User with email ${model.email} authenticated successfully`,
-                );
-                return 'authenticated';
+                if (credential.password === model.password) {
+                    this.logger.log(
+                        `User with email ${model.email} authenticated successfully`,
+                    );
+                    return 'authenticated';
+                } else {
+                    this.logger.warn(
+                        `Invalid credentials for email: ${model.email}`,
+                    );
+                    return 'invalid credentials';
+                }
             } else {
-                this.logger.warn(
-                    `Invalid credentials for email: ${model.email}`,
-                );
-                return 'invalid credentials';
+                this.logger.warn(`Email not found: ${model.email}`);
+                return 'email not found';
             }
-        } else {
-            this.logger.warn(`Email not found: ${model.email}`);
-            return 'email not found';
+        } catch (error) {
+            this.logger.error(
+                `Error authenticating user with email ${model.email}: ${error}`,
+            );
+            throw error;
         }
     }
 
@@ -63,21 +70,28 @@ export default class UserService extends BaseService {
     ): Promise<'updated' | 'email not found'> {
         this.logger.log(`Updating password for user with email: ${email}`);
 
-        const credentials = await this.credentialModel.findOne({ email });
+        try {
+            const credentials = await this.credentialModel.findOne({ email });
 
-        if (!credentials) {
-            this.logger.error(`User with email ${email} not found`);
-            return 'email not found';
+            if (!credentials) {
+                this.logger.error(`User with email ${email} not found`);
+                return 'email not found';
+            }
+
+            await this.credentialModel.updateOne(
+                { email },
+                { email, password: newPassword, updatedAt: new Date() },
+            );
+
+            this.logger.log(`Password updated for user with email: ${email}`);
+
+            return 'updated';
+        } catch (error) {
+            this.logger.error(
+                `Error updating password for user with email ${email}: ${error}`,
+            );
+            throw error;
         }
-
-        await this.credentialModel.updateOne(
-            { email },
-            { email, password: newPassword, updatedAt: new Date() },
-        );
-
-        this.logger.log(`Password updated for user with email: ${email}`);
-
-        return 'updated';
     }
 
     async getUserInfoByEmail(
@@ -85,21 +99,33 @@ export default class UserService extends BaseService {
     ): Promise<GetUserInfoResponseModel | null> {
         this.logger.log(`Fetching user info for email: ${email}`);
 
-        const user = await this.userModel.findOne({ email }).exec();
+        try {
+            const user = await this.userModel.findOne({ email }).exec();
 
-        if (!user) {
-            this.logger.error(`User with email ${email} not found`);
-            return null;
+            if (!user) {
+                this.logger.error(`User with email ${email} not found`);
+                return null;
+            }
+
+            this.logger.log(
+                `User info fetched for email: ${email} - fullname: ${user.fullname}`,
+            );
+            this.logger.debug(`User details: ${JSON.stringify(user)}`);
+
+            return new GetUserInfoResponseModel(
+                user.fullname,
+                user.email,
+                user.phoneNumber,
+                user.birthdate,
+                user.profilePicFileName,
+                user.nickname,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error fetching user info for email ${email}: ${error}`,
+            );
+            throw error;
         }
-
-        return new GetUserInfoResponseModel(
-            user.fullname,
-            user.email,
-            user.phoneNumber,
-            user.birthdate,
-            user.profilePicFileName,
-            user.nickname,
-        );
     }
 
     async insertUser(
@@ -107,44 +133,56 @@ export default class UserService extends BaseService {
     ): Promise<'existing email' | 'existing phone number' | 'inserted'> {
         this.logger.log(`Inserting user with email: ${user.email}`);
 
-        const userWithSameEmail = await this.userModel
-            .findOne({ email: user.email })
-            .exec();
+        try {
+            const userWithSameEmail = await this.userModel
+                .findOne({ email: user.email })
+                .exec();
 
-        const userWithSamePhoneNumber = await this.userModel
-            .findOne({ phoneNumber: user.phoneNumber })
-            .exec();
+            const userWithSamePhoneNumber = await this.userModel
+                .findOne({ phoneNumber: user.phoneNumber })
+                .exec();
 
-        if (userWithSameEmail) {
-            this.logger.warn(`User with email ${user.email} already exists`);
-            return 'existing email';
-        } else if (userWithSamePhoneNumber) {
-            this.logger.warn(
-                `User with phone number ${user.phoneNumber} already exists`,
+            if (userWithSameEmail) {
+                this.logger.warn(
+                    `User with email ${user.email} already exists`,
+                );
+                return 'existing email';
+            } else if (userWithSamePhoneNumber) {
+                this.logger.warn(
+                    `User with phone number ${user.phoneNumber} already exists`,
+                );
+                return 'existing phone number';
+            }
+
+            await this.userModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                fullname: user.fullname,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                birthdate: user.birthdate,
+                nickname: user.nickname,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            await this.credentialModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                email: user.email,
+                password: user.password,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            this.logger.log(
+                `User with email ${user.email} inserted successfully`,
             );
-            return 'existing phone number';
+            return 'inserted';
+        } catch (error) {
+            this.logger.error(
+                `Error inserting user with email ${user.email}: ${error}`,
+            );
+            throw error;
         }
-
-        await this.userModel.create({
-            _id: new mongoose.Types.ObjectId(),
-            fullname: user.fullname,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            birthdate: user.birthdate,
-            nickname: user.nickname,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
-        await this.credentialModel.create({
-            _id: new mongoose.Types.ObjectId(),
-            email: user.email,
-            password: user.password,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
-        this.logger.log(`User with email ${user.email} inserted successfully`);
     }
 
     async updateUser(
@@ -154,85 +192,122 @@ export default class UserService extends BaseService {
 
         this.logger.log(`Updating user with email: ${model.email}`);
 
-        this.logger.log(`Fetching user email: ${email}`);
+        try {
+            this.logger.log(`Fetching user email: ${email}`);
 
-        const user = await this.userModel.findOne({ email }).exec();
+            const user = await this.userModel.findOne({ email }).exec();
 
-        if (!user) {
-            this.logger.error(`User with email ${email} not found`);
-            return 'invalid email';
+            if (!user) {
+                this.logger.error(`User with email ${email} not found`);
+                return 'invalid email';
+            }
+
+            await this.userModel.updateOne(
+                {
+                    _id: user._id,
+                },
+                {
+                    fullname: model.fullname,
+                    birthdate: model.birthdate,
+                    nickname: model.nickname,
+                    email: model.email,
+                    phoneNumber: model.phoneNumber,
+                    updatedAt: new Date(),
+                },
+            );
+
+            this.logger.log(
+                `User with email ${user.email} updated successfully`,
+            );
+
+            return 'updated';
+        } catch (error) {
+            this.logger.error(
+                `Error updating user with email ${email}: ${error}`,
+            );
+            throw error;
         }
-
-        await this.userModel.updateOne(
-            {
-                _id: user._id,
-            },
-            {
-                fullname: model.fullname,
-                birthdate: model.birthdate,
-                nickname: model.nickname,
-                email: model.email,
-                phoneNumber: model.phoneNumber,
-                updatedAt: new Date(),
-            },
-        );
-
-        this.logger.log(`User with email ${user.email} updated successfully`);
-
-        return 'updated';
     }
 
     async listUsers(): Promise<ListUsersResponseModel> {
         this.logger.log('Listing all users');
 
-        const users = await this.userModel.find().exec();
+        try {
+            const users = await this.userModel.find().exec();
 
-        if (users.length === 0) {
-            this.logger.warn('No users found');
-            return new ListUsersResponseModel([]);
+            if (users.length === 0) {
+                this.logger.warn('No users found');
+                return new ListUsersResponseModel([]);
+            }
+
+            this.logger.log(`Found ${users.length} users`);
+
+            return new ListUsersResponseModel(
+                users.map(
+                    (user) =>
+                        new GetUserInfoResponseModel(
+                            user.fullname,
+                            user.email,
+                            user.phoneNumber,
+                            user.birthdate,
+                            user.profilePicFileName,
+                            user.nickname,
+                        ),
+                ),
+            );
+        } catch (error) {
+            this.logger.error(`Error listing users: ${error}`);
+            throw error;
         }
-
-        return new ListUsersResponseModel(
-            users.map(
-                (user) =>
-                    new GetUserInfoResponseModel(
-                        user.fullname,
-                        user.email,
-                        user.phoneNumber,
-                        user.birthdate,
-                        user.profilePicFileName,
-                        user.nickname,
-                    ),
-            ),
-        );
     }
 
     async changeProfilePicture(
         userEmail: string,
         profilePicture: Express.Multer.File,
     ) {
-        const user = await this.userModel.findOne({ email: userEmail }).exec();
-
-        if (!user) {
-            this.logger.error(`User with email ${userEmail} not found`);
-            return 'invalid email';
-        }
-
-        const fileExtension = profilePicture.originalname.split('.').pop();
-        const profilePicFileName = `${uuidv4()}.${fileExtension}`;
-
-        await this.blobStorageManager.write(
-            `profile_pics/${profilePicFileName}`,
-            profilePicture.buffer,
+        this.logger.log(
+            `Changing profile picture for user with email: ${userEmail}`,
         );
 
-        await this.userModel.updateOne(
-            { _id: user._id },
-            {
-                $set: {
-                    profilePicFileName,
+        try {
+            const user = await this.userModel
+                .findOne({ email: userEmail })
+                .exec();
+
+            if (!user) {
+                this.logger.error(`User with email ${userEmail} not found`);
+                return 'invalid email';
+            }
+
+            const fileExtension = profilePicture.originalname.split('.').pop();
+            const profilePicFileName = `${uuidv4()}.${fileExtension}`;
+
+            this.logger.log(
+                `Uploading new profile picture for user ${userEmail}: ${profilePicFileName}`,
+            );
+
+            await this.blobStorageManager.write(
+                `profile_pics/${profilePicFileName}`,
+                profilePicture.buffer,
+            );
+
+            await this.userModel.updateOne(
+                { _id: user._id },
+                {
+                    $set: {
+                        profilePicFileName,
+                    },
                 },
-            },
-        );
+            );
+
+            this.logger.log(
+                `Profile picture updated for user ${userEmail}: ${profilePicFileName}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error changing profile picture for user ${userEmail}: ${error}`,
+            );
+            throw error;
+        }
     }
 }

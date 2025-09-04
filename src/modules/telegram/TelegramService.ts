@@ -50,35 +50,59 @@ export default class TelegramService extends BaseService {
             .exec();
 
         if (linkedUser) {
-            const { data, status } = await axios.post(
-                `${process.env.ASSISTANT_MODULE_ADDRESS}/chat/message`,
-                {
-                    content: model.text,
-                },
-                {
-                    headers: {
-                        'x-user-email': linkedUser.email,
-                        'x-user-chat-origin': 'telegram',
-                    },
-                },
+            this.logger.log(
+                `Linked user found: ${linkedUser.email} (telegramUserId: ${linkedUser.telegramUserId})`,
             );
-
-            if (status >= 200 && status < 300) {
-                await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
-                    chat_id: model.chatId,
-                    text: data.content,
-                });
-            } else {
-                this.logger.error(
-                    `Error from Assistant module: ${status} - ${data}`,
+            try {
+                const { data, status } = await axios.post(
+                    `${process.env.ASSISTANT_MODULE_ADDRESS}/chat/message`,
+                    {
+                        content: model.text,
+                    },
+                    {
+                        headers: {
+                            'x-user-email': linkedUser.email,
+                            'x-user-chat-origin': 'telegram',
+                        },
+                    },
                 );
 
+                this.logger.log(`Assistant module response status: ${status}`);
+                this.logger.debug(
+                    `Assistant module response data: ${JSON.stringify(data)}`,
+                );
+
+                if (status >= 200 && status < 300) {
+                    await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
+                        chat_id: model.chatId,
+                        text: data.content,
+                    });
+                    this.logger.log(
+                        `Sent response to Telegram user: ${model.chatId}`,
+                    );
+                } else {
+                    this.logger.error(
+                        `Error from Assistant module: ${status} - ${JSON.stringify(data)}`,
+                    );
+
+                    await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
+                        chat_id: model.chatId,
+                        text: 'Oops! Something went wrong on my side. Please try again later.',
+                    });
+                }
+            } catch (error) {
+                this.logger.error(
+                    `Exception while communicating with Assistant module: ${error}`,
+                );
                 await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
                     chat_id: model.chatId,
                     text: 'Oops! Something went wrong on my side. Please try again later.',
                 });
             }
         } else {
+            this.logger.warn(
+                `No linked user found for telegramUserId: ${model.fromId}`,
+            );
             await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
                 chat_id: model.chatId,
                 text: "Hey, mate! It looks like you haven't linked your Telegram account yet. Please do so in order to use this bot.",
