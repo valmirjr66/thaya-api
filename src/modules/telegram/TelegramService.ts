@@ -66,7 +66,7 @@ export default class TelegramService extends BaseService {
             if (status >= 200 && status < 300) {
                 await axios.post(this.TELEGRAM_ENDPOINT_TO_SEND_MESSAGE, {
                     chat_id: model.chatId,
-                    text: data.assistantMessage.content,
+                    text: data.content,
                 });
             } else {
                 this.logger.error(
