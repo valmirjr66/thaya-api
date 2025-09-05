@@ -25,6 +25,8 @@ export class User extends BaseSchema {
     birthdate: string;
 
     telegramUserId?: number;
+
+    telegramChatId?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -6,5 +6,7 @@ export default class GetUserInfoResponseDto {
         public birthdate: string,
         public profilePicFileName?: string,
         public nickname?: string,
+        public telegramUserId?: number,
+        public telegramChatId?: number,
     ) {}
 }

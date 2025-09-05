@@ -119,6 +119,8 @@ export default class UserService extends BaseService {
                 user.birthdate,
                 user.profilePicFileName,
                 user.nickname,
+                user.telegramUserId,
+                user.telegramChatId,
             );
         } catch (error) {
             this.logger.error(
@@ -252,6 +254,8 @@ export default class UserService extends BaseService {
                             user.birthdate,
                             user.profilePicFileName,
                             user.nickname,
+                            user.telegramUserId,
+                            user.telegramChatId,
                         ),
                 ),
             );
