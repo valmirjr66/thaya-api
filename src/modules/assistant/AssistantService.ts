@@ -30,7 +30,9 @@ export default class AssistantService extends BaseService {
     private async findUserChatAndCreateIfNotExists(
         userEmail: string,
     ): Promise<Chat> {
-        let chat = await this.chatModel.findOne({ userEmail });
+        let chat = (
+            await this.chatModel.findOne({ userEmail }).exec()
+        ).toObject();
 
         if (!chat) {
             this.logger.log(
@@ -78,7 +80,9 @@ export default class AssistantService extends BaseService {
             );
         }
 
-        const response = new GetConversationResponseModel(chatMessages);
+        const response = new GetConversationResponseModel(
+            chatMessages.map((item) => item.toObject()),
+        );
 
         this.logger.debug(
             `Returning conversation response for userEmail: ${userEmail}`,
@@ -189,21 +193,23 @@ export default class AssistantService extends BaseService {
         );
 
         this.logger.debug(`Saving assistant message to chatId: ${chatId}`);
-        const response = await this.messageModel.create({
-            _id: new mongoose.Types.ObjectId(),
-            content: prettifiedTextContent,
-            role: 'assistant',
-            references: decoratedAnnotations,
-            chatId: chatId,
-            userChatOrigin: model.userChatOrigin,
-        });
+        const response = await this.messageModel
+            .create({
+                _id: new mongoose.Types.ObjectId(),
+                content: prettifiedTextContent,
+                role: 'assistant',
+                references: decoratedAnnotations,
+                chatId: chatId,
+                userChatOrigin: model.userChatOrigin,
+            })
+            .then((doc) => doc.toObject());
 
         this.logger.log(
-            `Assistant message sent for userEmail: ${model.userEmail} with messageId: ${response.id}`,
+            `Assistant message sent for userEmail: ${model.userEmail} with messageId: ${response._id}`,
         );
 
         return new SendMessageResponseModel(
-            response.id,
+            response._id.toString(),
             response.content,
             response.role,
             decoratedAnnotations,

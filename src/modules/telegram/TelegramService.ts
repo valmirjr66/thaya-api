@@ -47,7 +47,8 @@ export default class TelegramService extends BaseService {
             .findOne({
                 telegramUserId: model.fromId,
             })
-            .exec();
+            .exec()
+            .then((doc) => doc.toObject());
 
         if (linkedUser) {
             this.logger.log(

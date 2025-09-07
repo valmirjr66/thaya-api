@@ -37,6 +37,7 @@ async function resetMongoDB() {
             nickname: 'Val',
             profilePicFileName: 'sample1.jpg',
             telegramUserId: 761249989,
+            telegramChatId: 761249989,
         });
 
         // Enhanced: Multiple calendar events per day at different hours

@@ -71,7 +71,10 @@ export default class UserService extends BaseService {
         this.logger.log(`Updating password for user with email: ${email}`);
 
         try {
-            const credentials = await this.credentialModel.findOne({ email });
+            const credentials = await this.credentialModel
+                .findOne({ email })
+                .exec()
+                .then((doc) => doc?.toObject());
 
             if (!credentials) {
                 this.logger.error(`User with email ${email} not found`);
@@ -100,7 +103,10 @@ export default class UserService extends BaseService {
         this.logger.log(`Fetching user info for email: ${email}`);
 
         try {
-            const user = await this.userModel.findOne({ email }).exec();
+            const user = await this.userModel
+                .findOne({ email })
+                .exec()
+                .then((doc) => doc.toObject());
 
             if (!user) {
                 this.logger.error(`User with email ${email} not found`);
@@ -138,11 +144,13 @@ export default class UserService extends BaseService {
         try {
             const userWithSameEmail = await this.userModel
                 .findOne({ email: user.email })
-                .exec();
+                .exec()
+                .then((doc) => doc?.toObject());
 
             const userWithSamePhoneNumber = await this.userModel
                 .findOne({ phoneNumber: user.phoneNumber })
-                .exec();
+                .exec()
+                .then((doc) => doc?.toObject());
 
             if (userWithSameEmail) {
                 this.logger.warn(
@@ -197,7 +205,10 @@ export default class UserService extends BaseService {
         try {
             this.logger.log(`Fetching user email: ${email}`);
 
-            const user = await this.userModel.findOne({ email }).exec();
+            const user = await this.userModel
+                .findOne({ email })
+                .exec()
+                .then((doc) => doc?.toObject());
 
             if (!user) {
                 this.logger.error(`User with email ${email} not found`);
@@ -235,7 +246,10 @@ export default class UserService extends BaseService {
         this.logger.log('Listing all users');
 
         try {
-            const users = await this.userModel.find().exec();
+            const users = await this.userModel
+                .find()
+                .exec()
+                .then((docs) => docs.map((doc) => doc.toObject()));
 
             if (users.length === 0) {
                 this.logger.warn('No users found');
@@ -244,21 +258,21 @@ export default class UserService extends BaseService {
 
             this.logger.log(`Found ${users.length} users`);
 
-            return new ListUsersResponseModel(
-                users.map(
-                    (user) =>
-                        new GetUserInfoResponseModel(
-                            user.fullname,
-                            user.email,
-                            user.phoneNumber,
-                            user.birthdate,
-                            user.profilePicFileName,
-                            user.nickname,
-                            user.telegramUserId,
-                            user.telegramChatId,
-                        ),
-                ),
+            const x = users.map(
+                (user) =>
+                    new GetUserInfoResponseModel(
+                        user.fullname,
+                        user.email,
+                        user.phoneNumber,
+                        user.birthdate,
+                        user.profilePicFileName,
+                        user.nickname,
+                        user.telegramUserId,
+                        user.telegramChatId,
+                    ),
             );
+
+            return new ListUsersResponseModel(x);
         } catch (error) {
             this.logger.error(`Error listing users: ${error}`);
             throw error;
