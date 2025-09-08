@@ -17,12 +17,12 @@ export default class TelegramController extends BaseController {
         super();
     }
 
-    @Post()
+    @Post('incoming-message')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async telegramWebhook(@Body() dto: IncomingMessageDto): Promise<void> {
+    async incomingMessage(@Body() dto: IncomingMessageDto): Promise<void> {
         await this.telegramService.handleMessage(
             new IncomingMessageModel(
                 dto.update_id,
