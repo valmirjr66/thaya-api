@@ -18,7 +18,12 @@ import {
     FileMetadata,
     FileMetadataSchema,
 } from './modules/assistant/schemas/FileMetadataSchema';
+import CalendarService from './modules/user/CalendarService';
 import UserService from './modules/user/UserService';
+import {
+    Calendar,
+    CalendarSchema,
+} from './modules/user/schemas/CalendarSchema';
 import {
     Credential,
     CredentialSchema,
@@ -29,6 +34,7 @@ import { User, UserSchema } from './modules/user/schemas/UserSchema';
     controllers: [AssistantController],
     providers: [
         AssistantService,
+        CalendarService,
         UserService,
         ChatAssistant,
         UserInfoTool,
@@ -44,6 +50,7 @@ import { User, UserSchema } from './modules/user/schemas/UserSchema';
             { name: FileMetadata.name, schema: FileMetadataSchema },
             { name: User.name, schema: UserSchema },
             { name: Credential.name, schema: CredentialSchema },
+            { name: Calendar.name, schema: CalendarSchema },
         ]),
     ],
 })

@@ -24,6 +24,11 @@ import {
 } from './modules/user/schemas/CredentialSchema';
 import { User, UserSchema } from './modules/user/schemas/UserSchema';
 import UserService from './modules/user/UserService';
+import CalendarService from './modules/user/CalendarService';
+import {
+    Calendar,
+    CalendarSchema,
+} from './modules/user/schemas/CalendarSchema';
 
 @Module({
     controllers: [TelegramController],
@@ -32,6 +37,7 @@ import UserService from './modules/user/UserService';
         TelegramHandler,
         UserService,
         AssistantService,
+        CalendarService,
         BlobStorageManager,
         ChatAssistant,
         WeatherTool,
@@ -49,6 +55,9 @@ import UserService from './modules/user/UserService';
         MongooseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]),
         MongooseModule.forFeature([
             { name: FileMetadata.name, schema: FileMetadataSchema },
+        ]),
+        MongooseModule.forFeature([
+            { name: Calendar.name, schema: CalendarSchema },
         ]),
     ],
 })
