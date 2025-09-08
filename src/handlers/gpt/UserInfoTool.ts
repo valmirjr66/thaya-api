@@ -25,11 +25,6 @@ export default class UserInfoTool {
         this.logger.log(`Fetching user info for email: ${userEmail}`);
 
         try {
-            const getUserInfoUrl = `${process.env.USER_MODULE_ADDRESS}/info`;
-            this.logger.debug(
-                `Sending GET request to ${getUserInfoUrl} with x-user-email: ${userEmail}`,
-            );
-
             const data = await this.userService.getUserInfoByEmail(userEmail);
 
             this.logger.debug(`Received data: ${JSON.stringify(data)}`);
