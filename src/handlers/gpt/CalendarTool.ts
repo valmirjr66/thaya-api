@@ -144,4 +144,22 @@ export default class CalendarTool {
 
         return userCalendar;
     }
+
+    async insertUserCalendarOccurrence(
+        userEmail: string,
+        datetime: Date,
+        description: string,
+    ) {
+        this.logger.log(
+            `Inserting calendar occurrence for user: ${userEmail}, datetime: ${datetime.toISOString()}, description: ${description}`,
+        );
+
+        await this.calendarService.insertCalendarOccurrence({
+            userEmail,
+            datetime,
+            description,
+        });
+
+        this.logger.log('Calendar occurrence inserted successfully');
+    }
 }

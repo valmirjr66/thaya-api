@@ -111,6 +111,31 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
             },
         },
     },
+    {
+        type: 'function',
+        function: {
+            name: 'insert_calendar_occurrence',
+            description:
+                'Creates a calendar event or reminder with the provided details',
+            strict: true,
+            parameters: {
+                type: 'object',
+                required: ['description', 'datetime'],
+                properties: {
+                    description: {
+                        type: 'string',
+                        description:
+                            'Title or description of the event or reminder',
+                    },
+                    datetime: {
+                        type: 'string',
+                        description:
+                            'Date and time of the occurrence in ISO 8601 format (e.g., 2023-10-05T14:30:00Z)',
+                    },
+                },
+            },
+        },
+    },
 ];
 
 const ASSISTANT_NAME = 'Thaya';

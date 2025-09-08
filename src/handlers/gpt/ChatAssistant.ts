@@ -357,6 +357,34 @@ export default class ChatAssistant {
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(currentDateTime),
             });
+        } else if (toolCall.function.name === 'insert_calendar_occurrence') {
+            this.logger.log(
+                `insert_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                    args,
+                )}`,
+            );
+
+            const datetime = new Date(args.datetime);
+
+            if (isNaN(datetime.getTime())) {
+                this.logger.error(`Invalid datetime format: ${args.datetime}`);
+                throw new Error(
+                    `Invalid datetime format: ${args.datetime}. Please provide a valid ISO 8601 date string.`,
+                );
+            }
+
+            await this.calendarTool.insertUserCalendarOccurrence(
+                userEmail,
+                datetime,
+                args.description,
+            );
+
+            this.logger.log(`insert_calendar_occurrence completed`);
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify({ success: true }),
+            });
         } else {
             this.logger.error(`Unknown function: ${toolCall.function.name}`);
             throw new Error(`Unknown function: ${toolCall.function.name}`);
