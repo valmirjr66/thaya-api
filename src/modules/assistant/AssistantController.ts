@@ -13,13 +13,13 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { RESPONSE_DESCRIPTIONS, USER_CHAT_ORIGINS } from 'src/constants';
 import BaseController from '../../BaseController';
+import { UserChatOrigin } from '../../types/gpt';
 import AssistantService from './AssistantService';
 import GetChatByUserEmailResponseDto from './dto/GetChatByUserEmailResponseDto';
-import SendMessageRequestDto from './dto/SendMessageRequestDto';
-import SendMessageResponseDto from './dto/SendMessageResponseDto';
-import { UserChatOrigin } from '../../types/gpt';
-import { RESPONSE_DESCRIPTIONS, USER_CHAT_ORIGINS } from 'src/constants';
+import HandleIncomingMessageRequestDto from './dto/HandleIncomingMessageRequestDto';
+import HandleIncomingMessageResponseDto from './dto/HandleIncomingMessageResponseDto';
 
 @ApiTags('Assistant')
 @Controller('assistant')
@@ -50,16 +50,16 @@ export default class AssistantController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async sendMessage(
-        @Body() dto: SendMessageRequestDto,
+    async handleIncomingMessage(
+        @Body() dto: HandleIncomingMessageRequestDto,
         @Headers('x-user-email') userEmail: string,
         @Headers('x-user-chat-origin') userChatOrigin: string,
-    ): Promise<SendMessageResponseDto> {
+    ): Promise<HandleIncomingMessageResponseDto> {
         if (!USER_CHAT_ORIGINS.includes(userChatOrigin as UserChatOrigin)) {
             throw new BadRequestException('Invalid chat origin');
         }
 
-        const response = await this.assistantService.sendMessage({
+        const response = await this.assistantService.handleIncomingMessage({
             content: dto.content,
             userChatOrigin: userChatOrigin as UserChatOrigin,
             userEmail,

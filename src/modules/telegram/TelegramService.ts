@@ -52,7 +52,7 @@ export default class TelegramService extends BaseService {
             );
             try {
                 const assistantResponse =
-                    await this.assistantService.sendMessage({
+                    await this.assistantService.handleIncomingMessage({
                         content: model.text,
                         userEmail: linkedUser.email,
                         userChatOrigin: 'telegram',

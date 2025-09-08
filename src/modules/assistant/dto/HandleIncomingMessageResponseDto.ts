@@ -2,7 +2,7 @@ import { Role } from 'src/types/gpt';
 import { FileMetadata } from '../schemas/FileMetadataSchema';
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class SendMessageResponseDto {
+export default class HandleIncomingMessageResponseDto {
     @ApiProperty()
     public id: string;
 

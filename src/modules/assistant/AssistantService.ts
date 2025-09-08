@@ -5,8 +5,8 @@ import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
 import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserEmailResponseModel';
 import { Annotation } from 'src/types/gpt';
 import BaseService from '../../BaseService';
-import SendMessageRequestModel from './model/SendMessageRequestModel';
-import SendMessageResponseModel from './model/SendMessageResponseModel';
+import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
+import HandleIncomingMessageResponseModel from './model/HandleIncomingMessageResponseModel';
 import { Chat } from './schemas/ChatSchema';
 import { FileMetadata } from './schemas/FileMetadataSchema';
 import { Message } from './schemas/MessageSchema';
@@ -90,17 +90,17 @@ export default class AssistantService extends BaseService {
         return response;
     }
 
-    async sendMessage(
-        model: SendMessageRequestModel,
+    async handleIncomingMessage(
+        model: HandleIncomingMessageRequestModel,
         streamingCallback?: (
             userEmail: string,
             textSnapshot: string,
             decoratedAnnotations?: FileMetadata[],
             finished?: boolean,
         ) => void,
-    ): Promise<SendMessageResponseModel> {
+    ): Promise<HandleIncomingMessageResponseModel> {
         this.logger.debug(
-            `sendMessage called for userEmail: ${model.userEmail} with content: ${model.content}`,
+            `handleIncomingMessage called for userEmail: ${model.userEmail} with content: ${model.content}`,
         );
 
         const chat = await this.findUserChatAndCreateIfNotExists(
@@ -208,7 +208,7 @@ export default class AssistantService extends BaseService {
             `Assistant message sent for userEmail: ${model.userEmail} with messageId: ${response._id}`,
         );
 
-        return new SendMessageResponseModel(
+        return new HandleIncomingMessageResponseModel(
             response._id.toString(),
             response.content,
             response.role,

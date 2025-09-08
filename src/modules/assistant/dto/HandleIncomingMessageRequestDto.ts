@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class SendMessageRequestDto {
+export default class HandleIncomingMessageRequestDto {
     @ApiProperty()
     public content: string;
 

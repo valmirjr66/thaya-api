@@ -1,4 +1,4 @@
-export default class SendMessageRequestPayload {
+export default class HandleIncomingMessageRequestPayload {
     content: string;
 
     constructor(content: string) {

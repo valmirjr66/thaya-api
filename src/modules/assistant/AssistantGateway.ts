@@ -10,8 +10,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UserChatOrigin } from 'src/types/gpt';
 import AssistantService from './AssistantService';
-import SendMessageRequestPayload from './events/payloads/SendMessageRequestPayload';
-import SendMessageRequestModel from './model/SendMessageRequestModel';
+import HandleIncomingMessageRequestPayload from './events/payloads/HandleIncomingMessageRequestPayload';
+import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import { FileMetadata } from './schemas/FileMetadataSchema';
 
 @WebSocketGateway({ cors: true })
@@ -24,7 +24,10 @@ export class AssistantGateway
     private readonly logger: Logger = new Logger('AssistantGateway');
 
     @SubscribeMessage('message')
-    handleMessage(client: Socket, payload: SendMessageRequestPayload): void {
+    handleMessage(
+        client: Socket,
+        payload: HandleIncomingMessageRequestPayload,
+    ): void {
         this.logger.log(`Received 'message' event from client: ${client.id}`);
         this.logger.debug(`Payload: ${JSON.stringify(payload)}`);
 
@@ -37,14 +40,14 @@ export class AssistantGateway
             `User email: ${userEmail}, Chat origin: ${userChatOrigin}`,
         );
 
-        const messageModel = new SendMessageRequestModel(
+        const messageModel = new HandleIncomingMessageRequestModel(
             userEmail,
             userChatOrigin,
             payload.content,
         );
 
         this.logger.debug(
-            `Constructed SendMessageRequestModel: ${JSON.stringify(messageModel)}`,
+            `Constructed HandleIncomingMessageRequestModel: ${JSON.stringify(messageModel)}`,
         );
 
         const streamingCallback = (
@@ -67,8 +70,11 @@ export class AssistantGateway
             });
         };
 
-        this.logger.log('Calling assistantService.sendMessage...');
-        this.assistantService.sendMessage(messageModel, streamingCallback);
+        this.logger.log('Calling assistantService.handleIncomingMessage...');
+        this.assistantService.handleIncomingMessage(
+            messageModel,
+            streamingCallback,
+        );
     }
 
     afterInit() {
