@@ -32,7 +32,7 @@ export default class AssistantService extends BaseService {
     ): Promise<Chat> {
         let chat = (
             await this.chatModel.findOne({ userEmail }).exec()
-        ).toObject();
+        )?.toObject();
 
         if (!chat) {
             this.logger.log(
