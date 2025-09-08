@@ -9,6 +9,7 @@ import {
     MessageSchema,
 } from './modules/assistant/schemas/MessageSchema';
 
+import BlobStorageManager from './handlers/cloud/BlobStorageManager';
 import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
@@ -17,22 +18,32 @@ import {
     FileMetadata,
     FileMetadataSchema,
 } from './modules/assistant/schemas/FileMetadataSchema';
+import UserService from './modules/user/UserService';
+import {
+    Credential,
+    CredentialSchema,
+} from './modules/user/schemas/CredentialSchema';
+import { User, UserSchema } from './modules/user/schemas/UserSchema';
 
 @Module({
     controllers: [AssistantController],
     providers: [
         AssistantService,
+        UserService,
         ChatAssistant,
         UserInfoTool,
         WeatherTool,
         CalendarTool,
         AssistantGateway,
+        BlobStorageManager,
     ],
     imports: [
         MongooseModule.forFeature([
             { name: Message.name, schema: MessageSchema },
             { name: Chat.name, schema: ChatSchema },
             { name: FileMetadata.name, schema: FileMetadataSchema },
+            { name: User.name, schema: UserSchema },
+            { name: Credential.name, schema: CredentialSchema },
         ]),
     ],
 })
