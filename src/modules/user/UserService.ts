@@ -258,21 +258,21 @@ export default class UserService extends BaseService {
 
             this.logger.log(`Found ${users.length} users`);
 
-            const x = users.map(
-                (user) =>
-                    new GetUserInfoResponseModel(
-                        user.fullname,
-                        user.email,
-                        user.phoneNumber,
-                        user.birthdate,
-                        user.profilePicFileName,
-                        user.nickname,
-                        user.telegramUserId,
-                        user.telegramChatId,
-                    ),
+            return new ListUsersResponseModel(
+                users.map(
+                    (user) =>
+                        new GetUserInfoResponseModel(
+                            user.fullname,
+                            user.email,
+                            user.phoneNumber,
+                            user.birthdate,
+                            user.profilePicFileName,
+                            user.nickname,
+                            user.telegramUserId,
+                            user.telegramChatId,
+                        ),
+                ),
             );
-
-            return new ListUsersResponseModel(x);
         } catch (error) {
             this.logger.error(`Error listing users: ${error}`);
             throw error;
