@@ -1,3 +1,4 @@
+import { MONTHS_ABBREVIATION } from 'src/constants';
 import { AbbreviatedMonth } from 'src/types/calendar';
 
 export default class CalendarUtils {
@@ -18,5 +19,9 @@ export default class CalendarUtils {
         };
 
         return monthMap[month];
+    }
+
+    static mapNumberToMonthAbbreviation(monthNumber: number): AbbreviatedMonth {
+        return MONTHS_ABBREVIATION[monthNumber];
     }
 }

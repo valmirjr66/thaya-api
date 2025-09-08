@@ -1,12 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
 import { MONTHS_ABBREVIATION } from 'src/constants';
+import CalendarService from 'src/modules/user/CalendarService';
+import GetUserCalendarResponseModel from 'src/modules/user/model/GetUserCalendarResponseModel';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
 import CalendarUtils from 'src/utils/CalendarUtils';
 
 @Injectable()
 export default class CalendarTool {
     private readonly logger: Logger = new Logger('CalendarTool');
+
+    constructor(private readonly calendarService: CalendarService) {}
 
     async getCurrentDatetime() {
         const currentDatetime = new Date();
@@ -59,67 +62,38 @@ export default class CalendarTool {
             throw new Error('"from" date must be before or equal to "to" date');
         }
 
-        const fetches: Promise<any>[] = [];
+        const fetches: Promise<GetUserCalendarResponseModel>[] = [];
 
         let currentYear = from.year;
-        let currentMonth = CalendarUtils.mapMonthAbbreviationToNumber(
+        let currentMonthNumber = CalendarUtils.mapMonthAbbreviationToNumber(
             from.month,
         );
 
         while (
             currentYear < to.year ||
             (currentYear === to.year &&
-                currentMonth <=
+                currentMonthNumber <=
                     CalendarUtils.mapMonthAbbreviationToNumber(to.month))
         ) {
-            const url = `${process.env.USER_MODULE_ADDRESS}/calendar?month=${currentMonth}&year=${currentYear}`;
-            this.logger.debug(`Constructed URL: ${url}`);
-
             fetches.push(
-                axios
-                    .get(url, {
-                        headers: { 'x-user-email': userEmail },
-                        validateStatus: () => true,
-                    })
-                    .then(({ data, status }) => {
-                        this.logger.debug(
-                            `Fetch result for ${currentMonth}/${currentYear}: status=${status}`,
-                        );
-                        if (status === 204) {
-                            this.logger.debug(
-                                `No items for ${currentMonth}/${currentYear}`,
-                            );
-                            return {
-                                items: [],
-                            };
-                        }
-
-                        if (status < 200 || status >= 300) {
-                            this.logger.error(
-                                `Failed to fetch calendar for ${currentMonth}/${currentYear}: status=${status}`,
-                            );
-                            throw new Error(
-                                `Failed to fetch calendar for ${currentMonth}/${currentYear}`,
-                            );
-                        }
-
-                        this.logger.debug(
-                            `Fetched data for ${currentMonth}/${currentYear}: ${JSON.stringify(data)}`,
-                        );
-                        return data;
-                    })
-                    .catch((error) => {
-                        this.logger.error(
-                            `Error fetching calendar for ${currentMonth}/${currentYear}: ${error.message}`,
-                        );
-                        throw error;
-                    }),
+                this.fetchCalendar(
+                    userEmail,
+                    CalendarUtils.mapNumberToMonthAbbreviation(
+                        currentMonthNumber,
+                    ),
+                    currentYear,
+                ).catch((error) => {
+                    this.logger.error(
+                        `Error fetching calendar for ${currentMonthNumber}/${currentYear}: ${error.message}`,
+                    );
+                    throw error;
+                }),
             );
 
-            currentMonth++;
+            currentMonthNumber++;
 
-            if (currentMonth > 11) {
-                currentMonth = 0;
+            if (currentMonthNumber > 11) {
+                currentMonthNumber = 0;
                 currentYear++;
             }
         }
@@ -128,9 +102,8 @@ export default class CalendarTool {
 
         let results: { items: Occurrence[] }[] = [];
         try {
-            results = (await Promise.all(fetches)) as {
-                items: Occurrence[];
-            }[];
+            results = await Promise.all(fetches);
+
             this.logger.debug(
                 `Fetched all calendar results: ${JSON.stringify(results)}`,
             );
@@ -152,5 +125,23 @@ export default class CalendarTool {
         this.logger.log(`Returning ${occurrences.length} occurrences`);
 
         return occurrences;
+    }
+
+    private async fetchCalendar(
+        userEmail: string,
+        month: AbbreviatedMonth,
+        year: number,
+    ): Promise<GetUserCalendarResponseModel> {
+        const userCalendar = await this.calendarService.getUserCalendarByEmail(
+            userEmail,
+            month,
+            year,
+        );
+
+        if (!userCalendar.items) {
+            this.logger.debug(`No items for ${month}/${year}`);
+        }
+
+        return userCalendar;
     }
 }
