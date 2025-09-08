@@ -11,13 +11,13 @@ import IncomingMessageDto from './dto/IncomingMessageDto';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
 @ApiTags('Telegram')
-@Controller('telegram-webhook')
+@Controller('telegram')
 export default class TelegramController extends BaseController {
     constructor(private readonly telegramService: TelegramService) {
         super();
     }
 
-    @Post('incoming-message')
+    @Post('message-webhook')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
