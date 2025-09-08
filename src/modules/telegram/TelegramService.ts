@@ -1,10 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
-import { Model } from 'mongoose';
 import BaseService from 'src/BaseService';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
-import { User } from '../user/schemas/UserSchema';
+import UserService from '../user/UserService';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
 @Injectable()
@@ -12,8 +10,7 @@ export default class TelegramService extends BaseService {
     private readonly logger: Logger = new Logger('TelegramService');
 
     constructor(
-        @InjectModel(User.name)
-        private readonly userModel: Model<User>,
+        private readonly userService: UserService,
         private readonly telegramHandler: TelegramHandler,
     ) {
         super();
@@ -44,12 +41,9 @@ export default class TelegramService extends BaseService {
             );
         }
 
-        const linkedUser = await this.userModel
-            .findOne({
-                telegramUserId: model.fromId,
-            })
-            .exec()
-            .then((doc) => doc.toObject());
+        const linkedUser = await this.userService.getUserByTelegramUserId(
+            model.fromId,
+        );
 
         if (linkedUser) {
             this.logger.log(

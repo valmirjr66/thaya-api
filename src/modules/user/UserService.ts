@@ -328,4 +328,34 @@ export default class UserService extends BaseService {
             throw error;
         }
     }
+
+    async getUserByTelegramUserId(
+        telegramUserId: number,
+    ): Promise<User | null> {
+        this.logger.log(`Fetching user with telegramUserId: ${telegramUserId}`);
+
+        try {
+            const user = await this.userModel
+                .findOne({ telegramUserId })
+                .exec()
+                .then((doc) => doc?.toObject());
+
+            if (!user) {
+                this.logger.warn(
+                    `No user found with telegramUserId: ${telegramUserId}`,
+                );
+                return null;
+            }
+
+            this.logger.log(
+                `User found with telegramUserId: ${telegramUserId} - email: ${user.email}`,
+            );
+            return user;
+        } catch (error) {
+            this.logger.error(
+                `Error fetching user with telegramUserId ${telegramUserId}: ${error}`,
+            );
+            throw error;
+        }
+    }
 }
