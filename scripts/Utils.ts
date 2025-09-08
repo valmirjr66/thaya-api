@@ -6,21 +6,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-10T09:00:00'),
-            description: 'Consulta médica anual',
+            description: 'Annual medical appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-10T14:30:00'),
-            description: 'Reunião de acompanhamento de projetos',
+            description: 'Project follow-up meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-10T18:00:00'),
-            description: 'Sessão de fisioterapia',
+            description: 'Physical therapy session',
         },
     },
     // 2025-01-18
@@ -28,14 +28,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-18T10:00:00'),
-            description: 'Reunião de planejamento estratégico',
+            description: 'Strategic planning meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-18T16:00:00'),
-            description: 'Call com cliente internacional',
+            description: 'Call with international client',
         },
     },
     // 2025-01-27
@@ -43,14 +43,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-27T08:30:00'),
-            description: 'Workshop de integração',
+            description: 'Integration workshop',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-01-27T17:00:00'),
-            description: 'Reunião de feedback pós-workshop',
+            description: 'Post-workshop feedback meeting',
         },
     },
     // 2025-02-08
@@ -58,21 +58,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-02-08T11:00:00'),
-            description: 'Revisão de contratos',
+            description: 'Contract review',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-02-08T15:00:00'),
-            description: 'Sessão de dúvidas jurídicas',
+            description: 'Legal questions session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-02-08T18:00:00'),
-            description: 'Reunião com advogados',
+            description: 'Meeting with lawyers',
         },
     },
     // 2025-02-21
@@ -80,14 +80,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-02-21T09:30:00'),
-            description: 'Consulta com nutricionista',
+            description: 'Nutritionist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-02-21T18:00:00'),
-            description: 'Reunião de avaliação nutricional',
+            description: 'Nutritional assessment meeting',
         },
     },
     // 2025-03-03
@@ -95,14 +95,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-03T07:00:00'),
-            description: 'Viagem a trabalho para Campinas',
+            description: 'Business trip to Campinas',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-03T19:00:00'),
-            description: 'Jantar com equipe de Campinas',
+            description: 'Dinner with Campinas team',
         },
     },
     // 2025-03-10
@@ -110,21 +110,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-10T10:00:00'),
-            description: 'Consulta com dermatologista',
+            description: 'Dermatologist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-10T15:30:00'),
-            description: 'Reunião de atualização de tratamentos',
+            description: 'Treatment update meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-10T18:00:00'),
-            description: 'Sessão de cuidados com a pele',
+            description: 'Skin care session',
         },
     },
     // 2025-03-15
@@ -132,14 +132,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-15T13:00:00'),
-            description: 'Palestra sobre liderança',
+            description: 'Leadership lecture',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-15T17:00:00'),
-            description: 'Debate pós-palestra',
+            description: 'Post-lecture debate',
         },
     },
     // 2025-03-22
@@ -147,21 +147,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-22T09:00:00'),
-            description: 'Mentoria com equipe júnior',
+            description: 'Mentoring with junior team',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-22T14:00:00'),
-            description: 'Sessão de dúvidas técnicas',
+            description: 'Technical questions session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-22T16:00:00'),
-            description: 'Reunião de alinhamento técnico',
+            description: 'Technical alignment meeting',
         },
     },
     // 2025-03-30
@@ -169,14 +169,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-30T11:00:00'),
-            description: 'Entrega de relatório trimestral',
+            description: 'Quarterly report delivery',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-03-30T16:00:00'),
-            description: 'Reunião de revisão do relatório',
+            description: 'Report review meeting',
         },
     },
     // 2025-04-05
@@ -184,14 +184,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-05T09:00:00'),
-            description: 'Consulta odontológica',
+            description: 'Dental appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-05T13:30:00'),
-            description: 'Avaliação de tratamento odontológico',
+            description: 'Dental treatment evaluation',
         },
     },
     // 2025-04-11
@@ -199,14 +199,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-11T10:00:00'),
-            description: 'Reunião com fornecedores',
+            description: 'Meeting with suppliers',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-11T15:00:00'),
-            description: 'Negociação de contratos',
+            description: 'Contract negotiation',
         },
     },
     // 2025-04-18
@@ -214,14 +214,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-18T09:30:00'),
-            description: 'Revisão de metas trimestrais',
+            description: 'Quarterly goals review',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-18T17:00:00'),
-            description: 'Ajuste de metas com equipe',
+            description: 'Team goals adjustment',
         },
     },
     // 2025-04-29
@@ -229,14 +229,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-29T11:00:00'),
-            description: 'Feedback com gestores',
+            description: 'Feedback with managers',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-04-29T16:00:00'),
-            description: 'Planejamento de ações pós-feedback',
+            description: 'Post-feedback action planning',
         },
     },
     // 2025-05-02
@@ -244,14 +244,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-02T08:00:00'),
-            description: 'Consulta com psicólogo',
+            description: 'Psychologist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-02T18:00:00'),
-            description: 'Sessão de terapia em grupo',
+            description: 'Group therapy session',
         },
     },
     // 2025-05-09
@@ -259,14 +259,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-09T10:00:00'),
-            description: 'Planejamento de campanha de marketing',
+            description: 'Marketing campaign planning',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-09T15:30:00'),
-            description: 'Reunião de briefing de campanha',
+            description: 'Campaign briefing meeting',
         },
     },
     // 2025-05-14
@@ -274,14 +274,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-14T09:00:00'),
-            description: 'Análise de desempenho semestral',
+            description: 'Semiannual performance analysis',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-14T13:00:00'),
-            description: 'Reunião de avaliação de desempenho',
+            description: 'Performance evaluation meeting',
         },
     },
     // 2025-05-19
@@ -289,14 +289,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-19T11:00:00'),
-            description: 'Reunião com investidores',
+            description: 'Meeting with investors',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-19T17:00:00'),
-            description: 'Apresentação de resultados para investidores',
+            description: 'Results presentation to investors',
         },
     },
     // 2025-05-23
@@ -304,21 +304,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-23T09:00:00'),
-            description: 'Oficina de inovação',
+            description: 'Innovation workshop',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-23T14:00:00'),
-            description: 'Sessão de brainstorming',
+            description: 'Brainstorming session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-23T17:00:00'),
-            description: 'Reunião de prototipagem',
+            description: 'Prototyping meeting',
         },
     },
     // 2025-05-30
@@ -326,14 +326,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-30T10:00:00'),
-            description: 'Entrega de metas revisadas',
+            description: 'Delivery of revised goals',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-05-30T16:00:00'),
-            description: 'Reunião de alinhamento de metas',
+            description: 'Goals alignment meeting',
         },
     },
     // 2025-06-02
@@ -341,28 +341,28 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-02T09:00:00'),
-            description: 'Consulta no neurologista',
+            description: 'Neurologist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-02T11:00:00'),
-            description: 'Reunião com a diretoria da empresa',
+            description: 'Meeting with company board',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-02T15:00:00'),
-            description: 'Sessão de avaliação de projetos',
+            description: 'Project evaluation session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-02T18:00:00'),
-            description: 'Reunião de encerramento de projetos',
+            description: 'Project closing meeting',
         },
     },
     // 2025-06-15
@@ -370,14 +370,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-15T10:00:00'),
-            description: 'Sessão de coaching',
+            description: 'Coaching session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-15T17:00:00'),
-            description: 'Reunião de acompanhamento de coaching',
+            description: 'Coaching follow-up meeting',
         },
     },
     // 2025-06-26
@@ -385,14 +385,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-26T09:00:00'),
-            description: 'Revisão de pipeline de vendas',
+            description: 'Sales pipeline review',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-06-26T13:00:00'),
-            description: 'Sessão de treinamento de vendas',
+            description: 'Sales training session',
         },
     },
     // 2025-07-06
@@ -400,14 +400,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-06T08:00:00'),
-            description: 'Consulta com clínico geral',
+            description: 'General practitioner appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-06T18:00:00'),
-            description: 'Reunião de avaliação médica',
+            description: 'Medical evaluation meeting',
         },
     },
     // 2025-07-12
@@ -415,14 +415,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-12T10:00:00'),
-            description: 'Reunião de alinhamento com o time',
+            description: 'Team alignment meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-12T16:00:00'),
-            description: 'Sessão de feedback com o time',
+            description: 'Team feedback session',
         },
     },
     // 2025-07-25
@@ -430,21 +430,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-25T09:00:00'),
-            description: 'Feedback de meio de ano',
+            description: 'Mid-year feedback',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-25T14:00:00'),
-            description: 'Planejamento de ações pós-feedback',
+            description: 'Post-feedback action planning',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-07-25T17:00:00'),
-            description: 'Sessão de mentoria de carreira',
+            description: 'Career mentoring session',
         },
     },
     // 2025-08-01
@@ -452,14 +452,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-01T08:30:00'),
-            description: 'Consulta com fisioterapeuta',
+            description: 'Physical therapist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-01T17:00:00'),
-            description: 'Sessão de exercícios físicos',
+            description: 'Physical exercise session',
         },
     },
     // 2025-08-08
@@ -467,14 +467,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-08T10:00:00'),
-            description: 'Planejamento de inovação',
+            description: 'Innovation planning',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-08T15:00:00'),
-            description: 'Reunião de validação de ideias',
+            description: 'Idea validation meeting',
         },
     },
     // 2025-08-15
@@ -482,14 +482,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-15T09:00:00'),
-            description: 'Análise de dados financeiros',
+            description: 'Financial data analysis',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-15T13:00:00'),
-            description: 'Reunião de apresentação de resultados financeiros',
+            description: 'Financial results presentation meeting',
         },
     },
     // 2025-08-22
@@ -497,14 +497,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-22T11:00:00'),
-            description: 'Reunião sobre cultura organizacional',
+            description: 'Organizational culture meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-22T16:00:00'),
-            description: 'Sessão de integração cultural',
+            description: 'Cultural integration session',
         },
     },
     // 2025-08-29
@@ -512,14 +512,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-29T09:00:00'),
-            description: 'Visita técnica a fornecedor',
+            description: 'Technical visit to supplier',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-08-29T14:00:00'),
-            description: 'Reunião de avaliação de fornecedor',
+            description: 'Supplier evaluation meeting',
         },
     },
     // 2025-09-05
@@ -527,14 +527,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-09-05T10:00:00'),
-            description: 'Sessão de treinamento em liderança',
+            description: 'Leadership training session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-09-05T15:00:00'),
-            description: 'Reunião de desenvolvimento de liderança',
+            description: 'Leadership development meeting',
         },
     },
     // 2025-09-12
@@ -542,7 +542,7 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-09-12T09:30:00'),
-            description: 'Consulta com endocrinologista',
+            description: 'Endocrinologist appointment',
         },
     },
     // 2025-10-04
@@ -550,14 +550,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-04T08:00:00'),
-            description: 'Consulta com nutricionista',
+            description: 'Nutritionist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-04T18:00:00'),
-            description: 'Sessão de planejamento alimentar',
+            description: 'Meal planning session',
         },
     },
     // 2025-10-11
@@ -565,14 +565,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-11T10:00:00'),
-            description: 'Avaliação de saúde mental',
+            description: 'Mental health assessment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-11T15:00:00'),
-            description: 'Sessão de acompanhamento psicológico',
+            description: 'Psychological follow-up session',
         },
     },
     // 2025-10-18
@@ -580,14 +580,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-18T09:00:00'),
-            description: 'Apresentação de resultados',
+            description: 'Results presentation',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-18T13:00:00'),
-            description: 'Debate sobre resultados',
+            description: 'Results debate',
         },
     },
     // 2025-10-30
@@ -595,14 +595,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-30T11:00:00'),
-            description: 'Planejamento de 2026',
+            description: '2026 planning',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-10-30T16:00:00'),
-            description: 'Sessão de definição de metas para 2026',
+            description: '2026 goal setting session',
         },
     },
     // 2025-11-03
@@ -610,14 +610,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-03T09:00:00'),
-            description: 'Auditoria de processos',
+            description: 'Process audit',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-03T14:00:00'),
-            description: 'Reunião de ajustes pós-auditoria',
+            description: 'Post-audit adjustment meeting',
         },
     },
     // 2025-11-07
@@ -625,14 +625,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-07T10:00:00'),
-            description: 'Participação em conferência',
+            description: 'Conference participation',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-07T17:00:00'),
-            description: 'Networking pós-conferência',
+            description: 'Post-conference networking',
         },
     },
     // 2025-11-12
@@ -640,14 +640,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-12T08:00:00'),
-            description: 'Consulta com cardiologista',
+            description: 'Cardiologist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-12T18:00:00'),
-            description: 'Sessão de avaliação cardíaca',
+            description: 'Cardiac assessment session',
         },
     },
     // 2025-11-18
@@ -655,14 +655,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-18T09:00:00'),
-            description: 'Análise de indicadores',
+            description: 'Indicators analysis',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-18T13:00:00'),
-            description: 'Reunião de apresentação de indicadores',
+            description: 'Indicators presentation meeting',
         },
     },
     // 2025-11-24
@@ -670,14 +670,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-24T10:00:00'),
-            description: 'Avaliação da equipe técnica',
+            description: 'Technical team assessment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-24T15:00:00'),
-            description: 'Sessão de feedback técnico',
+            description: 'Technical feedback session',
         },
     },
     // 2025-11-30
@@ -685,14 +685,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-30T09:00:00'),
-            description: 'Planejamento de reestruturação',
+            description: 'Restructuring planning',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-11-30T14:00:00'),
-            description: 'Reunião de definição de novas estruturas',
+            description: 'New structure definition meeting',
         },
     },
     // 2025-12-05
@@ -700,14 +700,14 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-05T08:00:00'),
-            description: 'Consulta oftalmológica',
+            description: 'Ophthalmologist appointment',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-05T18:00:00'),
-            description: 'Sessão de avaliação visual',
+            description: 'Visual assessment session',
         },
     },
     // 2025-12-15
@@ -715,21 +715,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-15T10:00:00'),
-            description: 'Reunião de encerramento do ano',
+            description: 'Year-end closing meeting',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-15T17:00:00'),
-            description: 'Sessão de agradecimento à equipe',
+            description: 'Team appreciation session',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-15T20:00:00'),
-            description: 'Jantar de confraternização',
+            description: 'Year-end dinner',
         },
     },
     // 2025-12-20
@@ -737,21 +737,21 @@ export const OCCURRENCES = [
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-20T19:00:00'),
-            description: 'Festa de confraternização da empresa',
+            description: 'Company year-end party',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-20T22:00:00'),
-            description: 'Encerramento da festa de confraternização',
+            description: 'End of year party closing',
         },
     },
     {
         userEmail: DEFAULT_USER_EMAIL,
         record: {
             datetime: new Date('2025-12-20T23:00:00'),
-            description: 'Entrega de brindes aos colaboradores',
+            description: 'Gift delivery to employees',
         },
     },
 ];
