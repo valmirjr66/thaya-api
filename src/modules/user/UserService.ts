@@ -21,7 +21,7 @@ export default class UserService extends BaseService {
         private readonly userModel: Model<User>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
-        public readonly blobStorageManager: BlobStorageManager,
+        private readonly blobStorageManager: BlobStorageManager,
     ) {
         super();
     }
