@@ -9,7 +9,7 @@ import UserService from '../user/UserService';
 export default class RoutinesService extends BaseService {
     private readonly logger: Logger = new Logger('RoutinesService');
     private readonly DAYS_TO_CHECK_AHEAD: number =
-        Number(process.env.DAYS_TO_CHECK_AHEAD) || 14;
+        Number(process.env.DAYS_TO_CHECK_AHEAD) || 7;
 
     constructor(
         private readonly telegramHandler: TelegramHandler,
