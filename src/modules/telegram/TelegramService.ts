@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
 import BaseService from 'src/BaseService';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
+import AssistantService from '../assistant/AssistantService';
 import UserService from '../user/UserService';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
@@ -11,6 +11,7 @@ export default class TelegramService extends BaseService {
 
     constructor(
         private readonly userService: UserService,
+        private readonly assistantService: AssistantService,
         private readonly telegramHandler: TelegramHandler,
     ) {
         super();
@@ -50,43 +51,25 @@ export default class TelegramService extends BaseService {
                 `Linked user found: ${linkedUser.email} (telegramUserId: ${linkedUser.telegramUserId})`,
             );
             try {
-                const { data, status } = await axios.post(
-                    `${process.env.ASSISTANT_MODULE_ADDRESS}/chat/message`,
-                    {
+                const assistantResponse =
+                    await this.assistantService.sendMessage({
                         content: model.text,
-                    },
-                    {
-                        headers: {
-                            'x-user-email': linkedUser.email,
-                            'x-user-chat-origin': 'telegram',
-                        },
-                    },
-                );
+                        userEmail: linkedUser.email,
+                        userChatOrigin: 'telegram',
+                    });
 
-                this.logger.log(`Assistant module response status: ${status}`);
                 this.logger.debug(
-                    `Assistant module response data: ${JSON.stringify(data)}`,
+                    `Assistant response: ${JSON.stringify(assistantResponse)}`,
                 );
 
-                if (status >= 200 && status < 300) {
-                    await this.telegramHandler.sendMessage(
-                        model.chatId,
-                        data.content,
-                    );
+                await this.telegramHandler.sendMessage(
+                    model.chatId,
+                    assistantResponse.content,
+                );
 
-                    this.logger.log(
-                        `Sent response to Telegram user: ${model.chatId}`,
-                    );
-                } else {
-                    this.logger.error(
-                        `Error from Assistant module: ${status} - ${JSON.stringify(data)}`,
-                    );
-
-                    await this.telegramHandler.sendMessage(
-                        model.chatId,
-                        'Oops! Something went wrong on my side. Please try again later.',
-                    );
-                }
+                this.logger.log(
+                    `Sent response to Telegram user: ${model.chatId}`,
+                );
             } catch (error) {
                 this.logger.error(
                     `Exception while communicating with Assistant module: ${error}`,
