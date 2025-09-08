@@ -1,3 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export default class GenericCollectionResponse<T> {
-    constructor(public items: T[]) {}
+    @ApiProperty()
+    public items: T[];
+
+    constructor(items: T[]) {
+        this.items = items;
+    }
 }

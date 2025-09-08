@@ -1,12 +1,47 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export default class GetUserInfoResponseDto {
+    @ApiProperty()
+    public fullname: string;
+
+    @ApiProperty()
+    public email: string;
+
+    @ApiProperty()
+    public phoneNumber: string;
+
+    @ApiProperty()
+    public birthdate: string;
+
+    @ApiProperty()
+    public profilePicFileName?: string;
+
+    @ApiProperty()
+    public nickname?: string;
+
+    @ApiProperty()
+    public telegramUserId?: number;
+
+    @ApiProperty()
+    public telegramChatId?: number;
+
     constructor(
-        public fullname: string,
-        public email: string,
-        public phoneNumber: string,
-        public birthdate: string,
-        public profilePicFileName?: string,
-        public nickname?: string,
-        public telegramUserId?: number,
-        public telegramChatId?: number,
-    ) {}
+        fullname: string,
+        email: string,
+        phoneNumber: string,
+        birthdate: string,
+        profilePicFileName?: string,
+        nickname?: string,
+        telegramUserId?: number,
+        telegramChatId?: number,
+    ) {
+        this.fullname = fullname;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.birthdate = birthdate;
+        this.profilePicFileName = profilePicFileName;
+        this.nickname = nickname;
+        this.telegramUserId = telegramUserId;
+        this.telegramChatId = telegramChatId;
+    }
 }
