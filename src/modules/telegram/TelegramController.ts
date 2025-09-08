@@ -22,8 +22,10 @@ export default class TelegramController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async incomingMessage(@Body() dto: IncomingMessageDto): Promise<void> {
-        await this.telegramService.handleMessage(
+    async handleIncomingMessage(
+        @Body() dto: IncomingMessageDto,
+    ): Promise<void> {
+        await this.telegramService.handleIncomingMessage(
             new IncomingMessageModel(
                 dto.update_id,
                 dto.message.message_id,

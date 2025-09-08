@@ -19,7 +19,7 @@ export default class TelegramService extends BaseService {
         super();
     }
 
-    async handleMessage(model: IncomingMessageModel): Promise<void> {
+    async handleIncomingMessage(model: IncomingMessageModel): Promise<void> {
         this.logger.log(`Incoming message details: ${JSON.stringify(model)}`);
 
         if (model.isBot) {
