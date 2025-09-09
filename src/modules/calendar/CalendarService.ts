@@ -58,7 +58,14 @@ export default class CalendarService extends BaseService {
                 CalendarUtils.mapMonthAbbreviationToNumber(month);
 
             const filteredRecords = userCalendar
-                .map((item) => item.record as Occurrence)
+                .map(
+                    (item) =>
+                        ({
+                            id: item.id,
+                            datetime: item.toObject().record.datetime,
+                            description: item.toObject().record.description,
+                        }) as Occurrence,
+                )
                 .filter((item) => {
                     const match =
                         item.datetime.getUTCFullYear() === year &&
