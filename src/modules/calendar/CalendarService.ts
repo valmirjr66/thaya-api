@@ -11,6 +11,7 @@ import CalendarUtils from 'src/utils/CalendarUtils';
 import BaseService from '../../BaseService';
 import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
 import InsertCalendarOccurenceRequestModel from './model/InsertCalendarOccurenceRequestModel';
+import UpdateCalendarOccurenceRequestModel from './model/UpdateCalendarOccurenceRequestModel';
 import { Calendar } from './schemas/CalendarSchema';
 
 @Injectable()
@@ -159,6 +160,64 @@ export default class CalendarService extends BaseService {
         } catch (error) {
             this.logger.error(
                 `[deleteCalendarOccurrence] Error deleting occurrence with id: ${id} for user: ${userEmail}: ${error.message}`,
+                error.stack,
+            );
+            throw error;
+        }
+    }
+
+    async updateCalendarOccurrence(
+        model: UpdateCalendarOccurenceRequestModel,
+    ): Promise<void> {
+        const { id, userEmail, datetime, description } = model;
+
+        this.logger.log(
+            `[updateCalendarOccurrence] Updating occurrence with id: ${id} for user: ${userEmail}`,
+        );
+
+        try {
+            const occurrence = await this.calendarModel
+                .findOne({
+                    _id: id,
+                })
+                .exec();
+
+            if (!occurrence) {
+                this.logger.warn(
+                    `[updateCalendarOccurrence] No occurrence found with id: ${id}`,
+                );
+                throw new NotFoundException();
+            }
+
+            if (occurrence.userEmail !== userEmail) {
+                this.logger.warn(
+                    `[updateCalendarOccurrence] Unauthorized update attempt for occurrence id: ${id} by user: ${userEmail}`,
+                );
+                throw new UnauthorizedException();
+            }
+
+            const updatedFields: Partial<Calendar> = {
+                updatedAt: new Date(),
+                record: { datetime, description },
+            };
+
+            this.logger.debug(
+                `[updateCalendarOccurrence] Updated fields: ${JSON.stringify(
+                    updatedFields,
+                )}`,
+            );
+
+            await this.calendarModel.updateOne(
+                { _id: id, userEmail },
+                { $set: { record: updatedFields, updatedAt: new Date() } },
+            );
+
+            this.logger.log(
+                `[updateCalendarOccurrence] Successfully updated occurrence with id: ${id} for user: ${userEmail}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `[updateCalendarOccurrence] Error updating occurrence with id: ${model.id} for user: ${model.userEmail}: ${error.message}`,
                 error.stack,
             );
             throw error;

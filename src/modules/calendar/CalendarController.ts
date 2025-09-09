@@ -8,6 +8,7 @@ import {
     HttpStatus,
     Param,
     Post,
+    Put,
     Query,
 } from '@nestjs/common';
 import {
@@ -25,6 +26,7 @@ import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
+import UpdateCalendarOccurenceRequestDto from './dto/UpdateCalendarOccurenceRequestDto';
 
 @ApiTags('Calendar')
 @Controller('calendar/occurrences')
@@ -92,5 +94,27 @@ export default class CalendarController extends BaseController {
         @Param('id') id: string,
     ): Promise<void> {
         await this.calendarService.deleteCalendarOccurrence(id, userEmail);
+    }
+
+    @Put(':id')
+    @ApiUnauthorizedResponse({
+        description: RESPONSE_DESCRIPTIONS.UNAUTHORIZED,
+    })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async updateCalendarOccurrence(
+        @Param('id') id: string,
+        @Headers('x-user-email') userEmail: string,
+        @Body() body: UpdateCalendarOccurenceRequestDto,
+    ): Promise<void> {
+        await this.calendarService.updateCalendarOccurrence({
+            ...body,
+            id,
+            userEmail,
+        });
     }
 }
