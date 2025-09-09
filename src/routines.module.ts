@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import BlobStorageManager from './handlers/cloud/BlobStorageManager';
 import TelegramHandler from './handlers/messaging/TelegramHandler';
-import RoutinesController from './modules/routines/RoutinesController';
-import RoutinesService from './modules/routines/RoutinesService';
-import CalendarService from './modules/user/CalendarService';
+import CalendarService from './modules/calendar/CalendarService';
 import {
     Calendar,
     CalendarSchema,
-} from './modules/user/schemas/CalendarSchema';
+} from './modules/calendar/schemas/CalendarSchema';
+import RoutinesController from './modules/routines/RoutinesController';
+import RoutinesService from './modules/routines/RoutinesService';
 import {
     Credential,
     CredentialSchema,

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import BaseService from 'src/BaseService';
 import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
-import CalendarService from '../user/CalendarService';
+import CalendarService from '../calendar/CalendarService';
 import UserService from '../user/UserService';
 
 @Injectable()

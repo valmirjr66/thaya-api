@@ -16,6 +16,11 @@ import {
     Message,
     MessageSchema,
 } from './modules/assistant/schemas/MessageSchema';
+import CalendarService from './modules/calendar/CalendarService';
+import {
+    Calendar,
+    CalendarSchema,
+} from './modules/calendar/schemas/CalendarSchema';
 import TelegramController from './modules/telegram/TelegramController';
 import TelegramService from './modules/telegram/TelegramService';
 import {
@@ -24,11 +29,6 @@ import {
 } from './modules/user/schemas/CredentialSchema';
 import { User, UserSchema } from './modules/user/schemas/UserSchema';
 import UserService from './modules/user/UserService';
-import CalendarService from './modules/user/CalendarService';
-import {
-    Calendar,
-    CalendarSchema,
-} from './modules/user/schemas/CalendarSchema';
 
 @Module({
     controllers: [TelegramController],

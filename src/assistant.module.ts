@@ -18,12 +18,12 @@ import {
     FileMetadata,
     FileMetadataSchema,
 } from './modules/assistant/schemas/FileMetadataSchema';
-import CalendarService from './modules/user/CalendarService';
-import UserService from './modules/user/UserService';
+import CalendarService from './modules/calendar/CalendarService';
 import {
     Calendar,
     CalendarSchema,
-} from './modules/user/schemas/CalendarSchema';
+} from './modules/calendar/schemas/CalendarSchema';
+import UserService from './modules/user/UserService';
 import {
     Credential,
     CredentialSchema,

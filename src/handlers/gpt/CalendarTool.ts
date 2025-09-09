@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MONTHS_ABBREVIATION } from 'src/constants';
-import CalendarService from 'src/modules/user/CalendarService';
-import GetUserCalendarResponseModel from 'src/modules/user/model/GetUserCalendarResponseModel';
+import CalendarService from 'src/modules/calendar/CalendarService';
+import GetUserCalendarResponseModel from 'src/modules/calendar/model/GetUserCalendarResponseModel';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
 import CalendarUtils from 'src/utils/CalendarUtils';
 
