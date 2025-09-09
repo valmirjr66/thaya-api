@@ -62,8 +62,8 @@ export default class CalendarService extends BaseService {
                     (item) =>
                         ({
                             id: item.id,
-                            datetime: item.toObject().record.datetime,
-                            description: item.toObject().record.description,
+                            datetime: item.toObject().datetime,
+                            description: item.toObject().description,
                         }) as Occurrence,
                 )
                 .filter((item) => {
@@ -100,10 +100,8 @@ export default class CalendarService extends BaseService {
 
             const newOccurrence = {
                 _id: new mongoose.Types.ObjectId(),
-                record: {
-                    datetime,
-                    description,
-                },
+                datetime,
+                description,
                 userEmail,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -137,9 +135,7 @@ export default class CalendarService extends BaseService {
 
         try {
             const occurrence = await this.calendarModel
-                .findOne({
-                    _id: id,
-                })
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec();
 
             if (!occurrence) {
@@ -157,8 +153,7 @@ export default class CalendarService extends BaseService {
             }
 
             await this.calendarModel.deleteOne({
-                _id: id,
-                userEmail,
+                _id: new mongoose.Types.ObjectId(id),
             });
 
             this.logger.log(
@@ -184,9 +179,7 @@ export default class CalendarService extends BaseService {
 
         try {
             const occurrence = await this.calendarModel
-                .findOne({
-                    _id: id,
-                })
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec();
 
             if (!occurrence) {
@@ -205,7 +198,8 @@ export default class CalendarService extends BaseService {
 
             const updatedFields: Partial<Calendar> = {
                 updatedAt: new Date(),
-                record: { datetime, description },
+                datetime,
+                description,
             };
 
             this.logger.debug(
@@ -215,8 +209,8 @@ export default class CalendarService extends BaseService {
             );
 
             await this.calendarModel.updateOne(
-                { _id: id, userEmail },
-                { $set: { record: updatedFields, updatedAt: new Date() } },
+                { _id: new mongoose.Types.ObjectId(id), userEmail },
+                { $set: { ...updatedFields } },
             );
 
             this.logger.log(
