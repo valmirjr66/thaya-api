@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+    Injectable,
+    Logger,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
@@ -108,6 +113,52 @@ export default class CalendarService extends BaseService {
         } catch (error) {
             this.logger.error(
                 `[insertCalendarOccurrence] Error inserting occurrence for ${model.userEmail}: ${error.message}`,
+                error.stack,
+            );
+            throw error;
+        }
+    }
+
+    async deleteCalendarOccurrence(
+        id: string,
+        userEmail: string,
+    ): Promise<void> {
+        this.logger.log(
+            `[deleteCalendarOccurrence] Deleting occurrence with id: ${id} for user: ${userEmail}`,
+        );
+
+        try {
+            const occurrence = await this.calendarModel
+                .findOne({
+                    _id: id,
+                })
+                .exec();
+
+            if (!occurrence) {
+                this.logger.warn(
+                    `[deleteCalendarOccurrence] No occurrence found with id: ${id}`,
+                );
+                throw new NotFoundException();
+            }
+
+            if (occurrence.userEmail !== userEmail) {
+                this.logger.warn(
+                    `[deleteCalendarOccurrence] Unauthorized delete attempt for occurrence id: ${id} by user: ${userEmail}`,
+                );
+                throw new UnauthorizedException();
+            }
+
+            await this.calendarModel.deleteOne({
+                _id: id,
+                userEmail,
+            });
+
+            this.logger.log(
+                `[deleteCalendarOccurrence] Successfully deleted occurrence with id: ${id} for user: ${userEmail}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `[deleteCalendarOccurrence] Error deleting occurrence with id: ${id} for user: ${userEmail}: ${error.message}`,
                 error.stack,
             );
             throw error;

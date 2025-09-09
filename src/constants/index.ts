@@ -25,6 +25,7 @@ export const RESPONSE_DESCRIPTIONS = {
     OK: 'Ok',
     INTERNAL_SERVER_ERROR: 'Internal server error',
     CONFLICT: 'Conflict',
+    UNAUTHORIZED: 'Unauthorized',
 };
 
 export const TELEGRAM_CHAT_TYPES = [

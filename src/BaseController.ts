@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import GenericCollectionResponse from './types/generic';
 
 export default class BaseController {
@@ -11,7 +11,7 @@ export default class BaseController {
         ) {
             throw new HttpException('No content', HttpStatus.NO_CONTENT);
         } else if (!response) {
-            throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+            throw new NotFoundException();
         }
     }
 }

@@ -1,10 +1,12 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Headers,
     HttpException,
     HttpStatus,
+    Param,
     Post,
     Query,
 } from '@nestjs/common';
@@ -12,8 +14,10 @@ import {
     ApiBadRequestResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { MONTHS_ABBREVIATION, RESPONSE_DESCRIPTIONS } from 'src/constants';
 import { AbbreviatedMonth } from 'src/types/calendar';
@@ -23,13 +27,13 @@ import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
 
 @ApiTags('Calendar')
-@Controller('calendar')
+@Controller('calendar/occurrences')
 export default class CalendarController extends BaseController {
     constructor(private readonly calendarService: CalendarService) {
         super();
     }
 
-    @Get('/calendar')
+    @Get()
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
@@ -58,7 +62,7 @@ export default class CalendarController extends BaseController {
         return response;
     }
 
-    @Post('/calendar')
+    @Post()
     @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
@@ -72,5 +76,21 @@ export default class CalendarController extends BaseController {
             ...body,
             userEmail,
         });
+    }
+
+    @Delete(':id')
+    @ApiUnauthorizedResponse({
+        description: RESPONSE_DESCRIPTIONS.UNAUTHORIZED,
+    })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async deleteCalendarOccurrence(
+        @Headers('x-user-email') userEmail: string,
+        @Param('id') id: string,
+    ): Promise<void> {
+        await this.calendarService.deleteCalendarOccurrence(id, userEmail);
     }
 }
