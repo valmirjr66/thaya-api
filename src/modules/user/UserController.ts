@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Headers,
     HttpException,
@@ -121,7 +122,7 @@ export default class UserController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async processArtifact(
+    async changeProfilePicture(
         @Headers('x-user-email') userEmail: string,
         @UploadedFiles()
         files: {
@@ -134,6 +135,17 @@ export default class UserController extends BaseController {
             userEmail,
             profilePicture[0],
         );
+    }
+
+    @Delete('/profile-picture')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async removeProfilePicture(
+        @Headers('x-user-email') userEmail: string,
+    ): Promise<void> {
+        await this.userService.removeProfilePicture(userEmail);
     }
 
     @Post()

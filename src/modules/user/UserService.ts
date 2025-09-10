@@ -329,6 +329,51 @@ export default class UserService extends BaseService {
         }
     }
 
+    async removeProfilePicture(userEmail: string): Promise<void> {
+        this.logger.log(
+            `Removing profile picture for user with email: ${userEmail}`,
+        );
+
+        try {
+            const user = await this.userModel
+                .findOne({ email: userEmail })
+                .exec();
+
+            if (!user) {
+                this.logger.error(`User with email ${userEmail} not found`);
+                return;
+            }
+
+            if (user.profilePicFileName) {
+                this.logger.log(
+                    `Deleting profile picture for user ${userEmail}: ${user.profilePicFileName}`,
+                );
+
+                await this.userModel.updateOne(
+                    { _id: user._id },
+                    {
+                        $set: {
+                            profilePicFileName: null,
+                        },
+                    },
+                );
+
+                this.logger.log(
+                    `Profile picture removed for user ${userEmail}`,
+                );
+            } else {
+                this.logger.log(
+                    `No profile picture to remove for user ${userEmail}`,
+                );
+            }
+        } catch (error) {
+            this.logger.error(
+                `Error removing profile picture for user ${userEmail}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
     async getUserByTelegramUserId(
         telegramUserId: number,
     ): Promise<User | null> {
