@@ -385,6 +385,55 @@ export default class ChatAssistant {
                 tool_call_id: toolCall.id,
                 output: JSON.stringify({ success: true }),
             });
+        } else if (toolCall.function.name === 'delete_calendar_occurrence') {
+            this.logger.log(
+                `delete_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                    args,
+                )}`,
+            );
+
+            await this.calendarTool.deleteUserCalendarOccurrence(
+                userEmail,
+                args.occurrenceId,
+            );
+
+            this.logger.log(`delete_calendar_occurrence completed`);
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify({ success: true }),
+            });
+        } else if (toolCall.function.name === 'update_calendar_occurrence') {
+            this.logger.log(
+                `update_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                    args,
+                )}`,
+            );
+
+            const newDatetime = new Date(args.newDatetime);
+
+            if (isNaN(newDatetime.getTime())) {
+                this.logger.error(
+                    `Invalid newDatetime format: ${args.newDatetime}`,
+                );
+                throw new Error(
+                    `Invalid newDatetime format: ${args.newDatetime}. Please provide a valid ISO 8601 date string.`,
+                );
+            }
+
+            await this.calendarTool.updateUserCalendarOccurrence(
+                userEmail,
+                args.occurrenceId,
+                newDatetime,
+                args.newDescription,
+            );
+
+            this.logger.log(`update_calendar_occurrence completed`);
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify({ success: true }),
+            });
         } else {
             this.logger.error(`Unknown function: ${toolCall.function.name}`);
             throw new Error(`Unknown function: ${toolCall.function.name}`);

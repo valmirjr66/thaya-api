@@ -133,6 +133,58 @@ const ASSISTANT_TOOLS: AssistantTool[] = [
                             'Date and time of the occurrence in ISO 8601 format (e.g., 2023-10-05T14:30:00Z)',
                     },
                 },
+                additionalProperties: false,
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'delete_calendar_occurrence',
+            description: 'Deletes a calendar event or reminder with a given id',
+            strict: true,
+            parameters: {
+                type: 'object',
+                required: ['occurrenceId'],
+                properties: {
+                    occurrenceId: {
+                        type: 'string',
+                        description:
+                            'The id of the event or reminder to be deleted',
+                    },
+                },
+                additionalProperties: false,
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'update_calendar_occurrence',
+            description:
+                'Updates a calendar event or reminder with the provided details and a given id',
+            strict: true,
+            parameters: {
+                type: 'object',
+                required: ['occurrenceId', 'newDescription', 'newDatetime'],
+                properties: {
+                    occurrenceId: {
+                        type: 'string',
+                        description:
+                            'The id of the event or reminder to be updated',
+                    },
+                    newDescription: {
+                        type: 'string',
+                        description:
+                            'The new title or description of the event or reminder',
+                    },
+                    newDatetime: {
+                        type: 'string',
+                        description:
+                            'The new date and time of the occurrence in ISO 8601 format (e.g., 2023-10-05T14:30:00Z)',
+                    },
+                },
+                additionalProperties: false,
             },
         },
     },

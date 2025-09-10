@@ -162,4 +162,40 @@ export default class CalendarTool {
 
         this.logger.log('Calendar occurrence inserted successfully');
     }
+
+    async deleteUserCalendarOccurrence(
+        userEmail: string,
+        occurrenceId: string,
+    ) {
+        this.logger.log(
+            `Deleting calendar occurrence with ID: ${occurrenceId}`,
+        );
+
+        await this.calendarService.deleteCalendarOccurrence(
+            occurrenceId,
+            userEmail,
+        );
+
+        this.logger.log('Calendar occurrence deleted successfully');
+    }
+
+    async updateUserCalendarOccurrence(
+        userEmail: string,
+        occurrenceId: string,
+        newDatetime: Date,
+        newDescription: string,
+    ) {
+        this.logger.log(
+            `Updating calendar occurrence with ID: ${occurrenceId}, new datetime: ${newDatetime.toISOString()}, new description: ${newDescription}`,
+        );
+
+        await this.calendarService.updateCalendarOccurrence({
+            datetime: newDatetime,
+            description: newDescription,
+            id: occurrenceId,
+            userEmail,
+        });
+
+        this.logger.log('Calendar occurrence updated successfully');
+    }
 }
