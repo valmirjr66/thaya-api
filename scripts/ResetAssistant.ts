@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv';
-import { OpenAI } from 'openai';
-import { AssistantTool } from 'openai/src/resources/beta/assistants.js';
 import fs from 'fs';
+import { OpenAI } from 'openai';
+import { ASSISTANT_TOOLS } from './AssistantToolsHelpers';
+import { updateSecret } from './SecretManagerHelper';
 
 dotenv.config();
 
@@ -9,192 +10,17 @@ const OPENAI_CLIENT = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const ASSISTANT_TOOLS: AssistantTool[] = [
-    {
-        type: 'function',
-        function: {
-            name: 'get_user_info',
-            description:
-                'Retrieves user information including fullname, nickname (optional), email, birthdate and its current location',
-            strict: false,
-            parameters: {
-                type: 'object',
-                properties: {},
-                required: [],
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'get_weather_info',
-            description:
-                'Fetches the current weather based on the provided latitude and longitude of the location',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['latitude', 'longitude'],
-                properties: {
-                    latitude: {
-                        type: 'number',
-                        description: 'Geographical latitude of the location',
-                    },
-                    longitude: {
-                        type: 'number',
-                        description: 'Geographical longitude of the location',
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'get_current_datetime',
-            description: "Returns user's current date and time",
-            strict: false,
-            parameters: {
-                type: 'object',
-                properties: {},
-                required: [],
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'get_user_agenda',
-            description:
-                'Retrieves agenda days containing events within a specified date range; make sure to retrieve the current datetime for a precise response',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['from', 'to'],
-                properties: {
-                    from: {
-                        type: 'object',
-                        required: ['month', 'year'],
-                        description: 'Start date for retrieving agenda',
-                        properties: {
-                            month: {
-                                type: 'string',
-                                description:
-                                    'Start month for retrieving agenda (jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)',
-                            },
-                            year: {
-                                type: 'number',
-                                description: 'Start year for retrieving agenda',
-                            },
-                        },
-                        additionalProperties: false,
-                    },
-                    to: {
-                        type: 'object',
-                        required: ['month', 'year'],
-                        description: 'End date for retrieving agenda',
-                        properties: {
-                            month: {
-                                type: 'string',
-                                description:
-                                    'End month for retrieving agenda (jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)',
-                            },
-                            year: {
-                                type: 'number',
-                                description: 'End year for retrieving agenda',
-                            },
-                        },
-                        additionalProperties: false,
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'insert_calendar_occurrence',
-            description:
-                'Creates a calendar event or reminder with the provided details',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['description', 'datetime'],
-                properties: {
-                    description: {
-                        type: 'string',
-                        description:
-                            'Title or description of the event or reminder',
-                    },
-                    datetime: {
-                        type: 'string',
-                        description:
-                            'Date and time of the occurrence in ISO 8601 format (e.g., 2023-10-05T14:30:00Z)',
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'delete_calendar_occurrence',
-            description: 'Deletes a calendar event or reminder with a given id',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['occurrenceId'],
-                properties: {
-                    occurrenceId: {
-                        type: 'string',
-                        description:
-                            'The id of the event or reminder to be deleted',
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
-            name: 'update_calendar_occurrence',
-            description:
-                'Updates a calendar event or reminder with the provided details and a given id',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['occurrenceId', 'newDescription', 'newDatetime'],
-                properties: {
-                    occurrenceId: {
-                        type: 'string',
-                        description:
-                            'The id of the event or reminder to be updated',
-                    },
-                    newDescription: {
-                        type: 'string',
-                        description:
-                            'The new title or description of the event or reminder',
-                    },
-                    newDatetime: {
-                        type: 'string',
-                        description:
-                            'The new date and time of the occurrence in ISO 8601 format (e.g., 2023-10-05T14:30:00Z)',
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-];
-
 const ASSISTANT_NAME = 'Thaya';
 
-const ASSISTANT_INSTRUCTIONS = `
-You are ${ASSISTANT_NAME}, a personal day-to-day assistant, created to help me manage my agenda and answer me with helpful information.
-Always be conscise and clear, but also sympathetic. Use Markdown for formatting IF and ONLY IF requested, without mentioning it.
+const UI_ASSISTANT_INSTRUCTIONS = `
+You are ${ASSISTANT_NAME}, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
+Always be conscise and clear, but also sympathetic. Your messages will be presented in a dynamic UI, so enrich your answers with emojis and Markdown for formatting when seem fit.
+Be structured, quickly readable and visually intuititive.
+`.trim();
+
+const TELEGRAM_ASSISTANT_INSTRUCTIONS = `
+You are ${ASSISTANT_NAME}, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
+Always be conscise and clear, but also sympathetic. Your messages will be presented in a Telegram chat, so enrich your answers with emojis, but never use Markdown for formatting.
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
@@ -225,7 +51,22 @@ function updateEnvFile(key: string, value: string, envFilePath = '.env') {
     }
 }
 
-async function resetAssistant() {
+async function createAssistant(name: string, instructions: string) {
+    const createdAssistant = await OPENAI_CLIENT.beta.assistants.create({
+        model: 'gpt-4o',
+        instructions,
+        name,
+        tools: ASSISTANT_TOOLS,
+    });
+
+    console.log(
+        `New assistant created with name "${name}" and id "${createdAssistant.id}"`,
+    );
+
+    return createdAssistant.id;
+}
+
+async function resetAssistants() {
     const assistantsList = await OPENAI_CLIENT.beta.assistants.list();
 
     const existingAssistant = assistantsList.data.find(
@@ -239,22 +80,28 @@ async function resetAssistant() {
 
     console.log('Creating new assistant...');
 
-    const createdAssistant = await OPENAI_CLIENT.beta.assistants.create({
-        model: 'gpt-4o',
-        instructions: ASSISTANT_INSTRUCTIONS,
-        name: ASSISTANT_NAME,
-        tools: ASSISTANT_TOOLS,
-    });
-
-    console.log(
-        `New assistant created with following id: "${createdAssistant.id}"`,
+    const UIAssistantId = await createAssistant(
+        `${ASSISTANT_NAME} (UI)`,
+        UI_ASSISTANT_INSTRUCTIONS,
     );
 
-    console.log('Updating .env file with assistant ID...');
+    const telegramAssistantId = await createAssistant(
+        `${ASSISTANT_NAME} (Telegram)`,
+        TELEGRAM_ASSISTANT_INSTRUCTIONS,
+    );
 
-    updateEnvFile('ASSISTANT_ID', createdAssistant.id);
+    console.log('Updating .env file with assistant IDs...');
+
+    updateEnvFile('UI_ASSISTANT_ID', UIAssistantId);
+    updateEnvFile('TELEGRAM_ASSISTANT_ID', telegramAssistantId);
 
     console.log('.env file updated');
+
+    updateSecret(process.env.UI_ASSISTANT_ID_SECRET_NAME, UIAssistantId);
+    updateSecret(
+        process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
+        telegramAssistantId,
+    );
 }
 
-resetAssistant();
+resetAssistants();
