@@ -21,7 +21,7 @@ export class TextResponse {
 @Injectable()
 export default class ChatAssistant {
     private readonly logger: Logger = new Logger('ChatAssistant');
-    private readonly assistantId: string = process.env.ASSISTANT_ID;
+    private readonly assistantId: string = process.env.UI_ASSISTANT_ID;
     private readonly openaiClient: OpenAI = new OpenAI();
 
     constructor(
@@ -41,14 +41,11 @@ export default class ChatAssistant {
         threadId: string,
         message: string,
         userEmail: string,
-        enrichWithMarkdown: boolean,
     ): Promise<TextResponse> {
-        this.logger.log(
-            `Adding message to thread ${threadId}: "${message}" (markdown: ${enrichWithMarkdown})`,
-        );
+        this.logger.log(`Adding message to thread ${threadId}: "${message}"`);
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
-            content: this.composeMessage(message, enrichWithMarkdown),
+            content: message,
         });
 
         let run = await this.openaiClient.beta.threads.runs.createAndPoll(
@@ -135,7 +132,6 @@ export default class ChatAssistant {
         threadId: string,
         message: string,
         userEmail: string,
-        enrichWithMarkdown: boolean,
         streamingCallback: (
             textSnapshot: string,
             annotationsSnapshot: Annotation[],
@@ -143,11 +139,11 @@ export default class ChatAssistant {
         ) => void,
     ): Promise<TextResponse> {
         this.logger.log(
-            `Adding message to thread ${threadId} (stream): "${message}" (markdown: ${enrichWithMarkdown})`,
+            `Adding message to thread ${threadId} (stream): "${message}"`,
         );
         await this.openaiClient.beta.threads.messages.create(threadId, {
             role: 'user',
-            content: this.composeMessage(message, enrichWithMarkdown),
+            content: message,
         });
 
         let response: TextResponse | undefined;
@@ -158,7 +154,7 @@ export default class ChatAssistant {
             })
             .on('textCreated', () =>
                 this.logger.log(
-                    `TextCreated for thread '${threadId}' with incoming message '${message}' (markdown enriched: ${enrichWithMarkdown})`,
+                    `TextCreated for thread '${threadId}' with incoming message '${message}'`,
                 ),
             )
             .on('textDelta', (_textDelta, snapshot) => {
@@ -265,21 +261,6 @@ export default class ChatAssistant {
         }
 
         return response;
-    }
-
-    private composeMessage(
-        message: string,
-        enrichWithMarkdown: boolean,
-    ): string {
-        let composedMessage = message;
-
-        if (enrichWithMarkdown) {
-            composedMessage += '\n\n--------------------------\n\n';
-            composedMessage +=
-                '<<<Your answer must be rich in markdown format. Make sure to use headings, subheadings and bullet points when suitable.>>>';
-        }
-
-        return composedMessage;
     }
 
     private async executeToolCall(

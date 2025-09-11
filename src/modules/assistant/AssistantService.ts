@@ -99,6 +99,10 @@ export default class AssistantService extends BaseService {
             finished?: boolean,
         ) => void,
     ): Promise<HandleIncomingMessageResponseModel> {
+        this.logger.log(
+            `CHAT ORIGIN IS NOT CURRENTLY BEING USED, MUST IMPLEMENT, VALUE IS: ${model.userChatOrigin}`,
+        );
+
         this.logger.debug(
             `handleIncomingMessage called for userEmail: ${model.userEmail} with content: ${model.content}`,
         );
@@ -129,7 +133,6 @@ export default class AssistantService extends BaseService {
                     threadId,
                     model.content,
                     model.userEmail,
-                    model.userChatOrigin === 'ui',
                     (
                         textSnapshot: string,
                         annotationsSnapshot: Annotation[],
@@ -155,7 +158,6 @@ export default class AssistantService extends BaseService {
                 threadId,
                 model.content,
                 model.userEmail,
-                model.userChatOrigin === 'ui',
             );
         }
 
