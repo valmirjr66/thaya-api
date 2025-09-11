@@ -69,13 +69,20 @@ async function createAssistant(name: string, instructions: string) {
 async function resetAssistants() {
     const assistantsList = await OPENAI_CLIENT.beta.assistants.list();
 
-    const existingAssistant = assistantsList.data.find(
-        (assistant) => assistant.name === ASSISTANT_NAME,
+    const existingAssistant = assistantsList.data.filter(
+        (assistant) =>
+            assistant.name === `${ASSISTANT_NAME} (UI)` ||
+            assistant.name === `${ASSISTANT_NAME} (Telegram)`,
     );
 
-    if (existingAssistant) {
-        console.log('Assistant already exists. Deleting it...');
-        await OPENAI_CLIENT.beta.assistants.del(existingAssistant.id);
+    if (existingAssistant.length) {
+        console.log(
+            'Assistant(s) with same name already exists, deleting it...',
+        );
+        existingAssistant.forEach(
+            async (existingAssistant) =>
+                await OPENAI_CLIENT.beta.assistants.del(existingAssistant.id),
+        );
     }
 
     console.log('Creating new assistant...');
