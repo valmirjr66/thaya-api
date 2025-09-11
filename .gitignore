@@ -15,5 +15,5 @@ yarn-error.*
 **/coverage
 
 # GCP files
-credentials.json
+gcp-credentials.json
 token.json
