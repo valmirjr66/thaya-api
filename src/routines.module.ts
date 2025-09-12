@@ -1,7 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import BlobStorageManager from './handlers/cloud/BlobStorageManager';
+import CalendarTool from './handlers/gpt/CalendarTool';
+import ChatAssistant from './handlers/gpt/ChatAssistant';
+import UserInfoTool from './handlers/gpt/UserInfoTool';
+import WeatherTool from './handlers/gpt/WeatherTool';
 import TelegramHandler from './handlers/messaging/TelegramHandler';
+import AssistantService from './modules/assistant/AssistantService';
+import { Chat, ChatSchema } from './modules/assistant/schemas/ChatSchema';
+import {
+    FileMetadata,
+    FileMetadataSchema,
+} from './modules/assistant/schemas/FileMetadataSchema';
+import {
+    Message,
+    MessageSchema,
+} from './modules/assistant/schemas/MessageSchema';
 import CalendarService from './modules/calendar/CalendarService';
 import {
     Calendar,
@@ -22,8 +36,13 @@ import UserService from './modules/user/UserService';
         RoutinesService,
         UserService,
         CalendarService,
+        AssistantService,
+        ChatAssistant,
         TelegramHandler,
         BlobStorageManager,
+        WeatherTool,
+        CalendarTool,
+        UserInfoTool,
     ],
     imports: [
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -32,6 +51,13 @@ import UserService from './modules/user/UserService';
         ]),
         MongooseModule.forFeature([
             { name: Calendar.name, schema: CalendarSchema },
+        ]),
+        MongooseModule.forFeature([
+            { name: Message.name, schema: MessageSchema },
+        ]),
+        MongooseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]),
+        MongooseModule.forFeature([
+            { name: FileMetadata.name, schema: FileMetadataSchema },
         ]),
     ],
 })
