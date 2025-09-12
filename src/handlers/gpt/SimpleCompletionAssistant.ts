@@ -2,8 +2,8 @@ import { Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/src/resources/index.js';
 
-export default class SimpleCompletion {
-    private readonly logger: Logger = new Logger('SimpleCompletion');
+export default class SimpleCompletionAssistant {
+    private readonly logger: Logger = new Logger('SimpleCompletionAssistant');
     private readonly setupMessage: string;
     private readonly model: string;
 
