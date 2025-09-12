@@ -2,19 +2,39 @@ import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
 const client = new SecretManagerServiceClient();
 
-export async function updateSecret(name: string, value: string) {
-    console.log(
-        `THIS IS NOT UPDATING THE SECRET ${name} with value ${value} because the code is commented out`,
-    );
-    console.log('Please make sure to update it manually if needed.');
-    console.log(`Updating secret ${name}...`);
+export async function createOrUpdateSecret(name: string, value: string) {
+    console.log(`Updating secret ${name} with value ${value}`);
 
-    const [secret] = await client.addSecretVersion({
+    // Check if secret exists
+    try {
+        await client.getSecret({ name });
+    } catch (err: any) {
+        if (err.code === 5) {
+            // Not found
+            // Extract project and secretId from name
+            const match = name.match(/projects\/([^/]+)\/secrets\/([^/]+)/);
+            if (!match) throw new Error('Invalid secret name format');
+            const [, projectId, secretId] = match;
+
+            await client.createSecret({
+                parent: `projects/${projectId}`,
+                secretId,
+                secret: {
+                    replication: { automatic: {} },
+                },
+            });
+            console.info(`Created secret ${name}`);
+        } else {
+            throw err;
+        }
+    }
+
+    const [secretVersion] = await client.addSecretVersion({
         parent: name,
         payload: {
             data: Buffer.from(value, 'utf8'),
         },
     });
 
-    console.info(`Updated secret ${secret.name}`);
+    console.info(`Updated secret ${secretVersion.name}`);
 }
