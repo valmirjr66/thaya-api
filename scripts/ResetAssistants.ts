@@ -26,6 +26,12 @@ Always be conscise and clear, but also sympathetic. Your messages will be presen
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
+const ROUTINE_ASSISTANT_INSTRUCTIONS = `
+You are ${ASSISTANT_NAME}, an assistant created to compose messages containing the items in the user's agenda for the given days, thus helping the user to remember their commitments.
+Always be concise and clear, but also sympathetic. Your messages will be sent via Telegram, so enrich your answers with emojis, but never use Markdown for formatting.
+Be structured, quickly readable and visually intuititive.
+`.trim();
+
 function logStep(message: string) {
     console.log(`[${new Date().toISOString()}] ${message}`);
 }
@@ -107,17 +113,26 @@ async function createOrUpdateAssistant(
 
 async function resetAssistants() {
     logStep('Starting assistant reset process...');
+
     await createOrUpdateAssistant(
         `${ASSISTANT_NAME} (UI)`,
         UI_ASSISTANT_INSTRUCTIONS,
         'UI_ASSISTANT_ID',
         process.env.UI_ASSISTANT_ID_SECRET_NAME,
     );
+
     await createOrUpdateAssistant(
         `${ASSISTANT_NAME} (Telegram)`,
         TELEGRAM_ASSISTANT_INSTRUCTIONS,
         'TELEGRAM_ASSISTANT_ID',
         process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
+    );
+
+    await createOrUpdateAssistant(
+        `${ASSISTANT_NAME} (Reminder)`,
+        ROUTINE_ASSISTANT_INSTRUCTIONS,
+        'ROUTINE_ASSISTANT_ID',
+        process.env.ROUTINE_ASSISTANT_ID_SECRET_NAME,
     );
 
     logStep('Assistants updated and secrets set.');
