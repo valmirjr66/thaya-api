@@ -19,6 +19,7 @@ export default class TelegramHandler {
                     {
                         chat_id: chatId,
                         text: content,
+                        parse_mode: 'HTML',
                     },
                 );
                 this.logger.log(
