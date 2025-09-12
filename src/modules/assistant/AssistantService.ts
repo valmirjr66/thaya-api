@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
+import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
 import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserEmailResponseModel';
 import { Annotation } from 'src/types/gpt';
 import BaseService from '../../BaseService';
@@ -25,39 +26,6 @@ export default class AssistantService extends BaseService {
         private readonly fileMetadataModel: Model<FileMetadata>,
     ) {
         super();
-    }
-
-    private async findUserChatAndCreateIfNotExists(
-        userEmail: string,
-    ): Promise<Chat> {
-        let chat = (
-            await this.chatModel.findOne({ userEmail }).exec()
-        )?.toObject();
-
-        if (!chat) {
-            this.logger.log(
-                `No chat found for userEmail: ${userEmail}. Creating new chat.`,
-            );
-            const threadId = await this.chatAssistant.startThread();
-            this.logger.debug(`Started new thread with threadId: ${threadId}`);
-
-            chat = await this.chatModel.create({
-                _id: new mongoose.Types.ObjectId(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                userEmail,
-                threadId,
-            });
-            this.logger.log(
-                `Created new chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
-            );
-        } else {
-            this.logger.log(
-                `Found existing chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
-            );
-        }
-
-        return chat;
     }
 
     async getChatByUserEmail(
@@ -216,6 +184,75 @@ export default class AssistantService extends BaseService {
             response.role,
             decoratedAnnotations,
         );
+    }
+
+    async composeRoutineMessage(
+        userName: string,
+        evaluatedPeriod: string,
+        agendaItems: { datetime: string; description: string }[],
+    ): Promise<string> {
+        this.logger.debug(
+            `Composing routine message for userName: ${userName} for period: ${evaluatedPeriod} with ${agendaItems.length} agenda items`,
+        );
+
+        if (agendaItems.length === 0) {
+            this.logger.warn(
+                `No agenda items provided for userName: ${userName}. Returning empty message.`,
+            );
+            return `Hello ${userName}, you have no agenda items for the period of ${evaluatedPeriod}. Enjoy your day! 🎉`;
+        }
+
+        this.logger.debug(
+            `Agenda items: ${JSON.stringify(agendaItems, null, 2)}`,
+        );
+
+        const setupMessage =
+            "You are Thaya, an assistant created to compose messages containing the items in the user's agenda for the given days, thus helping the user to remember their commitments. Always be concise and clear, but also sympathetic. Your messages will be sent via Telegram, so enrich your answers with emojis, but never use Markdown for formatting. Be structured, quickly readable and visually intuititive.";
+
+        const assistant = new SimpleCompletionAssistant(setupMessage);
+
+        const formattedAgendaItems = agendaItems
+            .map((item) => `- ${item.datetime} | ${item.description}`)
+            .join('\n');
+
+        const completion = await assistant.createCompletion(
+            `User ${userName} has the following events/reminder for the evaluated period of ${evaluatedPeriod}:\n${formattedAgendaItems}\n\nMake sure to compose a friendly message that will be sent.`,
+        );
+
+        return completion;
+    }
+
+    private async findUserChatAndCreateIfNotExists(
+        userEmail: string,
+    ): Promise<Chat> {
+        let chat = (
+            await this.chatModel.findOne({ userEmail }).exec()
+        )?.toObject();
+
+        if (!chat) {
+            this.logger.log(
+                `No chat found for userEmail: ${userEmail}. Creating new chat.`,
+            );
+            const threadId = await this.chatAssistant.startThread();
+            this.logger.debug(`Started new thread with threadId: ${threadId}`);
+
+            chat = await this.chatModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                userEmail,
+                threadId,
+            });
+            this.logger.log(
+                `Created new chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
+            );
+        } else {
+            this.logger.log(
+                `Found existing chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
+            );
+        }
+
+        return chat;
     }
 
     private prettifyText(

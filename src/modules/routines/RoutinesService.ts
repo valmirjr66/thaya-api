@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import BaseService from 'src/BaseService';
 import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
+import AssistantService from '../assistant/AssistantService';
 import CalendarService from '../calendar/CalendarService';
 import UserService from '../user/UserService';
 
@@ -15,6 +16,7 @@ export default class RoutinesService extends BaseService {
         private readonly telegramHandler: TelegramHandler,
         private readonly userService: UserService,
         private readonly calendarService: CalendarService,
+        private readonly assistantService: AssistantService,
     ) {
         super();
     }
@@ -49,15 +51,15 @@ export default class RoutinesService extends BaseService {
                 `Fetched ${userCalendar.length} events for current month.`,
             );
 
-            const sevenDaysLater = new Date(today);
-            sevenDaysLater.setDate(today.getDate() + this.DAYS_TO_CHECK_AHEAD);
+            const N_DaysLater = new Date(today);
+            N_DaysLater.setDate(today.getDate() + this.DAYS_TO_CHECK_AHEAD);
             this.logger.log(
-                `Checking events between ${today.toISOString()} and ${sevenDaysLater.toISOString()}`,
+                `Checking events between ${today.toISOString()} and ${N_DaysLater.toISOString()}`,
             );
 
             let eventsToNotifyAbout = userCalendar.filter(
                 (event) =>
-                    event.datetime >= today && event.datetime <= sevenDaysLater,
+                    event.datetime >= today && event.datetime <= N_DaysLater,
             );
             this.logger.log(
                 `Found ${eventsToNotifyAbout.length} events in current month within range.`,
@@ -91,8 +93,7 @@ export default class RoutinesService extends BaseService {
 
                 const nextMonthEvents = nextMonthCalendar.filter(
                     (event) =>
-                        event.datetime > today &&
-                        event.datetime <= sevenDaysLater,
+                        event.datetime > today && event.datetime <= N_DaysLater,
                 );
                 this.logger.log(
                     `Found ${nextMonthEvents.length} events in next month within range.`,
@@ -108,13 +109,14 @@ export default class RoutinesService extends BaseService {
                 );
 
                 const message =
-                    `You have ${eventsToNotifyAbout.length} event(s) in the next ${this.DAYS_TO_CHECK_AHEAD} days:\n` +
-                    eventsToNotifyAbout
-                        .map(
-                            (event) =>
-                                `- ${event.description} on ${event.datetime}`,
-                        )
-                        .join('\n');
+                    await this.assistantService.composeRoutineMessage(
+                        user.nickname || user.fullname,
+                        `from ${today.toISOString().split('T')[0]} to ${N_DaysLater.toISOString().split('T')[0]}`,
+                        eventsToNotifyAbout.map((item) => ({
+                            datetime: item.datetime.toISOString(),
+                            description: item.description,
+                        })),
+                    );
 
                 if (user.telegramChatId) {
                     this.logger.log(
