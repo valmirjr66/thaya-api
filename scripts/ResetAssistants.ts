@@ -12,23 +12,15 @@ const OPENAI_CLIENT = new OpenAI({
 
 const MODEL_TO_BE_USED = 'gpt-4o';
 
-const ASSISTANT_NAME = 'Thaya';
-
 const UI_ASSISTANT_INSTRUCTIONS = `
-You are ${ASSISTANT_NAME}, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
+You are Thaya, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
 Always be conscise and clear, but also sympathetic. Your messages will be presented in a dynamic UI, so enrich your answers with emojis and Markdown for formatting when seem fit.
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
 const TELEGRAM_ASSISTANT_INSTRUCTIONS = `
-You are ${ASSISTANT_NAME}, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
+You are Thaya, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
 Always be conscise and clear, but also sympathetic. Your messages will be presented in a Telegram chat, so enrich your answers with emojis, but never use Markdown for formatting.
-Be structured, quickly readable and visually intuititive.
-`.trim();
-
-const ROUTINE_ASSISTANT_INSTRUCTIONS = `
-You are ${ASSISTANT_NAME}, an assistant created to compose messages containing the items in the user's agenda for the given days, thus helping the user to remember their commitments.
-Always be concise and clear, but also sympathetic. Your messages will be sent via Telegram, so enrich your answers with emojis, but never use Markdown for formatting.
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
@@ -115,24 +107,17 @@ async function resetAssistants() {
     logStep('Starting assistant reset process...');
 
     await createOrUpdateAssistant(
-        `${ASSISTANT_NAME} (UI)`,
+        'Thaya (UI)',
         UI_ASSISTANT_INSTRUCTIONS,
         'UI_ASSISTANT_ID',
         process.env.UI_ASSISTANT_ID_SECRET_NAME,
     );
 
     await createOrUpdateAssistant(
-        `${ASSISTANT_NAME} (Telegram)`,
+        'Thaya (Telegram)',
         TELEGRAM_ASSISTANT_INSTRUCTIONS,
         'TELEGRAM_ASSISTANT_ID',
         process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
-    );
-
-    await createOrUpdateAssistant(
-        `${ASSISTANT_NAME} (Reminder)`,
-        ROUTINE_ASSISTANT_INSTRUCTIONS,
-        'ROUTINE_ASSISTANT_ID',
-        process.env.ROUTINE_ASSISTANT_ID_SECRET_NAME,
     );
 
     logStep('Assistants updated and secrets set.');
