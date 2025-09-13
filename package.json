@@ -14,9 +14,12 @@
     "prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
-    "reset:assistants": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
-    "reset:db": "npx tsx scripts/ResetDB.ts",
-    "reset:all": "npm run reset:db && npm run reset:assistants"
+    "redeploy:assistants": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
+    "redeploy:db": "npx tsx scripts/ResetDB.ts",
+    "redeploy:all": "npm run redeploy:db && npm run redeploy:assistants",
+    "redeploy:prod:assistants": "ENVIRONMENT=prod GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
+    "redeploy:prod:db": "ENVIRONMENT=prod npx tsx scripts/ResetDB.ts",
+    "redeploy:prod:all": "ENVIRONMENT=prod npm run redeploy:db && npm run redeploy:assistants"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

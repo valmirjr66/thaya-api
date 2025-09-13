@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import fs from 'fs';
 import { OpenAI } from 'openai';
+import askForConfirmation from './AskForConfirmation';
 import { ASSISTANT_TOOLS } from './AssistantToolsHelpers';
 import { createOrUpdateSecret } from './SecretManagerHelper';
 
@@ -79,9 +80,13 @@ function updateEnvFile(key: string, value: string, envFilePath = '.env') {
 async function createOrUpdateAssistant(
     name: string,
     instructions: string,
-    envFileKey: string,
+    envFileKey: string | null,
     secretNameEnvVar: string,
 ) {
+    if (!secretNameEnvVar) {
+        throw new Error(`Secret name for assistant "${name}" is not defined.`);
+    }
+
     console.log(`Fetching assistants list from OpenAI`);
     const assistantsList = await OPENAI_CLIENT.beta.assistants.list();
 
@@ -117,7 +122,10 @@ async function createOrUpdateAssistant(
         assistantId = createdAssistant.id;
     }
 
-    updateEnvFile(envFileKey, assistantId);
+    if (envFileKey) {
+        updateEnvFile(envFileKey, assistantId);
+    }
+
     createOrUpdateSecret(secretNameEnvVar, assistantId);
 }
 
@@ -125,6 +133,10 @@ async function resetAssistants() {
     const isProd = process.env.ENVIRONMENT === 'prod';
 
     if (isProd) {
+        askForConfirmation(
+            'You are about to reset assistants in PRODUCTION environment. This is a potentially destructive operation. Do you want to proceed?',
+        );
+        askForConfirmation('Are you realy realy sure?');
     }
 
     console.log(
@@ -132,17 +144,21 @@ async function resetAssistants() {
     );
 
     await createOrUpdateAssistant(
-        'Thaya (UI)',
+        isProd ? 'Prod Thaya (UI)' : 'Thaya (UI)',
         UI_ASSISTANT_INSTRUCTIONS,
-        'UI_ASSISTANT_ID',
-        process.env.UI_ASSISTANT_ID_SECRET_NAME,
+        isProd ? null : 'UI_ASSISTANT_ID',
+        isProd
+            ? process.env.PROD_UI_ASSISTANT_ID_SECRET_NAME
+            : process.env.UI_ASSISTANT_ID_SECRET_NAME,
     );
 
     await createOrUpdateAssistant(
-        'Thaya (Telegram)',
+        isProd ? 'Prod Thaya (Telegram)' : 'Thaya (Telegram)',
         TELEGRAM_ASSISTANT_INSTRUCTIONS,
-        'TELEGRAM_ASSISTANT_ID',
-        process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
+        isProd ? null : 'TELEGRAM_ASSISTANT_ID',
+        isProd
+            ? process.env.PROD_TELEGRAM_ASSISTANT_ID_SECRET_NAME
+            : process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
     );
 
     console.log('Assistants updated and secrets set.');
