@@ -40,13 +40,9 @@ If formatting is needed, you have following options available:
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
-function logStep(message: string) {
-    console.log(`[${new Date().toISOString()}] ${message}`);
-}
-
 function updateEnvFile(key: string, value: string, envFilePath = '.env') {
     try {
-        logStep(`Reading environment file: ${envFilePath}`);
+        console.log(`Reading environment file: ${envFilePath}`);
         const envFileContent = fs.readFileSync(envFilePath, 'utf-8');
         const lines = envFileContent.split('\n');
 
@@ -55,19 +51,23 @@ function updateEnvFile(key: string, value: string, envFilePath = '.env') {
         const updatedLines = lines.map((line) => {
             if (line.startsWith(`${key}=`)) {
                 keyUpdated = true;
-                logStep(`Updating key "${key}" in .env file`);
+                console.log(`Updating key "${key}" in .env file`);
                 return `${key}="${value}"`;
             }
             return line;
         });
 
         if (!keyUpdated) {
-            logStep(`Key "${key}" not found in .env file, adding new entry`);
+            console.log(
+                `Key "${key}" not found in .env file, adding new entry`,
+            );
             updatedLines.push(`${key}=${value}`);
         }
 
         fs.writeFileSync(envFilePath, updatedLines.join('\n'));
-        logStep(`Successfully updated ${key} in ${envFilePath} to ${value}`);
+        console.log(
+            `Successfully updated ${key} in ${envFilePath} to ${value}`,
+        );
     } catch (error) {
         console.error(
             `[${new Date().toISOString()}] Error updating .env file:`,
@@ -82,10 +82,10 @@ async function createOrUpdateAssistant(
     envFileKey: string,
     secretNameEnvVar: string,
 ) {
-    logStep(`Fetching assistants list from OpenAI`);
+    console.log(`Fetching assistants list from OpenAI`);
     const assistantsList = await OPENAI_CLIENT.beta.assistants.list();
 
-    logStep(`Searching for assistant with name: "${name}"`);
+    console.log(`Searching for assistant with name: "${name}"`);
     const assistant = assistantsList.data.find(
         (assistant) => assistant.name === name,
     );
@@ -93,23 +93,25 @@ async function createOrUpdateAssistant(
     let assistantId = assistant ? assistant.id : null;
 
     if (assistant) {
-        logStep(`Assistant "${name}" found (id: ${assistant.id}), updating...`);
+        console.log(
+            `Assistant "${name}" found (id: ${assistant.id}), updating...`,
+        );
         await OPENAI_CLIENT.beta.assistants.update(assistant.id, {
             name: name,
             model: MODEL_TO_BE_USED,
             instructions: instructions,
             tools: ASSISTANT_TOOLS,
         });
-        logStep(`Assistant "${name}" updated successfully.`);
+        console.log(`Assistant "${name}" updated successfully.`);
     } else {
-        logStep(`Assistant "${name}" not found, creating new assistant...`);
+        console.log(`Assistant "${name}" not found, creating new assistant...`);
         const createdAssistant = await OPENAI_CLIENT.beta.assistants.create({
             name: name,
             model: MODEL_TO_BE_USED,
             instructions: instructions,
             tools: ASSISTANT_TOOLS,
         });
-        logStep(
+        console.log(
             `New assistant created with name "${name}" and id "${createdAssistant.id}"`,
         );
         assistantId = createdAssistant.id;
@@ -120,7 +122,14 @@ async function createOrUpdateAssistant(
 }
 
 async function resetAssistants() {
-    logStep('Starting assistant reset process...');
+    const isProd = process.env.ENVIRONMENT === 'prod';
+
+    if (isProd) {
+    }
+
+    console.log(
+        `Starting assistants reset process. Environment: ${isProd ? 'Production' : 'Development'}`,
+    );
 
     await createOrUpdateAssistant(
         'Thaya (UI)',
@@ -136,7 +145,7 @@ async function resetAssistants() {
         process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
     );
 
-    logStep('Assistants updated and secrets set.');
+    console.log('Assistants updated and secrets set.');
 }
 
 resetAssistants();
