@@ -1,7 +1,7 @@
 import { exit } from 'process';
 import readline from 'readline';
 
-function getUserInput(query: string) {
+async function getUserInput(query: string) {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,

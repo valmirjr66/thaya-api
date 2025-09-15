@@ -133,10 +133,10 @@ async function resetAssistants() {
     const isProd = process.env.ENVIRONMENT === 'prod';
 
     if (isProd) {
-        askForConfirmation(
+        await askForConfirmation(
             'You are about to reset assistants in PRODUCTION environment. This is a potentially destructive operation. Do you want to proceed?',
         );
-        askForConfirmation('Are you realy realy sure?');
+        await askForConfirmation('Are you realy realy sure?');
     }
 
     console.log(

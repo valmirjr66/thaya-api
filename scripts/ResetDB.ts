@@ -13,10 +13,10 @@ const DATABASE_URL = isProd
 
 async function resetMongoDB() {
     if (isProd) {
-        askForConfirmation(
+        await askForConfirmation(
             'You are about to reset DB in PRODUCTION environment. This is a potentially destructive operation. Do you want to proceed?',
         );
-        askForConfirmation('Are you realy realy sure?');
+        await askForConfirmation('Are you realy realy sure?');
     }
 
     console.log(
