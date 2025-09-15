@@ -120,6 +120,7 @@ export default class UserService extends BaseService {
 
             return new GetUserInfoResponseModel(
                 user.fullname,
+                user.role,
                 user.email,
                 user.phoneNumber,
                 user.birthdate,
@@ -167,6 +168,7 @@ export default class UserService extends BaseService {
             await this.userModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 fullname: user.fullname,
+                role: user.role,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
                 birthdate: user.birthdate,
@@ -221,6 +223,7 @@ export default class UserService extends BaseService {
                 },
                 {
                     fullname: model.fullname,
+                    role: model.role,
                     birthdate: model.birthdate,
                     nickname: model.nickname,
                     email: model.email,
@@ -263,6 +266,7 @@ export default class UserService extends BaseService {
                     (user) =>
                         new GetUserInfoResponseModel(
                             user.fullname,
+                            user.role,
                             user.email,
                             user.phoneNumber,
                             user.birthdate,

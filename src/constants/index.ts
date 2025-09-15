@@ -34,3 +34,5 @@ export const TELEGRAM_CHAT_TYPES = [
     'supergroup',
     'channel',
 ] as const;
+
+export const USER_ROLES = ['admin', 'doctor', 'support', 'patient'] as const;

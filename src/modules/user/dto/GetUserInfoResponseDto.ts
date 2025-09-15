@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from 'src/types/user';
 
 export default class GetUserInfoResponseDto {
     @ApiProperty()
     public fullname: string;
+
+    @ApiProperty()
+    public role: UserRole;
 
     @ApiProperty()
     public email: string;
@@ -27,6 +31,7 @@ export default class GetUserInfoResponseDto {
 
     constructor(
         fullname: string,
+        role: UserRole,
         email: string,
         phoneNumber: string,
         birthdate: string,
@@ -36,6 +41,7 @@ export default class GetUserInfoResponseDto {
         telegramChatId?: number,
     ) {
         this.fullname = fullname;
+        this.role = role;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthdate = birthdate;

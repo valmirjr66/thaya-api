@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from 'src/types/user';
 
 export default class InsertUserRequestDto {
     @ApiProperty()
     public fullname: string;
+
+    @ApiProperty()
+    public role: UserRole;
 
     @ApiProperty()
     public email: string;
@@ -21,6 +25,7 @@ export default class InsertUserRequestDto {
 
     constructor(
         fullname: string,
+        role: UserRole,
         email: string,
         phoneNumber: string,
         password: string,
@@ -28,6 +33,7 @@ export default class InsertUserRequestDto {
         nickname?: string,
     ) {
         this.fullname = fullname;
+        this.role = role;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;

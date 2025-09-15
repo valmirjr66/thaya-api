@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { BaseSchema } from '../../../BaseSchema';
+import { UserRole } from 'src/types/user';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -11,6 +12,9 @@ export class User extends BaseSchema {
 
     @Prop()
     nickname?: string;
+
+    @Prop({ required: true })
+    role: UserRole;
 
     @Prop()
     profilePicFileName?: string;

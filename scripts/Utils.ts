@@ -1,555 +1,531 @@
-export const DEFAULT_USER_EMAIL = 'valmirgmj@gmail.com';
-
+export const DEFAULT_ADMIN_EMAIL = 'thaya.admin@gmail.com';
+export const DEFAULT_PATIENT_EMAIL = 'thaya.patient@gmail.com';
+export const DEFAULT_1_DOCTOR_EMAIL = 'thaya.doctor1@gmail.com';
+export const DEFAULT_2_DOCTOR_EMAIL = 'thaya.doctor2@gmail.com';
+export const DEFAULT_SUPPORT_EMAIL = 'thaya.support@gmail.com';
 export const OCCURRENCES = [
     // 2025-01-10
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-10T09:00:00'),
-        description: 'Annual medical appointment',
+        description: 'Annual physical examination',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-10T14:30:00'),
-        description: 'Project follow-up meeting',
+        description: 'Follow-up with cardiologist',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-10T18:00:00'),
         description: 'Physical therapy session',
     },
     // 2025-01-18
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-18T10:00:00'),
-        description: 'Strategic planning meeting',
+        description: 'Consultation for allergy symptoms',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-18T16:00:00'),
-        description: 'Call with international client',
+        description: 'Telemedicine appointment with dermatologist',
     },
     // 2025-01-27
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-27T08:30:00'),
-        description: 'Integration workshop',
+        description: 'Blood test collection',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-01-27T17:00:00'),
-        description: 'Post-workshop feedback meeting',
+        description: 'Lab results review',
     },
     // 2025-02-08
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-02-08T11:00:00'),
-        description: 'Contract review',
+        description: 'Orthopedic evaluation',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-02-08T15:00:00'),
-        description: 'Legal questions session',
+        description: 'Nutrition counseling session',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-02-08T18:00:00'),
-        description: 'Meeting with lawyers',
+        description: 'Medication review with pharmacist',
     },
     // 2025-02-21
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-02-21T09:30:00'),
-        description: 'Nutritionist appointment',
+        description: 'Dental cleaning appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-02-21T18:00:00'),
-        description: 'Nutritional assessment meeting',
+        description: 'Oral health assessment',
     },
     // 2025-03-03
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-03T07:00:00'),
-        description: 'Business trip to Campinas',
+        description: 'Early morning fasting glucose test',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-03T19:00:00'),
-        description: 'Dinner with Campinas team',
+        description: 'Consultation for diabetes management',
     },
     // 2025-03-10
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-10T10:00:00'),
-        description: 'Dermatologist appointment',
+        description: 'Dermatologist skin check',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-10T15:30:00'),
-        description: 'Treatment update meeting',
+        description: 'Treatment update for eczema',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-10T18:00:00'),
-        description: 'Skin care session',
+        description: 'Skin care education session',
     },
     // 2025-03-15
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-15T13:00:00'),
-        description: 'Leadership lecture',
+        description: 'Health seminar: Preventive medicine',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-15T17:00:00'),
-        description: 'Post-lecture debate',
+        description: 'Discussion on chronic disease prevention',
     },
     // 2025-03-22
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-22T09:00:00'),
-        description: 'Mentoring with junior team',
+        description: 'Group therapy session',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-22T14:00:00'),
-        description: 'Technical questions session',
+        description: 'Mental health Q&A',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-22T16:00:00'),
-        description: 'Technical alignment meeting',
+        description: 'Psychiatric evaluation',
     },
     // 2025-03-30
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-30T11:00:00'),
-        description: 'Quarterly report delivery',
+        description: 'Quarterly medication review',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-03-30T16:00:00'),
-        description: 'Report review meeting',
+        description: 'Consultation for medication adjustment',
     },
     // 2025-04-05
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-05T09:00:00'),
-        description: 'Dental appointment',
+        description: 'Dental check-up',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-05T13:30:00'),
-        description: 'Dental treatment evaluation',
+        description: 'Evaluation for dental treatment',
     },
     // 2025-04-11
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-11T10:00:00'),
-        description: 'Meeting with suppliers',
+        description: 'Consultation with medical suppliers',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-11T15:00:00'),
-        description: 'Contract negotiation',
+        description: 'Negotiation for medical equipment',
     },
     // 2025-04-18
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-18T09:30:00'),
-        description: 'Quarterly goals review',
+        description: 'Quarterly health goals review',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-18T17:00:00'),
-        description: 'Team goals adjustment',
+        description: 'Adjustment of health improvement plan',
     },
     // 2025-04-29
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-29T11:00:00'),
-        description: 'Feedback with managers',
+        description: 'Feedback session with healthcare managers',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-04-29T16:00:00'),
-        description: 'Post-feedback action planning',
+        description: 'Action planning for patient care',
     },
     // 2025-05-02
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-02T08:00:00'),
         description: 'Psychologist appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-02T18:00:00'),
-        description: 'Group therapy session',
+        description: 'Group counseling session',
     },
     // 2025-05-09
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-09T10:00:00'),
-        description: 'Marketing campaign planning',
+        description: 'Planning for health awareness campaign',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-09T15:30:00'),
-        description: 'Campaign briefing meeting',
+        description: 'Briefing for medical staff',
     },
     // 2025-05-14
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-14T09:00:00'),
-        description: 'Semiannual performance analysis',
+        description: 'Semiannual health performance analysis',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-14T13:00:00'),
-        description: 'Performance evaluation meeting',
+        description: 'Meeting for patient progress evaluation',
     },
     // 2025-05-19
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-19T11:00:00'),
-        description: 'Meeting with investors',
+        description: 'Consultation with medical investors',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-19T17:00:00'),
-        description: 'Results presentation to investors',
+        description: 'Presentation of clinical results',
     },
     // 2025-05-23
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-23T09:00:00'),
-        description: 'Innovation workshop',
+        description: 'Medical innovation workshop',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-23T14:00:00'),
-        description: 'Brainstorming session',
+        description: 'Brainstorming for new treatments',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-23T17:00:00'),
-        description: 'Prototyping meeting',
+        description: 'Prototyping medical devices',
     },
     // 2025-05-30
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-30T10:00:00'),
-        description: 'Delivery of revised goals',
+        description: 'Delivery of revised health goals',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-05-30T16:00:00'),
-        description: 'Goals alignment meeting',
+        description: 'Health goals alignment meeting',
     },
     // 2025-06-02
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-02T09:00:00'),
         description: 'Neurologist appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-02T11:00:00'),
-        description: 'Meeting with company board',
+        description: 'Meeting with hospital board',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-02T15:00:00'),
-        description: 'Project evaluation session',
+        description: 'Evaluation of medical project',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-02T18:00:00'),
-        description: 'Project closing meeting',
+        description: 'Project closing for clinical trial',
     },
     // 2025-06-15
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-15T10:00:00'),
-        description: 'Coaching session',
+        description: 'Medical coaching session',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-15T17:00:00'),
-        description: 'Coaching follow-up meeting',
+        description: 'Follow-up for medical coaching',
     },
     // 2025-06-26
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-26T09:00:00'),
-        description: 'Sales pipeline review',
+        description: 'Review of patient care pipeline',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-06-26T13:00:00'),
-        description: 'Sales training session',
+        description: 'Medical staff training session',
     },
     // 2025-07-06
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-06T08:00:00'),
         description: 'General practitioner appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-06T18:00:00'),
         description: 'Medical evaluation meeting',
     },
     // 2025-07-12
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-12T10:00:00'),
-        description: 'Team alignment meeting',
+        description: 'Team alignment for patient care',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-12T16:00:00'),
-        description: 'Team feedback session',
+        description: 'Feedback session for healthcare team',
     },
     // 2025-07-25
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-25T09:00:00'),
-        description: 'Mid-year feedback',
+        description: 'Mid-year patient feedback',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-25T14:00:00'),
-        description: 'Post-feedback action planning',
+        description: 'Action planning for patient outcomes',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-07-25T17:00:00'),
-        description: 'Career mentoring session',
+        description: 'Career mentoring for medical staff',
     },
     // 2025-08-01
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-01T08:30:00'),
         description: 'Physical therapist appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-01T17:00:00'),
-        description: 'Physical exercise session',
+        description: 'Physical rehabilitation session',
     },
     // 2025-08-08
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-08T10:00:00'),
-        description: 'Innovation planning',
+        description: 'Planning for medical innovation',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-08T15:00:00'),
-        description: 'Idea validation meeting',
+        description: 'Validation meeting for new medical ideas',
     },
     // 2025-08-15
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-15T09:00:00'),
-        description: 'Financial data analysis',
+        description: 'Analysis of patient health data',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-15T13:00:00'),
-        description: 'Financial results presentation meeting',
+        description: 'Presentation of health results',
     },
     // 2025-08-22
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-22T11:00:00'),
-        description: 'Organizational culture meeting',
+        description: 'Meeting on hospital culture',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-22T16:00:00'),
-        description: 'Cultural integration session',
+        description: 'Session on patient cultural integration',
     },
     // 2025-08-29
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-29T09:00:00'),
-        description: 'Technical visit to supplier',
+        description: 'Technical visit to medical supplier',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-08-29T14:00:00'),
-        description: 'Supplier evaluation meeting',
+        description: 'Supplier evaluation for medical equipment',
     },
     // 2025-09-05
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-09-05T10:00:00'),
-        description: 'Leadership training session',
+        description: 'Leadership training for healthcare professionals',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-09-05T15:00:00'),
-        description: 'Leadership development meeting',
+        description: 'Development meeting for medical leaders',
     },
     // 2025-09-12
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-09-12T09:30:00'),
         description: 'Endocrinologist appointment',
     },
     // 2025-10-04
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-04T08:00:00'),
         description: 'Nutritionist appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-04T18:00:00'),
-        description: 'Meal planning session',
+        description: 'Meal planning for patient health',
     },
     // 2025-10-11
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-11T10:00:00'),
         description: 'Mental health assessment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-11T15:00:00'),
         description: 'Psychological follow-up session',
     },
     // 2025-10-18
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-18T09:00:00'),
-        description: 'Results presentation',
+        description: 'Presentation of medical test results',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-18T13:00:00'),
-        description: 'Results debate',
+        description: 'Discussion of patient results',
     },
     // 2025-10-30
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-30T11:00:00'),
-        description: '2026 planning',
+        description: "Planning for next year's medical care",
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-10-30T16:00:00'),
-        description: '2026 goal setting session',
+        description: 'Goal setting for patient health',
     },
     // 2025-11-03
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-03T09:00:00'),
-        description: 'Process audit',
+        description: 'Medical process audit',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-03T14:00:00'),
-        description: 'Post-audit adjustment meeting',
+        description: 'Adjustment meeting after medical audit',
     },
     // 2025-11-07
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-07T10:00:00'),
-        description: 'Conference participation',
+        description: 'Participation in medical conference',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-07T17:00:00'),
-        description: 'Post-conference networking',
+        description: 'Networking with healthcare professionals',
     },
     // 2025-11-12
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-12T08:00:00'),
         description: 'Cardiologist appointment',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-12T18:00:00'),
         description: 'Cardiac assessment session',
     },
     // 2025-11-18
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-18T09:00:00'),
-        description: 'Indicators analysis',
+        description: 'Analysis of health indicators',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-18T13:00:00'),
-        description: 'Indicators presentation meeting',
+        description: 'Presentation of medical indicators',
     },
     // 2025-11-24
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-24T10:00:00'),
-        description: 'Technical team assessment',
+        description: 'Assessment of technical medical team',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-24T15:00:00'),
-        description: 'Technical feedback session',
+        description: 'Feedback session for medical staff',
     },
     // 2025-11-30
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-30T09:00:00'),
-        description: 'Restructuring planning',
+        description: 'Planning for healthcare restructuring',
     },
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-11-30T14:00:00'),
-        description: 'New structure definition meeting',
+        description: 'Meeting for new medical structure definition',
     },
     // 2025-12-05
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-12-05T08:00:00'),
         description: 'Ophthalmologist appointment',
     },
+
     {
-        userEmail: DEFAULT_USER_EMAIL,
+        userEmail: DEFAULT_PATIENT_EMAIL,
         datetime: new Date('2025-12-05T18:00:00'),
         description: 'Visual assessment session',
     },
-    // 2025-12-15
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-15T10:00:00'),
-        description: 'Year-end closing meeting',
-    },
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-15T17:00:00'),
-        description: 'Team appreciation session',
-    },
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-15T20:00:00'),
-        description: 'Year-end dinner',
-    },
-    // 2025-12-20
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-20T19:00:00'),
-        description: 'Company year-end party',
-    },
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-20T22:00:00'),
-        description: 'End of year party closing',
-    },
-    {
-        userEmail: DEFAULT_USER_EMAIL,
-        datetime: new Date('2025-12-20T23:00:00'),
-        description: 'Gift delivery to employees',
-    },
-];
+].map((occurrence) => {
+    const newOccurrence = { ...occurrence };
+    newOccurrence.datetime.setDate(newOccurrence.datetime.getDate() + 30 * 7);
+    return newOccurrence;
+});
