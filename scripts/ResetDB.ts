@@ -1,12 +1,28 @@
 import * as dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { DEFAULT_USER_EMAIL, OCCURRENCES } from './Utils';
+import askForConfirmation from './AskForConfirmation';
 
 dotenv.config();
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const isProd = process.env.ENVIRONMENT === 'prod';
+
+const DATABASE_URL = isProd
+    ? process.env.PROD_DATABASE_URL
+    : process.env.DATABASE_URL;
 
 async function resetMongoDB() {
+    if (isProd) {
+        askForConfirmation(
+            'You are about to reset DB in PRODUCTION environment. This is a potentially destructive operation. Do you want to proceed?',
+        );
+        askForConfirmation('Are you realy realy sure?');
+    }
+
+    console.log(
+        `Starting assistants reset process. Environment: ${isProd ? 'Production' : 'Development'}`,
+    );
+
     const client = new MongoClient(DATABASE_URL);
 
     try {

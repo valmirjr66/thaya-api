@@ -19,7 +19,7 @@
     "redeploy:all": "npm run redeploy:db && npm run redeploy:assistants",
     "redeploy:prod:assistants": "ENVIRONMENT=prod GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
     "redeploy:prod:db": "ENVIRONMENT=prod npx tsx scripts/ResetDB.ts",
-    "redeploy:prod:all": "ENVIRONMENT=prod npm run redeploy:db && npm run redeploy:assistants"
+    "redeploy:prod:all": "ENVIRONMENT=prod npm run redeploy:prod:db && npm run redeploy:prod:assistants"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
