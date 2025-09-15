@@ -6,6 +6,7 @@ import GetOrganizationByIdResponseModel from './model/GetOrganizationByIdRespons
 import InsertOrganizationRequestModel from './model/InsertOrganizationRequestModel';
 import ListOrganizationsResponseModel from './model/ListOrganizationsResponseModel';
 import { Organization } from './schemas/OrganizationSchema';
+import UpdateOrganizationRequestModel from './model/UpdateOrganizationRequestModel';
 
 @Injectable()
 export default class OrganizationService extends BaseService {
@@ -83,6 +84,47 @@ export default class OrganizationService extends BaseService {
             );
         } catch (error) {
             this.logger.error(`Error listing organizations: ${error}`);
+            throw error;
+        }
+    }
+
+    async updateOrganization(
+        model: UpdateOrganizationRequestModel,
+    ): Promise<void> {
+        this.logger.log(`Updating organization with name: ${model.name}`);
+
+        try {
+            const organization = await this.organizationModel
+                .findById(model.id)
+                .exec()
+                .then((doc) => doc.toObject());
+
+            if (!organization) {
+                this.logger.warn(`Organization with ID ${model.id} not found`);
+                throw new NotFoundException();
+            }
+
+            this.logger.log(`Found organization with ID: ${model.id}`);
+
+            await this.organizationModel.updateOne(
+                { _id: organization._id },
+                {
+                    name: model.name,
+                    collaborators: model.collaborators,
+                    address: model.address,
+                    phoneNumber: model.phoneNumber,
+                    timezoneOffset: model.timezoneOffset,
+                    updatedAt: new Date(),
+                },
+            );
+
+            this.logger.log(
+                `Organization with name ${organization.name} updated successfully`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error updating organization with name ${model.name}: ${error}`,
+            );
             throw error;
         }
     }
