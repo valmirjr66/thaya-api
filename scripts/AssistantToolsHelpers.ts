@@ -6,7 +6,7 @@ export const ASSISTANT_TOOLS: AssistantTool[] = [
         function: {
             name: 'get_user_info',
             description:
-                'Retrieves user information including fullname, nickname (optional), email, birthdate and its current location',
+                'Retrieves user information including fullname, nickname (optional), email and birthdate',
             strict: false,
             parameters: {
                 type: 'object',
