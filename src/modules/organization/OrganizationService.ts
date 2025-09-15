@@ -26,7 +26,7 @@ export default class OrganizationService extends BaseService {
 
         try {
             const organization = await this.organizationModel
-                .findById(id)
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc.toObject());
 
@@ -95,7 +95,7 @@ export default class OrganizationService extends BaseService {
 
         try {
             const organization = await this.organizationModel
-                .findById(model.id)
+                .findById(new mongoose.Types.ObjectId(model.id))
                 .exec()
                 .then((doc) => doc.toObject());
 
