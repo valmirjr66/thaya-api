@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { USER_ROLES } from 'src/constants';
 import { UserRole } from 'src/types/user';
 
 export default class GetUserInfoResponseDto {
     @ApiProperty()
     public fullname: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: USER_ROLES[1] })
     public role: UserRole;
 
     @ApiProperty()
