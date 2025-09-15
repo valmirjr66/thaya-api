@@ -4,7 +4,6 @@ import BlobStorageManager from './handlers/cloud/BlobStorageManager';
 import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
-import WeatherTool from './handlers/gpt/WeatherTool';
 import TelegramHandler from './handlers/messaging/TelegramHandler';
 import AssistantService from './modules/assistant/AssistantService';
 import { Chat, ChatSchema } from './modules/assistant/schemas/ChatSchema';
@@ -40,7 +39,6 @@ import UserService from './modules/user/UserService';
         ChatAssistant,
         TelegramHandler,
         BlobStorageManager,
-        WeatherTool,
         CalendarTool,
         UserInfoTool,
     ],

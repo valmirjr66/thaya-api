@@ -13,7 +13,6 @@ import BlobStorageManager from './handlers/cloud/BlobStorageManager';
 import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
-import WeatherTool from './handlers/gpt/WeatherTool';
 import {
     FileMetadata,
     FileMetadataSchema,
@@ -38,7 +37,6 @@ import { User, UserSchema } from './modules/user/schemas/UserSchema';
         UserService,
         ChatAssistant,
         UserInfoTool,
-        WeatherTool,
         CalendarTool,
         AssistantGateway,
         BlobStorageManager,

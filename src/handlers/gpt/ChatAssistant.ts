@@ -6,7 +6,6 @@ import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/thread
 import { Annotation } from 'src/types/gpt';
 import CalendarTool from './CalendarTool';
 import UserInfoTool from './UserInfoTool';
-import WeatherTool from './WeatherTool';
 
 export class TextResponse {
     constructor(content: string, annotations?: Annotation[]) {
@@ -25,7 +24,6 @@ export default class ChatAssistant {
     private readonly openaiClient: OpenAI = new OpenAI();
 
     constructor(
-        private readonly weatherTool: WeatherTool,
         private readonly userInfoTool: UserInfoTool,
         private readonly calendarTool: CalendarTool,
     ) {}
@@ -285,30 +283,6 @@ export default class ChatAssistant {
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify(userInfo),
-            });
-        } else if (toolCall.function.name === 'get_weather_info') {
-            const latitude: string =
-                context.userInfo?.currentLocation.latitute ||
-                args.location?.latitute;
-
-            const longitude: string =
-                context.userInfo?.currentLocation.longitude ||
-                args.location?.longitude;
-
-            this.logger.log(
-                `get_weather_info with latitude: ${latitude}, longitude: ${longitude}`,
-            );
-            const weatherInfo = await this.weatherTool.getWeatherInfo({
-                latitude: Number(latitude),
-                longitude: Number(longitude),
-            });
-
-            this.logger.log(
-                `get_weather_info result: ${JSON.stringify(weatherInfo)}`,
-            );
-            toolOutputs.push({
-                tool_call_id: toolCall.id,
-                output: JSON.stringify(weatherInfo),
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
             this.logger.log(

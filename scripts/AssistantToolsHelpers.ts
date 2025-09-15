@@ -18,30 +18,6 @@ export const ASSISTANT_TOOLS: AssistantTool[] = [
     {
         type: 'function',
         function: {
-            name: 'get_weather_info',
-            description:
-                'Fetches the current weather based on the provided latitude and longitude of the location',
-            strict: true,
-            parameters: {
-                type: 'object',
-                required: ['latitude', 'longitude'],
-                properties: {
-                    latitude: {
-                        type: 'number',
-                        description: 'Geographical latitude of the location',
-                    },
-                    longitude: {
-                        type: 'number',
-                        description: 'Geographical longitude of the location',
-                    },
-                },
-                additionalProperties: false,
-            },
-        },
-    },
-    {
-        type: 'function',
-        function: {
             name: 'get_current_datetime',
             description: "Returns user's current date and time",
             strict: false,
