@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import BaseService from '../../BaseService';
 import GetOrganizationByIdResponseModel from './model/GetOrganizationByIdResponseModel';
+import InsertOrganizationRequestModel from './model/InsertOrganizationRequestModel';
 import ListOrganizationsResponseModel from './model/ListOrganizationsResponseModel';
 import { Organization } from './schemas/OrganizationSchema';
-import InsertOrganizationRequestModel from './model/InsertOrganizationRequestModel';
 
 @Injectable()
 export default class OrganizationService extends BaseService {
@@ -112,6 +112,39 @@ export default class OrganizationService extends BaseService {
         } catch (error) {
             this.logger.error(
                 `Error inserting organization with name ${organization.name}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async deleteOrganizationById(id: string): Promise<void> {
+        this.logger.log(
+            `[deleteOrganizationById] Deleting organization with id: ${id}`,
+        );
+
+        try {
+            const organization = await this.organizationModel
+                .findById(new mongoose.Types.ObjectId(id))
+                .exec();
+
+            if (!organization) {
+                this.logger.warn(
+                    `[deleteOrganizationById] No organization found with id: ${id}`,
+                );
+                throw new NotFoundException();
+            }
+
+            await this.organizationModel.deleteOne({
+                _id: new mongoose.Types.ObjectId(id),
+            });
+
+            this.logger.log(
+                `[deleteOrganizationById] Successfully deleted organization with id: ${id}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `[deleteOrganizationById] Error deleting organization with id: ${id}: ${error.message}`,
+                error.stack,
             );
             throw error;
         }

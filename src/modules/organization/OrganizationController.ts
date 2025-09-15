@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
@@ -56,5 +56,15 @@ export default class OrganizationController extends BaseController {
         @Body() body: InsertOrganizationRequestDto,
     ): Promise<void> {
         await this.organizationService.insertOrganization(body);
+    }
+
+    @Delete(':id')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async deleteCalendarOccurrence(@Param('id') id: string): Promise<void> {
+        await this.organizationService.deleteOrganizationById(id);
     }
 }
