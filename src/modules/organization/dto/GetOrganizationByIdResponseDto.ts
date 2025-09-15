@@ -18,4 +18,20 @@ export default class GetOrganizationByIdResponseDto {
 
     @ApiProperty()
     public timezoneOffset: number;
+
+    constructor(
+        id: string,
+        collaborators: string[],
+        name: string,
+        phoneNumber: string,
+        address: string,
+        timezoneOffset: number,
+    ) {
+        this.id = id;
+        this.collaborators = collaborators;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.timezoneOffset = timezoneOffset;
+    }
 }
