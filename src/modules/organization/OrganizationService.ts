@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import BaseService from '../../BaseService';
 import GetOrganizationByIdResponseModel from './model/GetOrganizationByIdResponseModel';
 import ListOrganizationsResponseModel from './model/ListOrganizationsResponseModel';
 import { Organization } from './schemas/OrganizationSchema';
+import InsertOrganizationRequestModel from './model/InsertOrganizationRequestModel';
 
 @Injectable()
 export default class OrganizationService extends BaseService {
@@ -82,6 +83,36 @@ export default class OrganizationService extends BaseService {
             );
         } catch (error) {
             this.logger.error(`Error listing organizations: ${error}`);
+            throw error;
+        }
+    }
+
+    async insertOrganization(
+        organization: InsertOrganizationRequestModel,
+    ): Promise<void> {
+        this.logger.log(
+            `Inserting organization with name: ${organization.name}`,
+        );
+
+        try {
+            await this.organizationModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                name: organization.name,
+                collaborators: organization.collaborators,
+                address: organization.address,
+                phoneNumber: organization.phoneNumber,
+                timezoneOffset: organization.timezoneOffset,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            this.logger.log(
+                `Organization with name ${organization.name} inserted successfully`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error inserting organization with name ${organization.name}: ${error}`,
+            );
             throw error;
         }
     }
