@@ -1,9 +1,4 @@
-import {
-    Injectable,
-    Logger,
-    NotFoundException,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
@@ -25,31 +20,31 @@ export default class CalendarService extends BaseService {
         super();
     }
 
-    async getUserCalendarByEmail(
-        userEmail: string,
+    async getUserCalendarByUserId(
+        userId: string,
         month: AbbreviatedMonth,
         year: number,
     ): Promise<GetUserCalendarResponseModel | null> {
         this.logger.log(
-            `[getUserCalendarByEmail] Fetching calendar for email: ${userEmail}, month: ${month}, year: ${year}`,
+            `[getUserCalendarByUserId] Fetching calendar for user: ${userId}, month: ${month}, year: ${year}`,
         );
 
         try {
             const userCalendar = await this.calendarModel
-                .find({ userEmail })
+                .find({ userId })
                 .exec();
 
             this.logger.debug(
-                `[getUserCalendarByEmail] Raw records: ${JSON.stringify(userCalendar)}`,
+                `[getUserCalendarByUserId] Raw records: ${JSON.stringify(userCalendar)}`,
             );
 
             this.logger.log(
-                `[getUserCalendarByEmail] Found ${userCalendar.length} records for user ${userEmail}`,
+                `[getUserCalendarByUserId] Found ${userCalendar.length} records for user ${userId}`,
             );
 
             if (!userCalendar) {
                 this.logger.warn(
-                    `[getUserCalendarByEmail] No calendar records found for user ${userEmail}`,
+                    `[getUserCalendarByUserId] No calendar records found for user ${userId}`,
                 );
                 return new GetUserCalendarResponseModel([]);
             }
@@ -71,19 +66,19 @@ export default class CalendarService extends BaseService {
                         item.datetime.getUTCFullYear() === year &&
                         item.datetime.getUTCMonth() === monthNumber;
                     this.logger.debug(
-                        `[getUserCalendarByEmail] Checking record: ${JSON.stringify(item)}, match: ${match}`,
+                        `[getUserCalendarByUserId] Checking record: ${JSON.stringify(item)}, match: ${match}`,
                     );
                     return match;
                 });
 
             this.logger.log(
-                `[getUserCalendarByEmail] Filtered ${filteredRecords.length} records for month '${month}' and year '${year}'`,
+                `[getUserCalendarByUserId] Filtered ${filteredRecords.length} records for month '${month}' and year '${year}'`,
             );
 
             return new GetUserCalendarResponseModel(filteredRecords);
         } catch (error) {
             this.logger.error(
-                `[getUserCalendarByEmail] Error fetching calendar for ${userEmail}: ${error.message}`,
+                `[getUserCalendarByUserId] Error fetching calendar for ${userId}: ${error.message}`,
                 error.stack,
             );
             throw error;
@@ -92,17 +87,17 @@ export default class CalendarService extends BaseService {
 
     async insertCalendarOccurrence(model: InsertCalendarOccurenceRequestModel) {
         this.logger.log(
-            `[insertCalendarOccurrence] Inserting occurrence for user: ${model.userEmail}, datetime: ${model.datetime}, description: ${model.description}`,
+            `[insertCalendarOccurrence] Inserting occurrence for user: ${model.userId}, datetime: ${model.datetime}, description: ${model.description}`,
         );
 
         try {
-            const { userEmail, datetime, description } = model;
+            const { userId, datetime, description } = model;
 
             const newOccurrence = {
                 _id: new mongoose.Types.ObjectId(),
                 datetime,
                 description,
-                userEmail,
+                userId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -114,23 +109,20 @@ export default class CalendarService extends BaseService {
             await this.calendarModel.create(newOccurrence);
 
             this.logger.log(
-                `[insertCalendarOccurrence] Successfully inserted occurrence for user: ${userEmail}`,
+                `[insertCalendarOccurrence] Successfully inserted occurrence for user: ${userId}`,
             );
         } catch (error) {
             this.logger.error(
-                `[insertCalendarOccurrence] Error inserting occurrence for ${model.userEmail}: ${error.message}`,
+                `[insertCalendarOccurrence] Error inserting occurrence for user ${model.userId}: ${error.message}`,
                 error.stack,
             );
             throw error;
         }
     }
 
-    async deleteCalendarOccurrence(
-        id: string,
-        userEmail: string,
-    ): Promise<void> {
+    async deleteCalendarOccurrence(id: string): Promise<void> {
         this.logger.log(
-            `[deleteCalendarOccurrence] Deleting occurrence with id: ${id} for user: ${userEmail}`,
+            `[deleteCalendarOccurrence] Deleting occurrence with id: ${id}`,
         );
 
         try {
@@ -145,23 +137,16 @@ export default class CalendarService extends BaseService {
                 throw new NotFoundException();
             }
 
-            if (occurrence.userEmail !== userEmail) {
-                this.logger.warn(
-                    `[deleteCalendarOccurrence] Unauthorized delete attempt for occurrence id: ${id} by user: ${userEmail}`,
-                );
-                throw new UnauthorizedException();
-            }
-
             await this.calendarModel.deleteOne({
                 _id: new mongoose.Types.ObjectId(id),
             });
 
             this.logger.log(
-                `[deleteCalendarOccurrence] Successfully deleted occurrence with id: ${id} for user: ${userEmail}`,
+                `[deleteCalendarOccurrence] Successfully deleted occurrence with id: ${id}`,
             );
         } catch (error) {
             this.logger.error(
-                `[deleteCalendarOccurrence] Error deleting occurrence with id: ${id} for user: ${userEmail}: ${error.message}`,
+                `[deleteCalendarOccurrence] Error deleting occurrence with id: ${id}: ${error.message}`,
                 error.stack,
             );
             throw error;
@@ -171,10 +156,10 @@ export default class CalendarService extends BaseService {
     async updateCalendarOccurrence(
         model: UpdateCalendarOccurenceRequestModel,
     ): Promise<void> {
-        const { id, userEmail, datetime, description } = model;
+        const { id, datetime, description } = model;
 
         this.logger.log(
-            `[updateCalendarOccurrence] Updating occurrence with id: ${id} for user: ${userEmail}`,
+            `[updateCalendarOccurrence] Updating occurrence with id: ${id}`,
         );
 
         try {
@@ -187,13 +172,6 @@ export default class CalendarService extends BaseService {
                     `[updateCalendarOccurrence] No occurrence found with id: ${id}`,
                 );
                 throw new NotFoundException();
-            }
-
-            if (occurrence.userEmail !== userEmail) {
-                this.logger.warn(
-                    `[updateCalendarOccurrence] Unauthorized update attempt for occurrence id: ${id} by user: ${userEmail}`,
-                );
-                throw new UnauthorizedException();
             }
 
             const updatedFields: Partial<Calendar> = {
@@ -209,16 +187,16 @@ export default class CalendarService extends BaseService {
             );
 
             await this.calendarModel.updateOne(
-                { _id: new mongoose.Types.ObjectId(id), userEmail },
+                { _id: new mongoose.Types.ObjectId(id) },
                 { $set: { ...updatedFields } },
             );
 
             this.logger.log(
-                `[updateCalendarOccurrence] Successfully updated occurrence with id: ${id} for user: ${userEmail}`,
+                `[updateCalendarOccurrence] Successfully updated occurrence with id: ${id}`,
             );
         } catch (error) {
             this.logger.error(
-                `[updateCalendarOccurrence] Error updating occurrence with id: ${model.id} for user: ${model.userEmail}: ${error.message}`,
+                `[updateCalendarOccurrence] Error updating occurrence with id: ${model.id}: ${error.message}`,
                 error.stack,
             );
             throw error;

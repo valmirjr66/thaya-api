@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
 import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
-import GetConversationResponseModel from 'src/modules/assistant/model/GetChatByUserEmailResponseModel';
+import GetChatByUserIdResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
 import { Annotation } from 'src/types/gpt';
 import BaseService from '../../BaseService';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
@@ -28,32 +28,30 @@ export default class AssistantService extends BaseService {
         super();
     }
 
-    async getChatByUserEmail(
-        userEmail: string,
-    ): Promise<GetConversationResponseModel> {
-        this.logger.debug(
-            `getChatByUserEmail called with userEmail: ${userEmail}`,
-        );
-        const chat = await this.findUserChatAndCreateIfNotExists(userEmail);
+    async getChatByUserId(
+        userId: string,
+    ): Promise<GetChatByUserIdResponseModel> {
+        this.logger.debug(`getChatByUserId called with userId: ${userId}`);
+        const chat = await this.findUserChatAndCreateIfNotExists(userId);
 
         const chatMessages = await this.messageModel.find({
             chatId: chat._id,
         });
 
         if (chatMessages.length === 0) {
-            this.logger.warn(`No messages found for userEmail: ${userEmail}`);
+            this.logger.warn(`No messages found for user: ${userId}`);
         } else {
             this.logger.log(
-                `Found ${chatMessages.length} messages for userEmail: ${userEmail}`,
+                `Found ${chatMessages.length} messages for user: ${userId}`,
             );
         }
 
-        const response = new GetConversationResponseModel(
+        const response = new GetChatByUserIdResponseModel(
             chatMessages.map((item) => item.toObject()),
         );
 
         this.logger.debug(
-            `Returning conversation response for userEmail: ${userEmail}`,
+            `Returning conversation response for user: ${userId}`,
         );
         return response;
     }
@@ -61,7 +59,7 @@ export default class AssistantService extends BaseService {
     async handleIncomingMessage(
         model: HandleIncomingMessageRequestModel,
         streamingCallback?: (
-            userEmail: string,
+            userId: string,
             textSnapshot: string,
             decoratedAnnotations?: FileMetadata[],
             finished?: boolean,
@@ -72,12 +70,10 @@ export default class AssistantService extends BaseService {
         );
 
         this.logger.debug(
-            `handleIncomingMessage called for userEmail: ${model.userEmail} with content: ${model.content}`,
+            `handleIncomingMessage called for user: ${model.userId} with content: ${model.content}`,
         );
 
-        const chat = await this.findUserChatAndCreateIfNotExists(
-            model.userEmail,
-        );
+        const chat = await this.findUserChatAndCreateIfNotExists(model.userId);
 
         const threadId = chat.threadId;
         const chatId = chat._id;
@@ -94,13 +90,13 @@ export default class AssistantService extends BaseService {
         let messageAddedToThread: TextResponse;
         if (streamingCallback) {
             this.logger.debug(
-                `Using streamingCallback for userEmail: ${model.userEmail}`,
+                `Using streamingCallback for user: ${model.userId}`,
             );
             messageAddedToThread =
                 await this.chatAssistant.addMessageToThreadByStream(
                     threadId,
                     model.content,
-                    model.userEmail,
+                    model.userId,
                     (
                         textSnapshot: string,
                         annotationsSnapshot: Annotation[],
@@ -110,46 +106,41 @@ export default class AssistantService extends BaseService {
                             annotationsSnapshot,
                         );
                         this.logger.debug(
-                            `Streaming snapshot for userEmail: ${model.userEmail}`,
+                            `Streaming snapshot for user: ${model.userId}`,
                         );
-                        streamingCallback(
-                            model.userEmail,
-                            prettifiedTextContent,
-                        );
+                        streamingCallback(model.userId, prettifiedTextContent);
                     },
                 );
         } else {
             this.logger.debug(
-                `Using non-streaming message for userEmail: ${model.userEmail}`,
+                `Using non-streaming message for user: ${model.userId}`,
             );
             messageAddedToThread = await this.chatAssistant.addMessageToThread(
                 threadId,
                 model.content,
-                model.userEmail,
+                model.userId,
             );
         }
 
         this.logger.debug(
-            `Prettifying assistant response for userEmail: ${model.userEmail}`,
+            `Prettifying assistant response for user: ${model.userId}`,
         );
         const prettifiedTextContent = this.prettifyText(
             messageAddedToThread.content,
             messageAddedToThread.annotations,
         );
 
-        this.logger.debug(
-            `Decorating annotations for userEmail: ${model.userEmail}`,
-        );
+        this.logger.debug(`Decorating annotations for user: ${model.userId}`);
         const decoratedAnnotations = await this.decorateAnnotations(
             messageAddedToThread.annotations,
         );
 
         if (streamingCallback) {
             this.logger.debug(
-                `Sending final streaming callback for userEmail: ${model.userEmail}`,
+                `Sending final streaming callback for user: ${model.userId}`,
             );
             streamingCallback(
-                model.userEmail,
+                model.userId,
                 prettifiedTextContent,
                 decoratedAnnotations,
                 true,
@@ -175,7 +166,7 @@ export default class AssistantService extends BaseService {
             .then((doc) => doc.toObject());
 
         this.logger.log(
-            `Assistant message sent for userEmail: ${model.userEmail} with messageId: ${response._id}`,
+            `Assistant message sent for user: ${model.userId} with messageId: ${response._id}`,
         );
 
         return new HandleIncomingMessageResponseModel(
@@ -242,15 +233,15 @@ Be structured, quickly readable and visually intuititive.
     }
 
     private async findUserChatAndCreateIfNotExists(
-        userEmail: string,
+        userId: string,
     ): Promise<Chat> {
         let chat = (
-            await this.chatModel.findOne({ userEmail }).exec()
+            await this.chatModel.findOne({ userId }).exec()
         )?.toObject();
 
         if (!chat) {
             this.logger.log(
-                `No chat found for userEmail: ${userEmail}. Creating new chat.`,
+                `No chat found for user: ${userId}. Creating new chat.`,
             );
             const threadId = await this.chatAssistant.startThread();
             this.logger.debug(`Started new thread with threadId: ${threadId}`);
@@ -259,15 +250,15 @@ Be structured, quickly readable and visually intuititive.
                 _id: new mongoose.Types.ObjectId(),
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                userEmail,
+                userId,
                 threadId,
             });
             this.logger.log(
-                `Created new chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
+                `Created new chat for user: ${userId} with chatId: ${chat._id}`,
             );
         } else {
             this.logger.log(
-                `Found existing chat for userEmail: ${userEmail} with chatId: ${chat._id}`,
+                `Found existing chat for user: ${userId} with chatId: ${chat._id}`,
             );
         }
 

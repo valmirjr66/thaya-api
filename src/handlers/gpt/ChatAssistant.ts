@@ -38,7 +38,7 @@ export default class ChatAssistant {
     public async addMessageToThread(
         threadId: string,
         message: string,
-        userEmail: string,
+        userId: string,
     ): Promise<TextResponse> {
         this.logger.log(`Adding message to thread ${threadId}: "${message}"`);
         await this.openaiClient.beta.threads.messages.create(threadId, {
@@ -71,12 +71,7 @@ export default class ChatAssistant {
                 this.logger.log(
                     `Executing tool call: ${call.function.name} (id: ${call.id})`,
                 );
-                await this.executeToolCall(
-                    call,
-                    context,
-                    toolOutputs,
-                    userEmail,
-                );
+                await this.executeToolCall(call, context, toolOutputs, userId);
             }
 
             this.logger.log(
@@ -129,7 +124,7 @@ export default class ChatAssistant {
     public async addMessageToThreadByStream(
         threadId: string,
         message: string,
-        userEmail: string,
+        userId: string,
         streamingCallback: (
             textSnapshot: string,
             annotationsSnapshot: Annotation[],
@@ -204,12 +199,7 @@ export default class ChatAssistant {
                 this.logger.log(
                     `Executing tool call: ${call.function.name} (id: ${call.id})`,
                 );
-                await this.executeToolCall(
-                    call,
-                    context,
-                    toolOutputs,
-                    userEmail,
-                );
+                await this.executeToolCall(call, context, toolOutputs, userId);
             }
 
             this.logger.log(
@@ -265,7 +255,7 @@ export default class ChatAssistant {
         toolCall: RequiredActionFunctionToolCall,
         context: Record<string, any>,
         toolOutputs: RunSubmitToolOutputsParams.ToolOutput[],
-        userEmail: string,
+        userId: string,
     ) {
         this.logger.log(
             `Executing tool call function: ${toolCall.function.name} (id: ${toolCall.id}) with args: ${toolCall.function.arguments}`,
@@ -273,7 +263,7 @@ export default class ChatAssistant {
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get_user_info') {
-            const userInfo = await this.userInfoTool.getUserInfo(userEmail);
+            const userInfo = await this.userInfoTool.getUserInfo(userId);
 
             context.userInfo = userInfo;
 
@@ -286,10 +276,10 @@ export default class ChatAssistant {
             });
         } else if (toolCall.function.name === 'get_user_agenda') {
             this.logger.log(
-                `get_user_agenda for user: ${userEmail} with args: ${JSON.stringify(args)}`,
+                `get_user_agenda for user with id: ${userId} with args: ${JSON.stringify(args)}`,
             );
             const userAgenda = await this.calendarTool.getUserAgenda(
-                userEmail,
+                userId,
                 args,
             );
 
@@ -314,7 +304,7 @@ export default class ChatAssistant {
             });
         } else if (toolCall.function.name === 'insert_calendar_occurrence') {
             this.logger.log(
-                `insert_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                `insert_calendar_occurrence for user: ${userId} with args: ${JSON.stringify(
                     args,
                 )}`,
             );
@@ -329,7 +319,7 @@ export default class ChatAssistant {
             }
 
             await this.calendarTool.insertUserCalendarOccurrence(
-                userEmail,
+                userId,
                 datetime,
                 args.description,
             );
@@ -342,15 +332,12 @@ export default class ChatAssistant {
             });
         } else if (toolCall.function.name === 'delete_calendar_occurrence') {
             this.logger.log(
-                `delete_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                `delete_calendar_occurrence for user: ${userId} with args: ${JSON.stringify(
                     args,
                 )}`,
             );
 
-            await this.calendarTool.deleteUserCalendarOccurrence(
-                userEmail,
-                args.occurrenceId,
-            );
+            await this.calendarTool.deleteUserCalendarOccurrence(userId);
 
             this.logger.log(`delete_calendar_occurrence completed`);
 
@@ -360,7 +347,7 @@ export default class ChatAssistant {
             });
         } else if (toolCall.function.name === 'update_calendar_occurrence') {
             this.logger.log(
-                `update_calendar_occurrence for user: ${userEmail} with args: ${JSON.stringify(
+                `update_calendar_occurrence for user: ${userId} with args: ${JSON.stringify(
                     args,
                 )}`,
             );
@@ -377,7 +364,6 @@ export default class ChatAssistant {
             }
 
             await this.calendarTool.updateUserCalendarOccurrence(
-                userEmail,
                 args.occurrenceId,
                 newDatetime,
                 args.newDescription,

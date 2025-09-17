@@ -102,6 +102,8 @@ async function resetMongoDB() {
             },
         ];
 
+        let patientUserId: string;
+
         for (const account of accountsToBeCreated) {
             await db.collection('credentials').insertOne({
                 email: account.email,
@@ -125,10 +127,21 @@ async function resetMongoDB() {
                 userToBeCreated.telegramUserId = 761249989;
             }
 
-            await db.collection('users').insertOne(userToBeCreated);
+            const insertionResponse = await db
+                .collection('users')
+                .insertOne(userToBeCreated);
+
+            if (account.role === 'patient') {
+                patientUserId = insertionResponse.insertedId.toString();
+            }
         }
 
-        await db.collection('calendars').insertMany(OCCURRENCES);
+        await db.collection('calendars').insertMany(
+            OCCURRENCES.map((occurrence) => ({
+                ...occurrence,
+                userId: patientUserId,
+            })),
+        );
 
         console.log('All collections cleared successfully.');
     } catch (error) {

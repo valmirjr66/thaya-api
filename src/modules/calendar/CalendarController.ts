@@ -3,7 +3,6 @@ import {
     Controller,
     Delete,
     Get,
-    Headers,
     HttpException,
     HttpStatus,
     Param,
@@ -42,7 +41,7 @@ export default class CalendarController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getUserCalendar(
-        @Headers('x-user-email') userEmail: string,
+        @Query('userId') userId: string,
         @Query('month') month: string,
         @Query('year') year: string,
     ): Promise<GetUserCalendarResponseDto> {
@@ -53,8 +52,8 @@ export default class CalendarController extends BaseController {
             );
         }
 
-        const response = await this.calendarService.getUserCalendarByEmail(
-            userEmail,
+        const response = await this.calendarService.getUserCalendarByUserId(
+            userId,
             month as AbbreviatedMonth,
             Number(year),
         );
@@ -71,29 +70,19 @@ export default class CalendarController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async insertCalendarOccurrence(
-        @Headers('x-user-email') userEmail: string,
         @Body() body: InsertCalendarOccurenceRequestDto,
     ): Promise<void> {
-        await this.calendarService.insertCalendarOccurrence({
-            ...body,
-            userEmail,
-        });
+        await this.calendarService.insertCalendarOccurrence(body);
     }
 
     @Delete(':id')
-    @ApiUnauthorizedResponse({
-        description: RESPONSE_DESCRIPTIONS.UNAUTHORIZED,
-    })
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async deleteCalendarOccurrence(
-        @Headers('x-user-email') userEmail: string,
-        @Param('id') id: string,
-    ): Promise<void> {
-        await this.calendarService.deleteCalendarOccurrence(id, userEmail);
+    async deleteCalendarOccurrence(@Param('id') id: string): Promise<void> {
+        await this.calendarService.deleteCalendarOccurrence(id);
     }
 
     @Put(':id')
@@ -108,13 +97,11 @@ export default class CalendarController extends BaseController {
     })
     async updateCalendarOccurrence(
         @Param('id') id: string,
-        @Headers('x-user-email') userEmail: string,
         @Body() body: UpdateCalendarOccurenceRequestDto,
     ): Promise<void> {
         await this.calendarService.updateCalendarOccurrence({
             ...body,
             id,
-            userEmail,
         });
     }
 }

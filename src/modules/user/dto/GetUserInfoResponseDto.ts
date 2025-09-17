@@ -4,6 +4,9 @@ import { UserRole } from 'src/types/user';
 
 export default class GetUserInfoResponseDto {
     @ApiProperty()
+    public id: string;
+
+    @ApiProperty()
     public fullname: string;
 
     @ApiProperty({ example: USER_ROLES[1] })
@@ -31,6 +34,7 @@ export default class GetUserInfoResponseDto {
     public telegramChatId?: number;
 
     constructor(
+        id: string,
         fullname: string,
         role: UserRole,
         email: string,
@@ -41,6 +45,7 @@ export default class GetUserInfoResponseDto {
         telegramUserId?: number,
         telegramChatId?: number,
     ) {
+        this.id = id;
         this.fullname = fullname;
         this.role = role;
         this.email = email;

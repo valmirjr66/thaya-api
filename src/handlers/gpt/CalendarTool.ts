@@ -19,7 +19,7 @@ export default class CalendarTool {
     }
 
     async getUserAgenda(
-        userEmail: string,
+        userId: string,
         args: {
             from: { month: AbbreviatedMonth; year: number };
             to: { month: AbbreviatedMonth; year: number };
@@ -77,7 +77,7 @@ export default class CalendarTool {
         ) {
             fetches.push(
                 this.fetchCalendar(
-                    userEmail,
+                    userId,
                     CalendarUtils.mapNumberToMonthAbbreviation(
                         currentMonthNumber,
                     ),
@@ -128,12 +128,12 @@ export default class CalendarTool {
     }
 
     private async fetchCalendar(
-        userEmail: string,
+        userId: string,
         month: AbbreviatedMonth,
         year: number,
     ): Promise<GetUserCalendarResponseModel> {
-        const userCalendar = await this.calendarService.getUserCalendarByEmail(
-            userEmail,
+        const userCalendar = await this.calendarService.getUserCalendarByUserId(
+            userId,
             month,
             year,
         );
@@ -146,16 +146,16 @@ export default class CalendarTool {
     }
 
     async insertUserCalendarOccurrence(
-        userEmail: string,
+        userId: string,
         datetime: Date,
         description: string,
     ) {
         this.logger.log(
-            `Inserting calendar occurrence for user: ${userEmail}, datetime: ${datetime.toISOString()}, description: ${description}`,
+            `Inserting calendar occurrence for user: ${userId}, datetime: ${datetime.toISOString()}, description: ${description}`,
         );
 
         await this.calendarService.insertCalendarOccurrence({
-            userEmail,
+            userId,
             datetime,
             description,
         });
@@ -163,24 +163,17 @@ export default class CalendarTool {
         this.logger.log('Calendar occurrence inserted successfully');
     }
 
-    async deleteUserCalendarOccurrence(
-        userEmail: string,
-        occurrenceId: string,
-    ) {
+    async deleteUserCalendarOccurrence(occurrenceId: string) {
         this.logger.log(
             `Deleting calendar occurrence with ID: ${occurrenceId}`,
         );
 
-        await this.calendarService.deleteCalendarOccurrence(
-            occurrenceId,
-            userEmail,
-        );
+        await this.calendarService.deleteCalendarOccurrence(occurrenceId);
 
         this.logger.log('Calendar occurrence deleted successfully');
     }
 
     async updateUserCalendarOccurrence(
-        userEmail: string,
         occurrenceId: string,
         newDatetime: Date,
         newDescription: string,
@@ -193,7 +186,6 @@ export default class CalendarTool {
             datetime: newDatetime,
             description: newDescription,
             id: occurrenceId,
-            userEmail,
         });
 
         this.logger.log('Calendar occurrence updated successfully');

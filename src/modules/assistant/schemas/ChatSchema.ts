@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { BaseSchema } from '../../../BaseSchema';
 
 export type ChatDocument = HydratedDocument<Chat>;
@@ -7,7 +7,7 @@ export type ChatDocument = HydratedDocument<Chat>;
 @Schema({ timestamps: true })
 export class Chat extends BaseSchema {
     @Prop({ required: true })
-    userEmail: string;
+    userId: mongoose.Types.ObjectId;
 
     @Prop({ required: true })
     threadId: string;

@@ -5,6 +5,7 @@ import {
     Get,
     Headers,
     Post,
+    Query,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
@@ -17,7 +18,7 @@ import { RESPONSE_DESCRIPTIONS, USER_CHAT_ORIGINS } from 'src/constants';
 import BaseController from '../../BaseController';
 import { UserChatOrigin } from '../../types/gpt';
 import AssistantService from './AssistantService';
-import GetChatByUserEmailResponseDto from './dto/GetChatByUserEmailResponseDto';
+import GetChatByUserIdResponseDto from './dto/GetChatByUserIdResponseDto';
 import HandleIncomingMessageRequestDto from './dto/HandleIncomingMessageRequestDto';
 import HandleIncomingMessageResponseDto from './dto/HandleIncomingMessageResponseDto';
 
@@ -35,10 +36,9 @@ export default class AssistantController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getChat(
-        @Headers('x-user-email') userEmail: string,
-    ): Promise<GetChatByUserEmailResponseDto> {
-        const response =
-            await this.assistantService.getChatByUserEmail(userEmail);
+        @Query('userId') userId: string,
+    ): Promise<GetChatByUserIdResponseDto> {
+        const response = await this.assistantService.getChatByUserId(userId);
         this.validateGetResponse(response);
         return response;
     }
@@ -52,7 +52,6 @@ export default class AssistantController extends BaseController {
     })
     async handleIncomingMessage(
         @Body() dto: HandleIncomingMessageRequestDto,
-        @Headers('x-user-email') userEmail: string,
         @Headers('x-user-chat-origin') userChatOrigin: string,
     ): Promise<HandleIncomingMessageResponseDto> {
         if (!USER_CHAT_ORIGINS.includes(userChatOrigin as UserChatOrigin)) {
@@ -62,7 +61,7 @@ export default class AssistantController extends BaseController {
         const response = await this.assistantService.handleIncomingMessage({
             content: dto.content,
             userChatOrigin: userChatOrigin as UserChatOrigin,
-            userEmail,
+            userId: dto.content,
         });
 
         this.validateGetResponse(response);

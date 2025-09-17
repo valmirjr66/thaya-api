@@ -125,6 +125,7 @@ export default class UserService extends BaseService {
             this.logger.debug(`User details: ${JSON.stringify(user)}`);
 
             return new GetUserInfoResponseModel(
+                user._id.toString(),
                 user.fullname,
                 user.role,
                 user.email,
@@ -263,6 +264,7 @@ export default class UserService extends BaseService {
                 users.map(
                     (user) =>
                         new GetUserInfoResponseModel(
+                            user._id.toString(),
                             user.fullname,
                             user.role,
                             user.email,
@@ -375,7 +377,7 @@ export default class UserService extends BaseService {
 
     async getUserByTelegramUserId(
         telegramUserId: number,
-    ): Promise<User | null> {
+    ): Promise<GetUserInfoResponseModel | null> {
         this.logger.log(`Fetching user with telegramUserId: ${telegramUserId}`);
 
         try {
@@ -394,7 +396,19 @@ export default class UserService extends BaseService {
             this.logger.log(
                 `User found with telegramUserId: ${telegramUserId} - email: ${user.email}`,
             );
-            return user;
+
+            return new GetUserInfoResponseModel(
+                user._id.toString(),
+                user.fullname,
+                user.role,
+                user.email,
+                user.phoneNumber,
+                user.birthdate,
+                user.profilePicFileName,
+                user.nickname,
+                user.telegramUserId,
+                user.telegramChatId,
+            );
         } catch (error) {
             this.logger.error(
                 `Error fetching user with telegramUserId ${telegramUserId}: ${error}`,

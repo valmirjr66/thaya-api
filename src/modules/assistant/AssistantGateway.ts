@@ -31,19 +31,18 @@ export class AssistantGateway
         this.logger.log(`Received 'message' event from client: ${client.id}`);
         this.logger.debug(`Payload: ${JSON.stringify(payload)}`);
 
-        const userEmail = client.handshake.headers['x-user-email'] as string;
         const userChatOrigin = client.handshake.headers[
             'x-user-chat-origin'
         ] as UserChatOrigin;
 
-        this.logger.log(
-            `User email: ${userEmail}, Chat origin: ${userChatOrigin}`,
-        );
+        const { userId, content } = payload;
+
+        this.logger.log(`User: ${userId}, Chat origin: ${userChatOrigin}`);
 
         const messageModel = new HandleIncomingMessageRequestModel(
-            userEmail,
+            userId,
             userChatOrigin,
-            payload.content,
+            content,
         );
 
         this.logger.debug(
@@ -51,19 +50,19 @@ export class AssistantGateway
         );
 
         const streamingCallback = (
-            userEmail: string,
+            userId: string,
             textSnapshot: string,
             decoratedAnnotations?: FileMetadata[],
             finished?: boolean,
         ) => {
             this.logger.log(
-                `Streaming callback for user: ${userEmail}, finished: ${finished ?? false}`,
+                `Streaming callback for user: ${userId}, finished: ${finished ?? false}`,
             );
             this.logger.debug(
                 `Text snapshot: ${textSnapshot}, Annotations: ${JSON.stringify(decoratedAnnotations)}`,
             );
             this.server.emit('message', {
-                userEmail,
+                userId,
                 textSnapshot,
                 decoratedAnnotations,
                 finished,

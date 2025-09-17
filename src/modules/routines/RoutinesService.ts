@@ -42,7 +42,7 @@ export default class RoutinesService extends BaseService {
                 `Fetching calendar for ${user.email} for ${MONTHS_ABBREVIATION[currentMonth]} ${currentYear}`,
             );
             const { items: userCalendar } =
-                await this.calendarService.getUserCalendarByEmail(
+                await this.calendarService.getUserCalendarByUserId(
                     user.email,
                     MONTHS_ABBREVIATION[currentMonth],
                     currentYear,
@@ -82,7 +82,7 @@ export default class RoutinesService extends BaseService {
                 );
 
                 const { items: nextMonthCalendar } =
-                    await this.calendarService.getUserCalendarByEmail(
+                    await this.calendarService.getUserCalendarByUserId(
                         user.email,
                         MONTHS_ABBREVIATION[nextMonth],
                         nextYear,

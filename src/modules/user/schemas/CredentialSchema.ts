@@ -7,6 +7,9 @@ export type CredentialDocument = HydratedDocument<Credential>;
 @Schema({ timestamps: true })
 export class Credential extends BaseSchema {
     @Prop({ required: true })
+    userId: string;
+
+    @Prop({ required: true })
     email: string;
 
     @Prop({ required: true })

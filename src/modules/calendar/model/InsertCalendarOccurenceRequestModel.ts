@@ -1,6 +1,6 @@
 export default class InsertCalendarOccurenceRequestModel {
     constructor(
-        public userEmail: string,
+        public userId: string,
         public datetime: Date,
         public description: string,
     ) {}

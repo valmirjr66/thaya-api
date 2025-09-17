@@ -14,8 +14,8 @@
   <input type="text" id="serverAddress" value="http://localhost:4000">
   <br><br>
 
-  <label for="userEmail">User e-mail:</label>
-  <input type="text" id="userEmail" value="valmirgmj@gmail.com">
+  <label for="userId">User Id</label>
+  <input type="text" id="userId" value="XPTO123">
   <br><br>
 
   <label for="message">Message:</label>
@@ -37,10 +37,10 @@
 
     connectButton.addEventListener('click', () => {
       const serverAddress = document.getElementById('serverAddress').value;
-      const userEmail = document.getElementById('userEmail').value;
+      const userId = document.getElementById('userId').value;
 
-      if (!serverAddress || !userEmail) {
-        console.error("Please provide both the server address and user email.");
+      if (!serverAddress || !userId) {
+        console.error("Please provide both the server address and user id.");
         return;
       }
 
@@ -50,13 +50,13 @@
         reconnectionDelayMax: 5000,
         reconnectionAttempts: Infinity,
         extraHeaders: {
-          'x-user-email': userEmail,
+          'x-user-chat-origin': 'ui',
         },
       });
 
       clientWS.on("connect", () => {
         console.log("Connected to the WebSocket server.");
-        console.log("User email:", userEmail);
+        console.log("User id:", userId);
         sendMessageButton.disabled = false;
       });
 
@@ -72,6 +72,7 @@
 
     sendMessageButton.addEventListener('click', () => {
       const messageContent = document.getElementById('message').value;
+      const userId = document.getElementById('userId').value;
 
       if (!messageContent) {
         console.error("Please enter a message to send.");
@@ -80,6 +81,7 @@
 
       const message = {
         content: messageContent,
+        userId
       };
       clientWS.emit('message', message);
       console.log("Message sent:", message);
