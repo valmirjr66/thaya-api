@@ -15,5 +15,6 @@ import {
             { name: Calendar.name, schema: CalendarSchema },
         ]),
     ],
+    exports: [CalendarService, MongooseModule],
 })
 export class CalendarModule {}

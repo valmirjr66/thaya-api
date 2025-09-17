@@ -15,5 +15,6 @@ import {
             { name: Organization.name, schema: OrganizationSchema },
         ]),
     ],
+    exports: [OrganizationService, MongooseModule],
 })
 export class OrganizationModule {}
