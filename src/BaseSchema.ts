@@ -1,7 +1,7 @@
 import { Prop } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
-export abstract class BaseSchema {
+export default abstract class BaseSchema {
     @Prop({ required: true })
     _id: mongoose.Types.ObjectId;
 

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { BaseSchema } from '../../../BaseSchema';
 import { UserRole } from 'src/types/user';
+import BaseSchema from '../../../BaseSchema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -16,17 +16,15 @@ export class User extends BaseSchema {
     @Prop({ required: true })
     role: UserRole;
 
-    @Prop()
-    profilePicFileName?: string;
-
     @Prop({ required: true })
     email: string;
 
-    @Prop({ required: true })
-    phoneNumber: string;
+    @Prop()
+    profilePicFileName?: string;
 
-    @Prop({ required: true })
-    birthdate: string;
+    phoneNumber?: string;
+
+    birthdate?: string;
 
     telegramUserId?: number;
 
