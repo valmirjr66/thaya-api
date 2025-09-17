@@ -1,7 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import BaseService from '../../BaseService';
 import GetOrganizationByIdResponseModel from './model/GetOrganizationByIdResponseModel';
 import InsertOrganizationRequestModel from './model/InsertOrganizationRequestModel';
 import ListOrganizationsResponseModel from './model/ListOrganizationsResponseModel';
@@ -9,15 +8,13 @@ import { Organization } from './schemas/OrganizationSchema';
 import UpdateOrganizationRequestModel from './model/UpdateOrganizationRequestModel';
 
 @Injectable()
-export default class OrganizationService extends BaseService {
+export default class OrganizationService {
     private readonly logger: Logger = new Logger('OrganizationService');
 
     constructor(
         @InjectModel(Organization.name)
         private readonly organizationModel: Model<Organization>,
-    ) {
-        super();
-    }
+    ) {}
 
     async getOrganizationById(
         id: string,

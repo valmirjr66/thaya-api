@@ -3,22 +3,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { AbbreviatedMonth, Occurrence } from 'src/types/calendar';
 import CalendarUtils from 'src/utils/CalendarUtils';
-import BaseService from '../../BaseService';
 import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
 import InsertCalendarOccurenceRequestModel from './model/InsertCalendarOccurenceRequestModel';
 import UpdateCalendarOccurenceRequestModel from './model/UpdateCalendarOccurenceRequestModel';
 import { Calendar } from './schemas/CalendarSchema';
 
 @Injectable()
-export default class CalendarService extends BaseService {
+export default class CalendarService {
     private readonly logger: Logger = new Logger('CalendarService');
 
     constructor(
         @InjectModel(Calendar.name)
         private readonly calendarModel: Model<Calendar>,
-    ) {
-        super();
-    }
+    ) {}
 
     async getUserCalendarByUserId(
         userId: string,

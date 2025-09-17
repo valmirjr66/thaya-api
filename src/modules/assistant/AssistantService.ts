@@ -5,7 +5,6 @@ import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
 import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
 import GetChatByUserIdResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
 import { Annotation } from 'src/types/gpt';
-import BaseService from '../../BaseService';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import HandleIncomingMessageResponseModel from './model/HandleIncomingMessageResponseModel';
 import { Chat } from './schemas/ChatSchema';
@@ -13,7 +12,7 @@ import { FileMetadata } from './schemas/FileMetadataSchema';
 import { Message } from './schemas/MessageSchema';
 
 @Injectable()
-export default class AssistantService extends BaseService {
+export default class AssistantService {
     private readonly logger: Logger = new Logger('AssistantService');
 
     constructor(
@@ -24,9 +23,7 @@ export default class AssistantService extends BaseService {
         private readonly chatModel: Model<Chat>,
         @InjectModel(FileMetadata.name)
         private readonly fileMetadataModel: Model<FileMetadata>,
-    ) {
-        super();
-    }
+    ) {}
 
     async getChatByUserId(
         userId: string,

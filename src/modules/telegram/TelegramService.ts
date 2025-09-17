@@ -1,21 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
-import BaseService from 'src/BaseService';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
 import AssistantService from '../assistant/AssistantService';
 import UserService from '../user/UserService';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
 @Injectable()
-export default class TelegramService extends BaseService {
+export default class TelegramService {
     private readonly logger: Logger = new Logger('TelegramService');
 
     constructor(
         private readonly userService: UserService,
         private readonly assistantService: AssistantService,
         private readonly telegramHandler: TelegramHandler,
-    ) {
-        super();
-    }
+    ) {}
 
     async handleIncomingMessage(model: IncomingMessageModel): Promise<void> {
         this.logger.log(`Incoming message details: ${JSON.stringify(model)}`);

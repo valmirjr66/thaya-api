@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
 import { v4 as uuidv4 } from 'uuid';
-import BaseService from '../../BaseService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import ChangeProfilePictureRequestModel from './model/ChangeProfilePictureRequestModel';
 import GetUserInfoResponseModel from './model/GetUserInfoResponseModel';
@@ -14,7 +13,7 @@ import { Credential } from './schemas/CredentialSchema';
 import { User } from './schemas/UserSchema';
 
 @Injectable()
-export default class UserService extends BaseService {
+export default class UserService {
     private readonly logger: Logger = new Logger('UserService');
 
     constructor(
@@ -23,9 +22,7 @@ export default class UserService extends BaseService {
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
         private readonly blobStorageManager: BlobStorageManager,
-    ) {
-        super();
-    }
+    ) {}
 
     async authenticateUser(
         model: AuthenticateUserRequestModel,

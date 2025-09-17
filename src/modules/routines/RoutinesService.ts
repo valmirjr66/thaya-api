@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import BaseService from 'src/BaseService';
 import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
 import AssistantService from '../assistant/AssistantService';
@@ -7,7 +6,7 @@ import CalendarService from '../calendar/CalendarService';
 import UserService from '../user/UserService';
 
 @Injectable()
-export default class RoutinesService extends BaseService {
+export default class RoutinesService {
     private readonly logger: Logger = new Logger('RoutinesService');
     private readonly DAYS_TO_CHECK_AHEAD: number =
         Number(process.env.DAYS_TO_CHECK_AHEAD) || 7;
@@ -17,9 +16,7 @@ export default class RoutinesService extends BaseService {
         private readonly userService: UserService,
         private readonly calendarService: CalendarService,
         private readonly assistantService: AssistantService,
-    ) {
-        super();
-    }
+    ) {}
 
     async agendaReminder(): Promise<void> {
         this.logger.log('Fetching user list...');
