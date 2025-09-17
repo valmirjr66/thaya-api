@@ -36,7 +36,10 @@ export default class CalendarController extends BaseController {
 
     @Get()
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: GetUserCalendarResponseDto,
+    })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -65,7 +68,7 @@ export default class CalendarController extends BaseController {
 
     @Post()
     @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })

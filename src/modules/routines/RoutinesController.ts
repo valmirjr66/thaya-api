@@ -8,7 +8,7 @@ import { RESPONSE_DESCRIPTIONS } from 'src/constants';
 import BaseController from '../../BaseController';
 import RoutinesService from './RoutinesService';
 
-@ApiTags('Routines')
+@ApiTags('Routine')
 @Controller('routines')
 export default class RoutinesController extends BaseController {
     constructor(private readonly routinesService: RoutinesService) {

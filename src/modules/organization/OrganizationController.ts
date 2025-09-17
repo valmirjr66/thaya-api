@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
 import BaseController from '../../BaseController';
-import GetUserCalendarResponseDto from './dto/GetOrganizationByIdResponseDto';
+import GetOrganizationByIdResponseDto from './dto/GetOrganizationByIdResponseDto';
 import InsertOrganizationRequestDto from './dto/InsertOrganizationRequestDto';
 import ListOrganizationsResponseDto from './dto/ListOrganizationsResponseDto';
 import OrganizationService from './OrganizationService';
@@ -31,13 +31,16 @@ export default class OrganizationController extends BaseController {
 
     @Get(':id')
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: GetOrganizationByIdResponseDto,
+    })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getOrganizationById(
         @Param('id') id: string,
-    ): Promise<GetUserCalendarResponseDto> {
+    ): Promise<GetOrganizationByIdResponseDto> {
         const response = await this.organizationService.getOrganizationById(id);
         this.validateGetResponse(response);
         return response;
@@ -45,7 +48,10 @@ export default class OrganizationController extends BaseController {
 
     @Get()
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: ListOrganizationsResponseDto,
+    })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -77,7 +83,7 @@ export default class OrganizationController extends BaseController {
     }
 
     @Put(':id')
-    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
+    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })

@@ -42,7 +42,10 @@ export default class UserController extends BaseController {
     }
 
     @Post('/authenticate')
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        schema: { example: { id: 'string' } },
+    })
     @ApiBadRequestResponse({
         description: RESPONSE_DESCRIPTIONS.BAD_REQUEST,
     })
@@ -97,7 +100,10 @@ export default class UserController extends BaseController {
     }
 
     @Get('/:id')
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: GetUserInfoResponseDto,
+    })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })

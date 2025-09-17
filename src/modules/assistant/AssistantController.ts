@@ -30,7 +30,10 @@ export default class AssistantController extends BaseController {
     }
 
     @Get('/chat')
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: GetChatByUserIdResponseDto,
+    })
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
@@ -44,7 +47,10 @@ export default class AssistantController extends BaseController {
     }
 
     @Post('/chat/message')
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.CREATED,
+        type: HandleIncomingMessageResponseDto,
+    })
     @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
