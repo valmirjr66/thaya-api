@@ -3,9 +3,9 @@ import {
     Controller,
     Delete,
     Get,
-    Headers,
     HttpException,
     HttpStatus,
+    Param,
     Post,
     Put,
     Query,
@@ -35,7 +35,7 @@ import ListUsersResponseDto from './dto/ListUsersResponseDto';
 import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
 
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export default class UserController extends BaseController {
     constructor(private readonly userService: UserService) {
         super();
@@ -51,7 +51,7 @@ export default class UserController extends BaseController {
     })
     async authenticateUser(
         @Body() dto: AuthenticateUserRequestDto,
-    ): Promise<void> {
+    ): Promise<{ id: string }> {
         const response = await this.userService.authenticateUser(dto);
 
         if (response === 'invalid credentials') {
@@ -59,13 +59,13 @@ export default class UserController extends BaseController {
                 'Invalid credentials',
                 HttpStatus.BAD_REQUEST,
             );
-        } else if (response === 'authenticated') {
-            return;
-        } else {
+        } else if (response === 'email not found') {
             throw new HttpException(
                 'E-mail is not registered',
                 HttpStatus.BAD_REQUEST,
             );
+        } else {
+            return response;
         }
     }
 
@@ -78,7 +78,7 @@ export default class UserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async changePassword(
-        @Headers('x-user-email') userEmail: string,
+        @Query('userEmail') userEmail: string,
         @Query('newPassword') newPassword: string,
     ) {
         const response = await this.userService.changePassword(
@@ -96,20 +96,20 @@ export default class UserController extends BaseController {
         return;
     }
 
-    @Get('/info')
+    @Get('/:id')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async getUserInfo(
-        @Headers('x-user-email') userEmail: string,
+    async getUserInfoById(
+        @Param('id') id: string,
     ): Promise<GetUserInfoResponseDto> {
-        const response = await this.userService.getUserInfoByEmail(userEmail);
+        const response = await this.userService.getUserInfoById(id);
         this.validateGetResponse(response);
         return response;
     }
 
-    @Put('/profile-picture')
+    @Put('/:id/profile-picture')
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(
         FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
@@ -123,7 +123,7 @@ export default class UserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async changeProfilePicture(
-        @Headers('x-user-email') userEmail: string,
+        @Param('id') userId: string,
         @UploadedFiles()
         files: {
             profilePicture: Express.Multer.File[];
@@ -131,21 +131,19 @@ export default class UserController extends BaseController {
     ): Promise<void> {
         const { profilePicture } = files;
 
-        await this.userService.changeProfilePicture(
-            userEmail,
-            profilePicture[0],
-        );
+        await this.userService.changeProfilePicture({
+            userId,
+            profilePicture: profilePicture[0],
+        });
     }
 
-    @Delete('/profile-picture')
+    @Delete('/:id/profile-picture')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async removeProfilePicture(
-        @Headers('x-user-email') userEmail: string,
-    ): Promise<void> {
-        await this.userService.removeProfilePicture(userEmail);
+    async removeProfilePicture(@Param('id') id: string): Promise<void> {
+        await this.userService.removeProfilePicture(id);
     }
 
     @Post()
@@ -166,32 +164,23 @@ export default class UserController extends BaseController {
         }
     }
 
-    @Put('/info')
+    @Put('/:id')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiConflictResponse({ description: RESPONSE_DESCRIPTIONS.CONFLICT })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async updateUser(
-        @Headers('x-user-email') userEmail: string,
+        @Param('id') id: string,
         @Body() body: UpdateUserRequestDto,
     ): Promise<void> {
-        const response = await this.userService.updateUser({
+        await this.userService.updateUser({
             ...body,
-            email: userEmail,
+            id,
         });
-
-        if (response === 'invalid email') {
-            throw new HttpException(
-                "E-mail doesn't have an assigned account",
-                HttpStatus.CONFLICT,
-            );
-        } else if (response === 'updated') {
-            return;
-        }
     }
 
-    @Get('/list')
+    @Get()
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
     @ApiInternalServerErrorResponse({

@@ -4,6 +4,9 @@ import { UserRole } from 'src/types/user';
 
 export default class UpdateUserRequestDto {
     @ApiProperty()
+    public email: string;
+
+    @ApiProperty()
     public fullname: string;
 
     @ApiProperty({ example: USER_ROLES[1] })
