@@ -9,10 +9,25 @@ import SupportUserController from './modules/user/controllers/SupportUserControl
 import DoctorUserService from './modules/user/DoctorUserService';
 import PatientUserService from './modules/user/PatientUserService';
 import {
+    AdminUser,
+    AdminUserSchema,
+} from './modules/user/schemas/AdminUserSchema';
+import {
     Credential,
     CredentialSchema,
 } from './modules/user/schemas/CredentialSchema';
-import { User, UserSchema } from './modules/user/schemas/UserSchema';
+import {
+    DoctorUser,
+    DoctorUserSchema,
+} from './modules/user/schemas/DoctorUserSchema';
+import {
+    PatientUser,
+    PatientUserSchema,
+} from './modules/user/schemas/PatientUserSchema';
+import {
+    SupportUser,
+    SupportUserSchema,
+} from './modules/user/schemas/SupportUserSchema';
 import SupportUserService from './modules/user/SupportUserService';
 
 @Module({
@@ -31,7 +46,10 @@ import SupportUserService from './modules/user/SupportUserService';
     ],
     imports: [
         MongooseModule.forFeature([
-            { name: User.name, schema: UserSchema },
+            { name: AdminUser.name, schema: AdminUserSchema },
+            { name: DoctorUser.name, schema: DoctorUserSchema },
+            { name: SupportUser.name, schema: SupportUserSchema },
+            { name: PatientUser.name, schema: PatientUserSchema },
             { name: Credential.name, schema: CredentialSchema },
         ]),
     ],

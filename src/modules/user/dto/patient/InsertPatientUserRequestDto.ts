@@ -1,25 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class InsertPatientUserRequestDto {
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public fullname: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public email: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public phoneNumber: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public birthdate: string;
 
-    @ApiProperty()
     public profilePicFileName: string;
 
-    @ApiProperty()
     public nickname: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public password: string;
 
     constructor(

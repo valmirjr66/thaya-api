@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import DoctorUserService from 'src/modules/user/DoctorUserService';
 import GetDoctorUserInfoResponseModel from 'src/modules/user/model/doctor/GetDoctorUserInfoResponseModel';
-import GetPatientInfoResponseModel from 'src/modules/user/model/patient/GetPatientInfoResponseModel';
+import GetPatientInfoResponseModel from 'src/modules/user/model/patient/GetPatientUserInfoResponseModel';
 import PatientUserService from 'src/modules/user/PatientUserService';
 import { UserChatOrigin } from 'src/types/gpt';
 

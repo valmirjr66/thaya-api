@@ -1,38 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import mongoose, { Model } from 'mongoose';
 import CoreCredentialService from './CoreCredentialService';
-import CoreUserService from './CoreUserService';
 import GetAdminUserInfoResponseModel from './model/admin/GetAdminUserInfoResponseModel';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
+import { AdminUser } from './schemas/AdminUserSchema';
 import { Credential } from './schemas/CredentialSchema';
-import { User } from './schemas/UserSchema';
 
 @Injectable()
 export default class AdminUserService {
-    private readonly coreUserService: CoreUserService;
     private readonly coreCredentialService: CoreCredentialService;
+    private readonly logger = new Logger('AdminUserService');
 
     constructor(
-        @InjectModel(User.name)
-        private readonly userModel: Model<User>,
+        @InjectModel(AdminUser.name)
+        private readonly userModel: Model<AdminUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
-        private readonly blobStorageManager: BlobStorageManager,
     ) {
-        const logger = new Logger('AdminUserService');
-
-        this.coreUserService = new CoreUserService(
-            this.userModel,
-            this.credentialModel,
-            this.blobStorageManager,
-            logger,
-        );
-
         this.coreCredentialService = new CoreCredentialService(
             this.credentialModel,
-            logger,
+            this.logger,
         );
     }
 
@@ -45,11 +33,34 @@ export default class AdminUserService {
     async getUserInfoById(
         id: string,
     ): Promise<GetAdminUserInfoResponseModel | null> {
-        const response = await this.coreUserService.getUserInfoById(id);
-        return new GetAdminUserInfoResponseModel(
-            response.id,
-            response.fullname,
-            response.email,
-        );
+        this.logger.log(`Fetching user info for id: ${id}`);
+
+        try {
+            const user = await this.userModel
+                .findById(new mongoose.Types.ObjectId(id))
+                .exec()
+                .then((doc) => doc.toObject());
+
+            if (!user) {
+                this.logger.error(`User with id ${id} not found`);
+                return null;
+            }
+
+            this.logger.log(
+                `User info fetched for id: ${id} - fullname: ${user}`,
+            );
+            this.logger.debug(`User details: ${JSON.stringify(user)}`);
+
+            return new GetAdminUserInfoResponseModel(
+                user._id.toString(),
+                user.fullname,
+                user.email,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error fetching user info for id ${id}: ${error}`,
+            );
+            throw error;
+        }
     }
 }

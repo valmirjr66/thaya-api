@@ -1,4 +1,4 @@
-export default class GetPatientInfoResponseModel {
+export default class GetPatientUserInfoResponseModel {
     constructor(
         public id: string,
         public fullname: string,

@@ -1,36 +1,26 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import mongoose, { Model } from 'mongoose';
 import CoreCredentialService from './CoreCredentialService';
-import CoreUserService from './CoreUserService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetSupportUserInfoResponseModel from './model/support/GetSupportUserInfoResponseModel';
 import InsertSupportUserRequestModel from './model/support/InsertSupportUserRequestModel';
 import ListSupportUsersInfoResponseModel from './model/support/ListSupportUsersInfoResponseModel';
 import UpdateSupportUserRequestModel from './model/support/UpdateSupportUserRequestModel';
 import { Credential } from './schemas/CredentialSchema';
-import { User } from './schemas/UserSchema';
+import { SupportUser } from './schemas/SupportUserSchema';
 
 @Injectable()
 export default class SupportUserService {
-    private readonly coreUserService: CoreUserService;
+    private readonly logger = new Logger('SupportUserService');
     private readonly coreCredentialService: CoreCredentialService;
 
     constructor(
-        @InjectModel(User.name)
-        private readonly userModel: Model<User>,
+        @InjectModel(SupportUser.name)
+        private readonly userModel: Model<SupportUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
-        private readonly blobStorageManager: BlobStorageManager,
-    ) {
-        this.coreUserService = new CoreUserService(
-            this.userModel,
-            this.credentialModel,
-            this.blobStorageManager,
-            new Logger('SupportUserService'),
-        );
-    }
+    ) {}
 
     async authenticateUser(
         model: AuthenticateUserRequestModel,
@@ -48,36 +38,149 @@ export default class SupportUserService {
     async getUserInfoById(
         id: string,
     ): Promise<GetSupportUserInfoResponseModel | null> {
-        const response = await this.coreUserService.getUserInfoById(id);
-        return new GetSupportUserInfoResponseModel(
-            response.id,
-            response.fullname,
-            response.email,
-        );
+        this.logger.log(`Fetching user info for id: ${id}`);
+
+        try {
+            const user = await this.userModel
+                .findById(new mongoose.Types.ObjectId(id))
+                .exec()
+                .then((doc) => doc.toObject());
+
+            if (!user) {
+                this.logger.error(`User with id ${id} not found`);
+                return null;
+            }
+
+            this.logger.log(
+                `User info fetched for id: ${id} - fullname: ${user.fullname}`,
+            );
+            this.logger.debug(`User details: ${JSON.stringify(user)}`);
+
+            return new GetSupportUserInfoResponseModel(
+                user._id.toString(),
+                user.fullname,
+                user.email,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error fetching user info for id ${id}: ${error}`,
+            );
+            throw error;
+        }
     }
 
     async insertUser(
         user: InsertSupportUserRequestModel,
     ): Promise<'existing email' | 'existing phone number' | 'inserted'> {
-        return this.coreUserService.insertUser({ ...user, role: 'support' });
+        this.logger.log(`Inserting user with email: ${user.email}`);
+
+        try {
+            const userWithSameEmail = await this.userModel
+                .findOne({ email: user.email })
+                .exec()
+                .then((doc) => doc?.toObject());
+
+            if (userWithSameEmail) {
+                this.logger.warn(
+                    `User with email ${user.email} already exists`,
+                );
+                return 'existing email';
+            }
+
+            const createdUser = await this.userModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                fullname: user.fullname,
+                email: user.email,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            await this.credentialModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                userId: createdUser.toObject()._id,
+                email: user.email,
+                password: user.password,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            this.logger.log(
+                `User with email ${user.email} inserted successfully`,
+            );
+            return 'inserted';
+        } catch (error) {
+            this.logger.error(
+                `Error inserting user with email ${user.email}: ${error}`,
+            );
+            throw error;
+        }
     }
 
     async updateUser(model: UpdateSupportUserRequestModel): Promise<void> {
-        return this.coreUserService.updateUser({ ...model, role: 'support' });
+        const { id } = model;
+
+        this.logger.log(`Updating user with id: ${id}`);
+
+        try {
+            this.logger.log(`Fetching user with id: ${id}`);
+
+            const user = await this.userModel
+                .findById(new mongoose.Types.ObjectId(model.id))
+                .exec()
+                .then((doc) => doc.toObject());
+
+            if (!user) {
+                this.logger.error(`User with id ${id} not found`);
+                throw new NotFoundException();
+            }
+
+            await this.userModel.updateOne(
+                {
+                    _id: user._id,
+                },
+                {
+                    fullname: model.fullname,
+                    email: model.email,
+                    updatedAt: new Date(),
+                },
+            );
+
+            this.logger.log(`User with id ${id} updated successfully`);
+        } catch (error) {
+            this.logger.error(`Error updating user with id ${id}: ${error}`);
+            throw error;
+        }
     }
 
     async listUsers(): Promise<ListSupportUsersInfoResponseModel> {
-        const response = await this.coreUserService.listUsers('support');
+        this.logger.log('Listing all users');
 
-        return new ListSupportUsersInfoResponseModel(
-            response.items.map(
-                (user) =>
-                    new GetSupportUserInfoResponseModel(
-                        user.id,
-                        user.fullname,
-                        user.email,
-                    ),
-            ),
-        );
+        try {
+            const users = await this.userModel
+                .find()
+                .exec()
+                .then((docs) => docs.map((doc) => doc.toObject()));
+
+            if (users.length === 0) {
+                this.logger.warn('No users found');
+                return new ListSupportUsersInfoResponseModel([]);
+            }
+
+            this.logger.log(`Found ${users.length} users`);
+
+            return new ListSupportUsersInfoResponseModel(
+                users.map(
+                    (user) =>
+                        new GetSupportUserInfoResponseModel(
+                            user._id.toString(),
+                            user.fullname,
+                            user.email,
+                        ),
+                ),
+            );
+        } catch (error) {
+            this.logger.error(`Error listing users: ${error}`);
+            throw error;
+        }
     }
 }
