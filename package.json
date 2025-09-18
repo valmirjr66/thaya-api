@@ -15,10 +15,10 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "redeploy:assistants": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
-    "redeploy:db": "npx tsx scripts/ResetDB.ts",
+    "redeploy:db": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetDB.ts",
     "redeploy:all": "npm run redeploy:db && npm run redeploy:assistants",
     "redeploy:prod:assistants": "ENVIRONMENT=prod GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetAssistants.ts",
-    "redeploy:prod:db": "ENVIRONMENT=prod npx tsx scripts/ResetDB.ts",
+    "redeploy:prod:db": "ENVIRONMENT=prod GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" npx tsx scripts/ResetDB.ts",
     "redeploy:prod:all": "ENVIRONMENT=prod npm run redeploy:prod:db && npm run redeploy:prod:assistants"
   },
   "dependencies": {

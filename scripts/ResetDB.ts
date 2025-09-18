@@ -1,7 +1,10 @@
 import * as dotenv from 'dotenv';
+import { readFile } from 'fs/promises';
 import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
+import { join } from 'path';
 import { CollaboratorRole } from 'src/types/user';
+import BlobStorageManager from '../src/handlers/cloud/BlobStorageManager';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
@@ -142,6 +145,9 @@ async function resetMongoDB() {
         }[] = [];
 
         console.log(`Inserting ${usersToBeInserted.length} users...`);
+
+        const blobStorageManager = new BlobStorageManager();
+
         for (const user of usersToBeInserted) {
             console.log(`Inserting user: ${user.fullname} (${user.role})`);
 
@@ -154,6 +160,29 @@ async function resetMongoDB() {
 
             const userId = insertionResponse.insertedId.toString();
             console.log(`Inserted user with _id: ${userId}`);
+
+            if (user.profilePicFileName) {
+                const filePath = join(
+                    __dirname,
+                    'assets',
+                    user.profilePicFileName,
+                );
+
+                console.log(
+                    `Uploading profile picture for user ${user.fullname} from ${filePath}...`,
+                );
+
+                const fileBuffer = await readFile(filePath);
+
+                await blobStorageManager.write(
+                    `profile_pics/${user.profilePicFileName}`,
+                    fileBuffer,
+                );
+
+                console.log('Profile picture uploaded to blob storage.');
+
+                console.log('User document updated with profilePicUrl.');
+            }
 
             if (user.role === 'patient') {
                 console.log(
