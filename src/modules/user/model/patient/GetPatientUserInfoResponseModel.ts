@@ -1,6 +1,7 @@
 export default class GetPatientUserInfoResponseModel {
     constructor(
         public id: string,
+        public doctorsId: string[],
         public fullname: string,
         public email: string,
         public phoneNumber: string,

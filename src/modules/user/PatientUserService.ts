@@ -61,6 +61,7 @@ export default class PatientUserService {
 
             return new GetPatientUserInfoResponseModel(
                 user._id.toString(),
+                user.doctorsId.map((objId) => objId.toString()),
                 user.fullname,
                 user.email,
                 user.phoneNumber,
@@ -113,6 +114,9 @@ export default class PatientUserService {
                 phoneNumber: model.phoneNumber,
                 birthdate: model.birthdate,
                 nickname: model.nickname,
+                doctorsId: model.doctorsId.map(
+                    (id) => new mongoose.Types.ObjectId(id),
+                ),
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
@@ -166,6 +170,9 @@ export default class PatientUserService {
                     nickname: model.nickname,
                     email: model.email,
                     phoneNumber: model.phoneNumber,
+                    doctorsId: model.doctorsId.map(
+                        (id) => new mongoose.Types.ObjectId(id),
+                    ),
                     updatedAt: new Date(),
                 },
             );
@@ -198,6 +205,7 @@ export default class PatientUserService {
                     (user) =>
                         new GetPatientUserInfoResponseModel(
                             user._id.toString(),
+                            user.doctorsId.map((objId) => objId.toString()),
                             user.fullname,
                             user.email,
                             user.phoneNumber,
@@ -322,6 +330,7 @@ export default class PatientUserService {
 
             return new GetPatientUserInfoResponseModel(
                 user._id.toString(),
+                user.doctorsId.map((objId) => objId.toString()),
                 user.fullname,
                 user.email,
                 user.phoneNumber,

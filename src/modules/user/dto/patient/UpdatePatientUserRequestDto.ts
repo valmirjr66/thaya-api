@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class UpdatePatientUserRequestDto {
+    @ApiProperty({
+        type: [String],
+        required: true,
+        description: 'Array of doctor ObjectIds',
+    })
+    public doctorsId: string[];
+
     @ApiProperty()
     public fullname: string;
 
@@ -23,6 +30,7 @@ export default class UpdatePatientUserRequestDto {
     public password: string;
 
     constructor(
+        doctorsId: string[],
         fullname: string,
         email: string,
         phoneNumber: string,
@@ -31,6 +39,7 @@ export default class UpdatePatientUserRequestDto {
         nickname: string,
         password: string,
     ) {
+        this.doctorsId = doctorsId;
         this.fullname = fullname;
         this.email = email;
         this.phoneNumber = phoneNumber;

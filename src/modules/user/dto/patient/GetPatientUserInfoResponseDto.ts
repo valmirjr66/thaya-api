@@ -5,6 +5,9 @@ export default class GetPatientUserInfoResponseDto {
     public id: string;
 
     @ApiProperty()
+    public doctorsId: string[];
+
+    @ApiProperty()
     public fullname: string;
 
     @ApiProperty()
