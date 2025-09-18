@@ -51,6 +51,7 @@ async function resetMongoDB() {
     console.log(
         `Starting assistants reset process. Environment: ${isProd ? 'Production' : 'Development'}`,
     );
+    console.log(`Connecting to MongoDB at: ${DATABASE_URL}`);
 
     const client = new MongoClient(DATABASE_URL);
 
@@ -61,14 +62,16 @@ async function resetMongoDB() {
         const db = client.db();
         const collections = await db.collections();
 
+        console.log(`Found ${collections.length} collections. Clearing all collections...`);
         for (const collection of collections) {
+            console.log(`Clearing collection: ${collection.collectionName}`);
             const result = await collection.deleteMany({});
-
             console.log(
                 `Cleared ${collection.collectionName}: ${result.deletedCount} documents removed.`,
             );
         }
 
+        console.log('Inserting default organization...');
         const insertedOrganization = await db
             .collection('organizations')
             .insertOne({
@@ -78,6 +81,7 @@ async function resetMongoDB() {
                 address: 'Belo Horizonte, MG, Brazil',
                 timezoneOffset: -180,
             });
+        console.log(`Inserted organization with _id: ${insertedOrganization.insertedId}`);
 
         const usersToBeInserted = [
             {
@@ -130,24 +134,31 @@ async function resetMongoDB() {
 
         const collaborators: mongoose.Types.ObjectId[] = [];
 
+        console.log(`Inserting ${usersToBeInserted.length} users...`);
         for (const user of usersToBeInserted) {
+            console.log(`Inserting user: ${user.fullname} (${user.role})`);
             const insertionResponse = await db
                 .collection('users')
                 .insertOne(user);
 
             const userId = insertionResponse.insertedId.toString();
+            console.log(`Inserted user with _id: ${userId}`);
 
             if (user.role === 'patient') {
+                console.log(`Inserting calendar occurrences for patient: ${user.fullname}`);
                 await db.collection('calendars').insertMany(
                     OCCURRENCES.map((occurrence) => ({
                         ...occurrence,
                         userId,
                     })),
                 );
+                console.log(`Inserted ${OCCURRENCES.length} calendar occurrences for patient.`);
             } else if (user.role === 'doctor' || user.role === 'support') {
                 collaborators.push(insertionResponse.insertedId);
+                console.log(`Added ${user.fullname} to collaborators list.`);
             }
 
+            console.log(`Inserting credentials for user: ${user.email}`);
             await db.collection('credentials').insertOne({
                 userId,
                 email: user.email,
@@ -155,6 +166,7 @@ async function resetMongoDB() {
             });
         }
 
+        console.log('Updating organization with collaborators...');
         await db.collection('organizations').updateOne(
             {
                 _id: insertedOrganization.insertedId,
@@ -165,8 +177,9 @@ async function resetMongoDB() {
                 },
             },
         );
+        console.log('Organization updated with collaborators.');
 
-        console.log('All collections cleared successfully.');
+        console.log('All collections cleared and default data inserted successfully.');
     } catch (error) {
         console.error('Error clearing collections:', error);
     } finally {
