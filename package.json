@@ -8,9 +8,9 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "nest start",
-    "dev": "nest start --watch",
-    "debug": "nest start --debug --watch",
+    "start": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" nest start",
+    "dev": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" nest start --watch",
+    "debug": "GOOGLE_APPLICATION_CREDENTIALS=\"./gcp-credentials.json\" nest start --debug --watch",
     "prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
