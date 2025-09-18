@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
 import AssistantService from '../assistant/AssistantService';
-import UserService from '../user/UserService';
+import PatientUserService from '../user/PatientUserService';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
 @Injectable()
@@ -9,7 +9,7 @@ export default class TelegramService {
     private readonly logger: Logger = new Logger('TelegramService');
 
     constructor(
-        private readonly userService: UserService,
+        private readonly patientUserService: PatientUserService,
         private readonly assistantService: AssistantService,
         private readonly telegramHandler: TelegramHandler,
     ) {}
@@ -39,9 +39,8 @@ export default class TelegramService {
             );
         }
 
-        const linkedUser = await this.userService.getUserByTelegramUserId(
-            model.fromId,
-        );
+        const linkedUser =
+            await this.patientUserService.getUserByTelegramUserId(model.fromId);
 
         if (linkedUser) {
             this.logger.log(

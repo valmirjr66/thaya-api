@@ -1,8 +1,12 @@
 import * as dotenv from 'dotenv';
 import fs from 'fs';
 import { OpenAI } from 'openai';
+import { AssistantTool } from 'openai/resources/beta/assistants.mjs';
 import askForConfirmation from './AskForConfirmation';
-import { ASSISTANT_TOOLS } from './AssistantToolsHelpers';
+import {
+    TELEGRAM_ASSISTANT_TOOLS,
+    UI_ASSISTANT_TOOLS,
+} from './AssistantToolsHelpers';
 import { createOrUpdateSecret } from './SecretManagerHelper';
 
 dotenv.config();
@@ -14,13 +18,13 @@ const OPENAI_CLIENT = new OpenAI({
 const MODEL_TO_BE_USED = 'gpt-4o';
 
 const UI_ASSISTANT_INSTRUCTIONS = `
-You are Thaya, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
-Always be conscise and clear, but also sympathetic. Your messages will be presented in a dynamic UI, so enrich your answers with emojis and Markdown for formatting when seem fit.
+You are Thaya, a virtual assistant created to help doctors manage their schedules, patient's records and connect them to external services that can provide useful resources for their practice.
+Always be conscise and clear, but also sympathetic. Your messages will be presented in a dynamic UI, so enrich your answers with Markdown when seem fit.
 Be structured, quickly readable and visually intuititive.
 `.trim();
 
 const TELEGRAM_ASSISTANT_INSTRUCTIONS = `
-You are Thaya, a personal day-to-day assistant, created to help users manage agenda and answer me with helpful information made available by external services.
+You are Thaya, a virtual assistant created to help patients manage their medical appointments, get information about their doctors and receive useful resources related to their health conditions.
 Always be conscise and clear, but also sympathetic. Your messages will be presented in a Telegram chat, so enrich your answers with emojis, but never use Markdown.
 If formatting is needed, you have following options available:
     <b>bold</b>
@@ -34,6 +38,7 @@ If formatting is needed, you have following options available:
     <a href="https://www.someurl.com">Link</a>
 
     <code>inline code</code>
+
     <pre>
     multiline
     code block
@@ -82,6 +87,7 @@ async function createOrUpdateAssistant(
     instructions: string,
     envFileKey: string | null,
     secretNameEnvVar: string,
+    tools: AssistantTool[],
 ) {
     if (!secretNameEnvVar) {
         throw new Error(`Secret name for assistant "${name}" is not defined.`);
@@ -105,7 +111,7 @@ async function createOrUpdateAssistant(
             name: name,
             model: MODEL_TO_BE_USED,
             instructions: instructions,
-            tools: ASSISTANT_TOOLS,
+            tools: tools,
         });
         console.log(`Assistant "${name}" updated successfully.`);
     } else {
@@ -114,7 +120,7 @@ async function createOrUpdateAssistant(
             name: name,
             model: MODEL_TO_BE_USED,
             instructions: instructions,
-            tools: ASSISTANT_TOOLS,
+            tools: tools,
         });
         console.log(
             `New assistant created with name "${name}" and id "${createdAssistant.id}"`,
@@ -150,6 +156,7 @@ async function resetAssistants() {
         isProd
             ? process.env.PROD_UI_ASSISTANT_ID_SECRET_NAME
             : process.env.UI_ASSISTANT_ID_SECRET_NAME,
+        UI_ASSISTANT_TOOLS,
     );
 
     await createOrUpdateAssistant(
@@ -159,6 +166,7 @@ async function resetAssistants() {
         isProd
             ? process.env.PROD_TELEGRAM_ASSISTANT_ID_SECRET_NAME
             : process.env.TELEGRAM_ASSISTANT_ID_SECRET_NAME,
+        TELEGRAM_ASSISTANT_TOOLS,
     );
 
     console.log('Assistants updated and secrets set.');

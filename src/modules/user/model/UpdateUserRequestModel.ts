@@ -6,8 +6,8 @@ export default class UpdateUserRequestModel {
         public fullname: string,
         public role: UserRole,
         public email: string,
-        public phoneNumber: string,
-        public birthdate: string,
+        public phoneNumber?: string,
+        public birthdate?: string,
         public nickname?: string,
     ) {}
 }

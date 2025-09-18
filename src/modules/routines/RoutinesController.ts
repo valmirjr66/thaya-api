@@ -15,12 +15,12 @@ export default class RoutinesController extends BaseController {
         super();
     }
 
-    @Post('agenda-reminder')
+    @Post('trigger-patient-reminder')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async agendaReminder(): Promise<void> {
-        await this.routinesService.agendaReminder();
+    async triggerPatientReminder(): Promise<void> {
+        await this.routinesService.triggerPatientReminder();
     }
 }

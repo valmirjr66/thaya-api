@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages.mjs';
 import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
 import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/threads/runs/runs.js';
-import { Annotation } from 'src/types/gpt';
+import { Annotation, UserChatOrigin } from 'src/types/gpt';
 import CalendarTool from './CalendarTool';
 import UserInfoTool from './UserInfoTool';
 
@@ -20,7 +20,9 @@ export class TextResponse {
 @Injectable()
 export default class ChatAssistant {
     private readonly logger: Logger = new Logger('ChatAssistant');
-    private readonly assistantId: string = process.env.UI_ASSISTANT_ID;
+    private readonly uiAssistantId: string = process.env.UI_ASSISTANT_ID;
+    private readonly telegramAssistantId: string =
+        process.env.TELEGRAM_ASSISTANT_ID;
     private readonly openaiClient: OpenAI = new OpenAI();
 
     constructor(
@@ -36,6 +38,7 @@ export default class ChatAssistant {
     }
 
     public async addMessageToThread(
+        userChatOrigin: UserChatOrigin,
         threadId: string,
         message: string,
         userId: string,
@@ -49,7 +52,10 @@ export default class ChatAssistant {
         let run = await this.openaiClient.beta.threads.runs.createAndPoll(
             threadId,
             {
-                assistant_id: this.assistantId,
+                assistant_id:
+                    userChatOrigin === 'telegram'
+                        ? this.telegramAssistantId
+                        : this.uiAssistantId,
             },
         );
 
@@ -71,7 +77,13 @@ export default class ChatAssistant {
                 this.logger.log(
                     `Executing tool call: ${call.function.name} (id: ${call.id})`,
                 );
-                await this.executeToolCall(call, context, toolOutputs, userId);
+                await this.executeToolCall(
+                    userChatOrigin,
+                    call,
+                    context,
+                    toolOutputs,
+                    userId,
+                );
             }
 
             this.logger.log(
@@ -122,6 +134,7 @@ export default class ChatAssistant {
     }
 
     public async addMessageToThreadByStream(
+        userChatOrigin: UserChatOrigin,
         threadId: string,
         message: string,
         userId: string,
@@ -143,7 +156,10 @@ export default class ChatAssistant {
 
         const runStream = this.openaiClient.beta.threads.runs
             .stream(threadId, {
-                assistant_id: this.assistantId,
+                assistant_id:
+                    userChatOrigin === 'telegram'
+                        ? this.telegramAssistantId
+                        : this.uiAssistantId,
             })
             .on('textCreated', () =>
                 this.logger.log(
@@ -199,7 +215,13 @@ export default class ChatAssistant {
                 this.logger.log(
                     `Executing tool call: ${call.function.name} (id: ${call.id})`,
                 );
-                await this.executeToolCall(call, context, toolOutputs, userId);
+                await this.executeToolCall(
+                    userChatOrigin,
+                    call,
+                    context,
+                    toolOutputs,
+                    userId,
+                );
             }
 
             this.logger.log(
@@ -252,6 +274,7 @@ export default class ChatAssistant {
     }
 
     private async executeToolCall(
+        userChatOrigin: UserChatOrigin,
         toolCall: RequiredActionFunctionToolCall,
         context: Record<string, any>,
         toolOutputs: RunSubmitToolOutputsParams.ToolOutput[],
@@ -263,7 +286,10 @@ export default class ChatAssistant {
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get_user_info') {
-            const userInfo = await this.userInfoTool.getUserInfo(userId);
+            const userInfo = await this.userInfoTool.getUserInfo(
+                userChatOrigin,
+                userId,
+            );
 
             context.userInfo = userInfo;
 

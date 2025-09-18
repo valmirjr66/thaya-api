@@ -1,16 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { USER_ROLES } from 'src/constants';
-import { UserRole } from 'src/types/user';
 
-export default class UpdateUserRequestDto {
+export default class UpdateDoctorRequestDto {
     @ApiProperty()
     public email: string;
 
     @ApiProperty()
     public fullname: string;
-
-    @ApiProperty({ example: USER_ROLES[1] })
-    public role: UserRole;
 
     @ApiProperty()
     public birthdate: string;
@@ -18,20 +13,15 @@ export default class UpdateUserRequestDto {
     @ApiProperty()
     public phoneNumber: string;
 
-    @ApiProperty()
-    public nickname?: string;
-
     constructor(
+        email: string,
         fullname: string,
-        role: UserRole,
         birthdate: string,
         phoneNumber: string,
-        nickname?: string,
     ) {
+        this.email = email;
         this.fullname = fullname;
-        this.role = role;
         this.birthdate = birthdate;
         this.phoneNumber = phoneNumber;
-        this.nickname = nickname;
     }
 }

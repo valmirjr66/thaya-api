@@ -22,10 +22,13 @@ export class User extends BaseSchema {
     @Prop()
     profilePicFileName?: string;
 
+    @Prop()
     phoneNumber?: string;
 
+    @Prop()
     birthdate?: string;
 
+    @Prop()
     telegramUserId?: number;
 
     telegramChatId?: number;

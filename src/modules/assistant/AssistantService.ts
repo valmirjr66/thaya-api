@@ -62,10 +62,6 @@ export default class AssistantService {
             finished?: boolean,
         ) => void,
     ): Promise<HandleIncomingMessageResponseModel> {
-        this.logger.log(
-            `CHAT ORIGIN IS NOT CURRENTLY BEING USED, MUST IMPLEMENT, VALUE IS: ${model.userChatOrigin}`,
-        );
-
         this.logger.debug(
             `handleIncomingMessage called for user: ${model.userId} with content: ${model.content}`,
         );
@@ -91,6 +87,7 @@ export default class AssistantService {
             );
             messageAddedToThread =
                 await this.chatAssistant.addMessageToThreadByStream(
+                    model.userChatOrigin,
                     threadId,
                     model.content,
                     model.userId,
@@ -113,6 +110,7 @@ export default class AssistantService {
                 `Using non-streaming message for user: ${model.userId}`,
             );
             messageAddedToThread = await this.chatAssistant.addMessageToThread(
+                model.userChatOrigin,
                 threadId,
                 model.content,
                 model.userId,

@@ -1,13 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { USER_ROLES } from 'src/constants';
-import { UserRole } from 'src/types/user';
 
-export default class InsertUserRequestDto {
+export default class UpdatePatientUserRequestDto {
     @ApiProperty()
     public fullname: string;
-
-    @ApiProperty({ example: USER_ROLES[1] })
-    public role: UserRole;
 
     @ApiProperty()
     public email: string;
@@ -16,29 +11,32 @@ export default class InsertUserRequestDto {
     public phoneNumber: string;
 
     @ApiProperty()
-    public password: string;
-
-    @ApiProperty()
     public birthdate: string;
 
     @ApiProperty()
-    public nickname?: string;
+    public profilePicFileName: string;
+
+    @ApiProperty()
+    public nickname: string;
+
+    @ApiProperty()
+    public password: string;
 
     constructor(
         fullname: string,
-        role: UserRole,
         email: string,
         phoneNumber: string,
-        password: string,
         birthdate: string,
-        nickname?: string,
+        profilePicFileName: string,
+        nickname: string,
+        password: string,
     ) {
         this.fullname = fullname;
-        this.role = role;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.password = password;
         this.birthdate = birthdate;
+        this.profilePicFileName = profilePicFileName;
         this.nickname = nickname;
+        this.password = password;
     }
 }

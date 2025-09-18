@@ -1,7 +1,6 @@
 import {
     Body,
     Controller,
-    Delete,
     Get,
     HttpException,
     HttpStatus,
@@ -9,15 +8,10 @@ import {
     Post,
     Put,
     Query,
-    UploadedFiles,
-    UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
     ApiBadRequestResponse,
-    ApiBody,
     ApiConflictResponse,
-    ApiConsumes,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
@@ -25,19 +19,19 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
-import UserService from './UserService';
-import AuthenticateUserRequestDto from './dto/AuthenticateUserRequestDto';
-import ChangeProfilePictureRequestDto from './dto/ChangeProfilePictureRequestDto';
-import GetUserInfoResponseDto from './dto/GetUserInfoResponseDto';
-import InsertUserRequestDto from './dto/InsertUserRequestDto';
-import ListUsersResponseDto from './dto/ListUsersResponseDto';
-import UpdateUserRequestDto from './dto/UpdateUserRequestDto';
+import BaseController from '../../../BaseController';
+import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
+import ListDoctorsResponseDto from '../dto/doctor/ListDoctorUsersInfoResponseDto';
+import ListSupportUsersInfoResponseDto from '../dto/support/ListSupportUsersInfoResponseDto';
+import UpdateSupportUserRequestDto from '../dto/support/UpdateSupportUserRequestDto';
+import GetSupportUserInfoResponseDto from '../dto/support/GetSupportUserInfoResponseDto';
+import InsertSupportUserRequestDto from '../dto/support/InsertSupportUserRequestDto';
+import SupportUserService from '../SupportUserService';
 
 @ApiTags('User')
-@Controller('users')
-export default class UserController extends BaseController {
-    constructor(private readonly userService: UserService) {
+@Controller('support-users')
+export default class SupportUserController extends BaseController {
+    constructor(private readonly supportUserService: SupportUserService) {
         super();
     }
 
@@ -55,7 +49,7 @@ export default class UserController extends BaseController {
     async authenticateUser(
         @Body() dto: AuthenticateUserRequestDto,
     ): Promise<{ id: string }> {
-        const response = await this.userService.authenticateUser(dto);
+        const response = await this.supportUserService.authenticateUser(dto);
 
         if (response === 'invalid credentials') {
             throw new HttpException(
@@ -84,7 +78,7 @@ export default class UserController extends BaseController {
         @Query('userEmail') userEmail: string,
         @Query('newPassword') newPassword: string,
     ) {
-        const response = await this.userService.changePassword(
+        const response = await this.supportUserService.changePassword(
             userEmail,
             newPassword,
         );
@@ -102,54 +96,17 @@ export default class UserController extends BaseController {
     @Get('/:id')
     @ApiOkResponse({
         description: RESPONSE_DESCRIPTIONS.OK,
-        type: GetUserInfoResponseDto,
+        type: GetSupportUserInfoResponseDto,
     })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async getUserInfoById(
         @Param('id') id: string,
-    ): Promise<GetUserInfoResponseDto> {
-        const response = await this.userService.getUserInfoById(id);
+    ): Promise<GetSupportUserInfoResponseDto> {
+        const response = await this.supportUserService.getUserInfoById(id);
         this.validateGetResponse(response);
         return response;
-    }
-
-    @Put('/:id/profile-picture')
-    @ApiConsumes('multipart/form-data')
-    @UseInterceptors(
-        FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
-    )
-    @ApiBody({
-        type: ChangeProfilePictureRequestDto,
-    })
-    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.CREATED })
-    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
-    @ApiInternalServerErrorResponse({
-        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
-    })
-    async changeProfilePicture(
-        @Param('id') userId: string,
-        @UploadedFiles()
-        files: {
-            profilePicture: Express.Multer.File[];
-        },
-    ): Promise<void> {
-        const { profilePicture } = files;
-
-        await this.userService.changeProfilePicture({
-            userId,
-            profilePicture: profilePicture[0],
-        });
-    }
-
-    @Delete('/:id/profile-picture')
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
-    @ApiInternalServerErrorResponse({
-        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
-    })
-    async removeProfilePicture(@Param('id') id: string): Promise<void> {
-        await this.userService.removeProfilePicture(id);
     }
 
     @Post()
@@ -158,8 +115,8 @@ export default class UserController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async insertUser(@Body() body: InsertUserRequestDto): Promise<void> {
-        const response = await this.userService.insertUser(body);
+    async insertUser(@Body() dto: InsertSupportUserRequestDto): Promise<void> {
+        const response = await this.supportUserService.insertUser(dto);
         if (response === 'existing email') {
             throw new HttpException(
                 'E-mail already has an assigned account',
@@ -178,22 +135,22 @@ export default class UserController extends BaseController {
     })
     async updateUser(
         @Param('id') id: string,
-        @Body() body: UpdateUserRequestDto,
+        @Body() body: UpdateSupportUserRequestDto,
     ): Promise<void> {
-        await this.userService.updateUser({
-            ...body,
-            id,
-        });
+        await this.supportUserService.updateUser({ ...body, id });
     }
 
     @Get()
-    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: ListDoctorsResponseDto,
+    })
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async listUsers(): Promise<ListUsersResponseDto> {
-        const response = await this.userService.listUsers();
+    async listUsers(): Promise<ListSupportUsersInfoResponseDto> {
+        const response = await this.supportUserService.listUsers();
         this.validateGetResponse(response);
         return response;
     }

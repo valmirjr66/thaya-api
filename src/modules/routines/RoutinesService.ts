@@ -3,7 +3,7 @@ import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
 import AssistantService from '../assistant/AssistantService';
 import CalendarService from '../calendar/CalendarService';
-import UserService from '../user/UserService';
+import PatientUserService from '../user/PatientUserService';
 
 @Injectable()
 export default class RoutinesService {
@@ -13,14 +13,14 @@ export default class RoutinesService {
 
     constructor(
         private readonly telegramHandler: TelegramHandler,
-        private readonly userService: UserService,
+        private readonly patientUserService: PatientUserService,
         private readonly calendarService: CalendarService,
         private readonly assistantService: AssistantService,
     ) {}
 
-    async agendaReminder(): Promise<void> {
+    async triggerPatientReminder(): Promise<void> {
         this.logger.log('Fetching user list...');
-        const { items: userList } = await this.userService.listUsers();
+        const { items: userList } = await this.patientUserService.listUsers();
         this.logger.log(`Found ${userList.length} users.`);
 
         for (const user of userList) {
