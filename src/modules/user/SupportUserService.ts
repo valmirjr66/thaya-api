@@ -58,6 +58,7 @@ export default class SupportUserService {
 
             return new GetSupportUserInfoResponseModel(
                 user._id.toString(),
+                user.organizationId.toString(),
                 user.fullname,
                 user.email,
             );
@@ -89,6 +90,9 @@ export default class SupportUserService {
 
             const createdUser = await this.userModel.create({
                 _id: new mongoose.Types.ObjectId(),
+                organizationId: new mongoose.Types.ObjectId(
+                    user.organizationId,
+                ),
                 fullname: user.fullname,
                 email: user.email,
                 createdAt: new Date(),
@@ -173,6 +177,7 @@ export default class SupportUserService {
                     (user) =>
                         new GetSupportUserInfoResponseModel(
                             user._id.toString(),
+                            user.organizationId.toString(),
                             user.fullname,
                             user.email,
                         ),

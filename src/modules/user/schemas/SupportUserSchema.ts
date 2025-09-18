@@ -12,8 +12,8 @@ export class SupportUser extends BaseSchema {
     @Prop({ required: true })
     email: string;
 
-    @Prop()
-    organziationId: mongoose.Types.ObjectId;
+    @Prop({ required: true })
+    organizationId: mongoose.Types.ObjectId;
 }
 
 export const SupportUserSchema = SchemaFactory.createForClass(SupportUser);
