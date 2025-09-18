@@ -99,7 +99,7 @@ export default class SupportUserService {
 
             await this.organizationModel.updateOne(
                 { _id: new mongoose.Types.ObjectId(user.organizationId) },
-                { $pull: { doctors: user._id } },
+                { $pull: { collaborators: { id: user._id } } },
             );
 
             this.logger.log(
@@ -146,7 +146,11 @@ export default class SupportUserService {
 
             await this.organizationModel.updateOne(
                 { _id: new mongoose.Types.ObjectId(model.organizationId) },
-                { $push: { doctors: createdUser._id } },
+                {
+                    $push: {
+                        collaborators: { id: createdUser._id, role: 'support' },
+                    },
+                },
             );
 
             this.logger.log(
