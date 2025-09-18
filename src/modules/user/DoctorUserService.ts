@@ -85,6 +85,58 @@ export default class DoctorUserService {
         }
     }
 
+    async deleteUserById(id: string): Promise<void> {
+        this.logger.log(`Deleting user with id: ${id}`);
+
+        try {
+            const user = await this.userModel
+                .findById(new mongoose.Types.ObjectId(id))
+                .exec()
+                .then((doc) => doc?.toObject());
+
+            if (!user) {
+                this.logger.error(`User with id ${id} not found`);
+                throw new NotFoundException();
+            }
+
+            await this.credentialModel.deleteOne({
+                userId: new mongoose.Types.ObjectId(id),
+            });
+
+            this.logger.log(`Credentials deleted for user id: ${id}`);
+
+            await this.userModel.deleteOne({ _id: user._id });
+
+            this.logger.log(`User with id ${id} deleted successfully`);
+
+            await this.organizationModel.updateOne(
+                { _id: new mongoose.Types.ObjectId(user.organizationId) },
+                { $pull: { doctors: user._id } },
+            );
+
+            this.logger.log(
+                `User with id ${id} removed from organization ${user.organizationId}`,
+            );
+
+            if (user.profilePicFileName) {
+                this.logger.log(
+                    `Deleting profile picture for user with id ${id}: ${user.profilePicFileName}`,
+                );
+
+                await this.blobStorageManager.delete(
+                    `profile_pics/${user.profilePicFileName}`,
+                );
+
+                this.logger.log(
+                    `Profile picture deleted for user with id ${id}`,
+                );
+            }
+        } catch (error) {
+            this.logger.error(`Error deleting user with id ${id}: ${error}`);
+            throw error;
+        }
+    }
+
     async insertUser(
         model: InsertDoctorRequestModel,
     ): Promise<'existing email' | 'existing phone number' | 'inserted'> {

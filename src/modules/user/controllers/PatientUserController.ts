@@ -21,6 +21,7 @@ import {
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
@@ -104,6 +105,7 @@ export default class PatientUserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.OK,
         type: GetPatientInfoResponseDto,
     })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -113,6 +115,17 @@ export default class PatientUserController extends BaseController {
         const response = await this.patientUserService.getUserInfoById(id);
         this.validateGetResponse(response);
         return response;
+    }
+
+    @Delete('/:id')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async deleteUserById(@Param('id') id: string): Promise<void> {
+        const response = await this.patientUserService.deleteUserById(id);
+        this.validateGetResponse(response);
     }
 
     @Put('/:id/profile-picture')

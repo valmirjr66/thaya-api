@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpException,
     HttpStatus,
@@ -15,6 +16,7 @@ import {
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
@@ -98,6 +100,7 @@ export default class SupportUserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.OK,
         type: GetSupportUserInfoResponseDto,
     })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -107,6 +110,17 @@ export default class SupportUserController extends BaseController {
         const response = await this.supportUserService.getUserInfoById(id);
         this.validateGetResponse(response);
         return response;
+    }
+
+    @Delete('/:id')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async deleteUserById(@Param('id') id: string): Promise<void> {
+        const response = await this.supportUserService.deleteUserById(id);
+        this.validateGetResponse(response);
     }
 
     @Post()

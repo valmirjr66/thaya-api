@@ -60,4 +60,21 @@ export default class BlobStorageManager {
                 });
         });
     }
+
+    async delete(path: string): Promise<void> {
+        this.logger.log(
+            `Deleting file from bucket "${this.bucketName}" at path "${path}"`,
+        );
+        try {
+            await this.storage.bucket(this.bucketName).file(path).delete();
+            this.logger.log(
+                `Successfully deleted file "${path}" from bucket "${this.bucketName}"`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Failed to delete file "${path}" from bucket "${this.bucketName}": ${error}`,
+            );
+            throw error;
+        }
+    }
 }

@@ -99,18 +99,18 @@ async function resetMongoDB() {
                 email: DEFAULT_1_DOCTOR_EMAIL,
                 phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
                 birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample1.jpg',
+                profilePicFileName: 'sample2.jpg',
                 organizationId: new mongoose.Types.ObjectId(
                     insertedOrganization.insertedId,
                 ),
             },
             {
-                fullname: 'Juliana Andrade Santos',
+                fullname: 'Anderson Paiva Rocha',
                 role: 'doctor',
                 email: DEFAULT_2_DOCTOR_EMAIL,
                 phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
                 birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample1.jpg',
+                profilePicFileName: 'sample3.jpg',
                 organizationId: new mongoose.Types.ObjectId(
                     insertedOrganization.insertedId,
                 ),
