@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
 import { v4 as uuidv4 } from 'uuid';
+import { Organization } from '../organization/schemas/OrganizationSchema';
 import CoreCredentialService from './CoreCredentialService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import ChangeProfilePictureRequestModel from './model/ChangeProfilePictureRequestModel';
@@ -23,6 +24,8 @@ export default class DoctorUserService {
         private readonly userModel: Model<DoctorUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
+        @InjectModel(Organization.name)
+        private readonly organizationModel: Model<Organization>,
         private readonly blobStorageManager: BlobStorageManager,
     ) {
         this.coreCredentialService = new CoreCredentialService(
@@ -120,6 +123,19 @@ export default class DoctorUserService {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+
+            this.logger.log(
+                `User with email ${model.email} created successfully with id ${createdUser._id}`,
+            );
+
+            await this.organizationModel.updateOne(
+                { _id: new mongoose.Types.ObjectId(model.organizationId) },
+                { $push: { doctors: createdUser._id } },
+            );
+
+            this.logger.log(
+                `User with id ${createdUser._id} added to organization ${model.organizationId}`,
+            );
 
             await this.credentialModel.create({
                 _id: new mongoose.Types.ObjectId(),

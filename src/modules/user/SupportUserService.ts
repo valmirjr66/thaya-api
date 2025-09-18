@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { Organization } from '../organization/schemas/OrganizationSchema';
 import CoreCredentialService from './CoreCredentialService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import GetSupportUserInfoResponseModel from './model/support/GetSupportUserInfoResponseModel';
@@ -20,6 +21,8 @@ export default class SupportUserService {
         private readonly userModel: Model<SupportUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
+        @InjectModel(Organization.name)
+        private readonly organizationModel: Model<Organization>,
     ) {}
 
     async authenticateUser(
@@ -71,19 +74,19 @@ export default class SupportUserService {
     }
 
     async insertUser(
-        user: InsertSupportUserRequestModel,
+        model: InsertSupportUserRequestModel,
     ): Promise<'existing email' | 'existing phone number' | 'inserted'> {
-        this.logger.log(`Inserting user with email: ${user.email}`);
+        this.logger.log(`Inserting user with email: ${model.email}`);
 
         try {
             const userWithSameEmail = await this.userModel
-                .findOne({ email: user.email })
+                .findOne({ email: model.email })
                 .exec()
                 .then((doc) => doc?.toObject());
 
             if (userWithSameEmail) {
                 this.logger.warn(
-                    `User with email ${user.email} already exists`,
+                    `User with email ${model.email} already exists`,
                 );
                 return 'existing email';
             }
@@ -91,30 +94,43 @@ export default class SupportUserService {
             const createdUser = await this.userModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 organizationId: new mongoose.Types.ObjectId(
-                    user.organizationId,
+                    model.organizationId,
                 ),
-                fullname: user.fullname,
-                email: user.email,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
-
-            await this.credentialModel.create({
-                _id: new mongoose.Types.ObjectId(),
-                userId: createdUser.toObject()._id,
-                email: user.email,
-                password: user.password,
+                fullname: model.fullname,
+                email: model.email,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
 
             this.logger.log(
-                `User with email ${user.email} inserted successfully`,
+                `User with email ${model.email} created successfully with id ${createdUser._id}`,
+            );
+
+            await this.organizationModel.updateOne(
+                { _id: new mongoose.Types.ObjectId(model.organizationId) },
+                { $push: { doctors: createdUser._id } },
+            );
+
+            this.logger.log(
+                `User with id ${createdUser._id} added to organization ${model.organizationId}`,
+            );
+
+            await this.credentialModel.create({
+                _id: new mongoose.Types.ObjectId(),
+                userId: createdUser.toObject()._id,
+                email: model.email,
+                password: model.password,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+
+            this.logger.log(
+                `User with email ${model.email} inserted successfully`,
             );
             return 'inserted';
         } catch (error) {
             this.logger.error(
-                `Error inserting user with email ${user.email}: ${error}`,
+                `Error inserting user with email ${model.email}: ${error}`,
             );
             throw error;
         }

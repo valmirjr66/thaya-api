@@ -20,6 +20,7 @@ import BaseController from '../../BaseController';
 import GetOrganizationByIdResponseDto from './dto/GetOrganizationByIdResponseDto';
 import InsertOrganizationRequestDto from './dto/InsertOrganizationRequestDto';
 import ListOrganizationsResponseDto from './dto/ListOrganizationsResponseDto';
+import UpdateOrganizationRequestDto from './dto/UpdateOrganizationRequestDto';
 import OrganizationService from './OrganizationService';
 
 @ApiTags('Organization')
@@ -89,7 +90,7 @@ export default class OrganizationController extends BaseController {
     })
     async updateOrganization(
         @Param('id') id: string,
-        @Body() body: InsertOrganizationRequestDto,
+        @Body() body: UpdateOrganizationRequestDto,
     ): Promise<void> {
         await this.organizationService.updateOrganization({ ...body, id });
     }
