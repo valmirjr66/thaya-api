@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
@@ -68,6 +69,16 @@ async function resetMongoDB() {
             );
         }
 
+        const insertedOrganization = await db
+            .collection('organizations')
+            .insertOne({
+                name: 'Thaya Health',
+                collaborators: [],
+                phoneNumber: '5531999999999',
+                address: 'Belo Horizonte, MG, Brazil',
+                timezoneOffset: -180,
+            });
+
         const usersToBeInserted = [
             {
                 fullname: 'Valmir Martins Júnior',
@@ -81,6 +92,9 @@ async function resetMongoDB() {
                 phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
                 birthdate: generateRandomBirthdate(),
                 profilePicFileName: 'sample1.jpg',
+                organizationId: new mongoose.Types.ObjectId(
+                    insertedOrganization.insertedId,
+                ),
             },
             {
                 fullname: 'Juliana Andrade Santos',
@@ -89,11 +103,17 @@ async function resetMongoDB() {
                 phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
                 birthdate: generateRandomBirthdate(),
                 profilePicFileName: 'sample1.jpg',
+                organizationId: new mongoose.Types.ObjectId(
+                    insertedOrganization.insertedId,
+                ),
             },
             {
                 fullname: 'Viviane Silva Costa',
                 role: 'support',
                 email: DEFAULT_SUPPORT_EMAIL,
+                organizationId: new mongoose.Types.ObjectId(
+                    insertedOrganization.insertedId,
+                ),
             },
             {
                 fullname: 'Rodrigo Medeiros Chaia',
@@ -107,6 +127,8 @@ async function resetMongoDB() {
                 telegramUserId: 761249989,
             },
         ];
+
+        const collaborators: mongoose.Types.ObjectId[] = [];
 
         for (const user of usersToBeInserted) {
             const insertionResponse = await db
@@ -122,6 +144,8 @@ async function resetMongoDB() {
                         userId,
                     })),
                 );
+            } else if (user.role === 'doctor' || user.role === 'support') {
+                collaborators.push(insertionResponse.insertedId);
             }
 
             await db.collection('credentials').insertOne({
@@ -130,6 +154,17 @@ async function resetMongoDB() {
                 password: '123',
             });
         }
+
+        await db.collection('organizations').updateOne(
+            {
+                _id: insertedOrganization.insertedId,
+            },
+            {
+                $set: {
+                    collaborators: collaborators,
+                },
+            },
+        );
 
         console.log('All collections cleared successfully.');
     } catch (error) {
