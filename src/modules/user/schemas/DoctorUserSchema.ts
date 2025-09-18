@@ -21,8 +21,8 @@ export class DoctorUser extends BaseSchema {
     @Prop()
     birthdate?: string;
 
-    @Prop()
-    organziationId: mongoose.Types.ObjectId;
+    @Prop({ required: true })
+    organizationId: mongoose.Types.ObjectId;
 }
 
 export const DoctorUserSchema = SchemaFactory.createForClass(DoctorUser);

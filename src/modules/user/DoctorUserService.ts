@@ -67,6 +67,7 @@ export default class DoctorUserService {
 
             return new GetDoctorUserInfoResponseModel(
                 user._id.toString(),
+                user.organizationId.toString(),
                 user.fullname,
                 user.email,
                 user.phoneNumber,
@@ -111,6 +112,7 @@ export default class DoctorUserService {
 
             const createdUser = await this.userModel.create({
                 _id: new mongoose.Types.ObjectId(),
+                organizationId: model.organizationId,
                 fullname: model.fullname,
                 email: model.email,
                 phoneNumber: model.phoneNumber,
@@ -199,6 +201,7 @@ export default class DoctorUserService {
                     (user) =>
                         new GetDoctorUserInfoResponseModel(
                             user._id.toString(),
+                            user.organizationId.toString(),
                             user.fullname,
                             user.email,
                             user.phoneNumber,

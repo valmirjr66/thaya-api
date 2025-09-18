@@ -5,6 +5,9 @@ export default class GetDoctorUserInfoResponseDto {
     public id: string;
 
     @ApiProperty()
+    public organizationId: string;
+
+    @ApiProperty()
     public fullname: string;
 
     @ApiProperty()
@@ -21,6 +24,7 @@ export default class GetDoctorUserInfoResponseDto {
 
     constructor(
         id: string,
+        organizationId: string,
         fullname: string,
         email: string,
         phoneNumber: string,
@@ -28,6 +32,7 @@ export default class GetDoctorUserInfoResponseDto {
         profilePicFileName?: string,
     ) {
         this.id = id;
+        this.organizationId = organizationId;
         this.fullname = fullname;
         this.email = email;
         this.phoneNumber = phoneNumber;
