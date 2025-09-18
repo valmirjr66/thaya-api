@@ -363,7 +363,9 @@ export default class ChatAssistant {
                 )}`,
             );
 
-            await this.calendarTool.deleteUserCalendarOccurrence(userId);
+            await this.calendarTool.deleteUserCalendarOccurrence(
+                args.occurrenceId,
+            );
 
             this.logger.log(`delete_calendar_occurrence completed`);
 
