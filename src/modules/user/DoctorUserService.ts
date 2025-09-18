@@ -36,7 +36,6 @@ export default class DoctorUserService {
 
         this.coreCredentialService = new CoreCredentialService(
             this.credentialModel,
-            this.userModel,
             logger,
         );
     }

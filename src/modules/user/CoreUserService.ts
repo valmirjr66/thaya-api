@@ -88,7 +88,7 @@ export default class CoreUserService {
                 return 'existing phone number';
             }
 
-            await this.userModel.create({
+            const createdUser = await this.userModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 fullname: user.fullname,
                 role: user.role,
@@ -102,6 +102,7 @@ export default class CoreUserService {
 
             await this.credentialModel.create({
                 _id: new mongoose.Types.ObjectId(),
+                userId: createdUser.toObject()._id,
                 email: user.email,
                 password: user.password,
                 createdAt: new Date(),

@@ -68,39 +68,34 @@ async function resetMongoDB() {
             );
         }
 
-        await db.collection('users').insertOne({
-            fullname: 'Valmir Martins Júnior',
-            role: 'admin',
-            email: DEFAULT_ADMIN_EMAIL,
-        });
-
-        await db.collection('users').insertOne({
-            fullname: 'Alessandra Matos Vieira',
-            role: 'doctor',
-            email: DEFAULT_1_DOCTOR_EMAIL,
-            phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-            birthdate: generateRandomBirthdate(),
-            profilePicFileName: 'sample1.jpg',
-        });
-
-        await db.collection('users').insertOne({
-            fullname: 'Juliana Andrade Santos',
-            role: 'doctor',
-            email: DEFAULT_2_DOCTOR_EMAIL,
-            phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-            birthdate: generateRandomBirthdate(),
-            profilePicFileName: 'sample1.jpg',
-        });
-
-        await db.collection('users').insertOne({
-            fullname: 'Juliana Andrade Santos',
-            role: 'support',
-            email: DEFAULT_SUPPORT_EMAIL,
-        });
-
-        const patientInsertionResponse = await db
-            .collection('users')
-            .insertOne({
+        const usersToBeInserted = [
+            {
+                fullname: 'Valmir Martins Júnior',
+                role: 'admin',
+                email: DEFAULT_ADMIN_EMAIL,
+            },
+            {
+                fullname: 'Alessandra Matos Vieira',
+                role: 'doctor',
+                email: DEFAULT_1_DOCTOR_EMAIL,
+                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
+                birthdate: generateRandomBirthdate(),
+                profilePicFileName: 'sample1.jpg',
+            },
+            {
+                fullname: 'Juliana Andrade Santos',
+                role: 'doctor',
+                email: DEFAULT_2_DOCTOR_EMAIL,
+                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
+                birthdate: generateRandomBirthdate(),
+                profilePicFileName: 'sample1.jpg',
+            },
+            {
+                fullname: 'Viviane Silva Costa',
+                role: 'support',
+                email: DEFAULT_SUPPORT_EMAIL,
+            },
+            {
                 fullname: 'Rodrigo Medeiros Chaia',
                 role: 'patient',
                 email: DEFAULT_PATIENT_EMAIL,
@@ -110,16 +105,31 @@ async function resetMongoDB() {
                 nickname: 'Rô',
                 telegramChatId: 761249989,
                 telegramUserId: 761249989,
+            },
+        ];
+
+        for (const user of usersToBeInserted) {
+            const insertionResponse = await db
+                .collection('users')
+                .insertOne(user);
+
+            const userId = insertionResponse.insertedId.toString();
+
+            if (user.role === 'patient') {
+                await db.collection('calendars').insertMany(
+                    OCCURRENCES.map((occurrence) => ({
+                        ...occurrence,
+                        userId,
+                    })),
+                );
+            }
+
+            await db.collection('credentials').insertOne({
+                userId,
+                email: user.email,
+                password: '123',
             });
-
-        const patientUserId = patientInsertionResponse.insertedId.toString();
-
-        await db.collection('calendars').insertMany(
-            OCCURRENCES.map((occurrence) => ({
-                ...occurrence,
-                userId: patientUserId,
-            })),
-        );
+        }
 
         console.log('All collections cleared successfully.');
     } catch (error) {

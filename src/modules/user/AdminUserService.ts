@@ -32,7 +32,6 @@ export default class AdminUserService {
 
         this.coreCredentialService = new CoreCredentialService(
             this.credentialModel,
-            this.userModel,
             logger,
         );
     }

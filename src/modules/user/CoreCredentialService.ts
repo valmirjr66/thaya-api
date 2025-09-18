@@ -2,12 +2,10 @@ import { Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import { Credential } from './schemas/CredentialSchema';
-import { User } from './schemas/UserSchema';
 
 export default class CoreCredentialService {
     constructor(
         private readonly credentialModel: Model<Credential>,
-        private readonly userModel: Model<User>,
         private readonly logger: Logger,
     ) {}
 
@@ -26,16 +24,12 @@ export default class CoreCredentialService {
             if (credential) {
                 this.logger.log(`Credential found for email: ${model.email}`);
 
-                const user = await this.userModel
-                    .findOne({ email: model.email })
-                    .exec()
-                    .then((doc) => doc.toObject());
-
                 if (credential.password === model.password) {
                     this.logger.log(
                         `User with email ${model.email} authenticated successfully`,
                     );
-                    return { id: user._id.toString() };
+
+                    return { id: credential.toObject().userId.toString() };
                 } else {
                     this.logger.warn(
                         `Invalid credentials for email: ${model.email}`,
