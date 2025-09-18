@@ -11,6 +11,7 @@ import { CalendarModule } from './calendar.module';
 import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
+import { AssistantGateway } from './modules/assistant/AssistantGateway';
 import AssistantService from './modules/assistant/AssistantService';
 import {
     FileMetadata,
@@ -20,7 +21,13 @@ import { UserModule } from './user.module';
 
 @Module({
     controllers: [AssistantController],
-    providers: [AssistantService, ChatAssistant, UserInfoTool, CalendarTool],
+    providers: [
+        AssistantGateway,
+        AssistantService,
+        ChatAssistant,
+        UserInfoTool,
+        CalendarTool,
+    ],
     imports: [
         UserModule,
         CalendarModule,
