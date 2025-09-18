@@ -119,8 +119,7 @@ export default class SupportUserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async deleteUserById(@Param('id') id: string): Promise<void> {
-        const response = await this.supportUserService.deleteUserById(id);
-        this.validateGetResponse(response);
+        await this.supportUserService.deleteUserById(id);
     }
 
     @Post()

@@ -124,8 +124,7 @@ export default class DoctorUserController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async deleteUserById(@Param('id') id: string): Promise<void> {
-        const response = await this.doctorUserService.deleteUserById(id);
-        this.validateGetResponse(response);
+        await this.doctorUserService.deleteUserById(id);
     }
 
     @Put('/:id/profile-picture')
