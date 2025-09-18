@@ -23,7 +23,12 @@ export default class SupportUserService {
         private readonly credentialModel: Model<Credential>,
         @InjectModel(Organization.name)
         private readonly organizationModel: Model<Organization>,
-    ) {}
+    ) {
+        this.coreCredentialService = new CoreCredentialService(
+            this.credentialModel,
+            this.logger,
+        );
+    }
 
     async authenticateUser(
         model: AuthenticateUserRequestModel,
