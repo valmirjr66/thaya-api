@@ -184,7 +184,7 @@ export default class DoctorUserService {
                 { _id: new mongoose.Types.ObjectId(model.organizationId) },
                 {
                     $push: {
-                        collaborators: { id: createdUser._id, role: 'support' },
+                        collaborators: { id: createdUser._id, role: 'doctor' },
                     },
                 },
             );
