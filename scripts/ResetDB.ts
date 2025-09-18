@@ -62,7 +62,9 @@ async function resetMongoDB() {
         const db = client.db();
         const collections = await db.collections();
 
-        console.log(`Found ${collections.length} collections. Clearing all collections...`);
+        console.log(
+            `Found ${collections.length} collections. Clearing all collections...`,
+        );
         for (const collection of collections) {
             console.log(`Clearing collection: ${collection.collectionName}`);
             const result = await collection.deleteMany({});
@@ -81,7 +83,9 @@ async function resetMongoDB() {
                 address: 'Belo Horizonte, MG, Brazil',
                 timezoneOffset: -180,
             });
-        console.log(`Inserted organization with _id: ${insertedOrganization.insertedId}`);
+        console.log(
+            `Inserted organization with _id: ${insertedOrganization.insertedId}`,
+        );
 
         const usersToBeInserted = [
             {
@@ -138,21 +142,25 @@ async function resetMongoDB() {
         for (const user of usersToBeInserted) {
             console.log(`Inserting user: ${user.fullname} (${user.role})`);
             const insertionResponse = await db
-                .collection('users')
+                .collection(`${user.role}users`)
                 .insertOne(user);
 
             const userId = insertionResponse.insertedId.toString();
             console.log(`Inserted user with _id: ${userId}`);
 
             if (user.role === 'patient') {
-                console.log(`Inserting calendar occurrences for patient: ${user.fullname}`);
+                console.log(
+                    `Inserting calendar occurrences for patient: ${user.fullname}`,
+                );
                 await db.collection('calendars').insertMany(
                     OCCURRENCES.map((occurrence) => ({
                         ...occurrence,
                         userId,
                     })),
                 );
-                console.log(`Inserted ${OCCURRENCES.length} calendar occurrences for patient.`);
+                console.log(
+                    `Inserted ${OCCURRENCES.length} calendar occurrences for patient.`,
+                );
             } else if (user.role === 'doctor' || user.role === 'support') {
                 collaborators.push(insertionResponse.insertedId);
                 console.log(`Added ${user.fullname} to collaborators list.`);
@@ -179,7 +187,9 @@ async function resetMongoDB() {
         );
         console.log('Organization updated with collaborators.');
 
-        console.log('All collections cleared and default data inserted successfully.');
+        console.log(
+            'All collections cleared and default data inserted successfully.',
+        );
     } catch (error) {
         console.error('Error clearing collections:', error);
     } finally {
