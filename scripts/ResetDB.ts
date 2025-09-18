@@ -44,9 +44,8 @@ function generateRandomBirthdate(): string {
 async function resetMongoDB() {
     if (isProd) {
         await askForConfirmation(
-            'You are about to reset DB in PRODUCTION environment. This is a potentially destructive operation. Do you want to proceed?',
+            'You are about to reset DB in PRODUCTION environment. Do you want to proceed?',
         );
-        await askForConfirmation('Are you realy realy sure?');
     }
 
     console.log(
