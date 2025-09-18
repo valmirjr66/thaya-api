@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import BlobStorageManager from './handlers/cloud/BlobStorageManager';
+import {
+    Organization,
+    OrganizationSchema,
+} from './modules/organization/schemas/OrganizationSchema';
 import AdminUserService from './modules/user/AdminUserService';
 import AdminUserController from './modules/user/controllers/AdminUserController';
 import DoctorUserController from './modules/user/controllers/DoctorUserController';
@@ -51,6 +55,7 @@ import SupportUserService from './modules/user/SupportUserService';
             { name: SupportUser.name, schema: SupportUserSchema },
             { name: PatientUser.name, schema: PatientUserSchema },
             { name: Credential.name, schema: CredentialSchema },
+            { name: Organization.name, schema: OrganizationSchema },
         ]),
     ],
     exports: [
