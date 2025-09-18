@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Collaborator } from 'src/types/user';
 
 export default class GetOrganizationByIdResponseDto {
     @ApiProperty()
@@ -7,8 +8,8 @@ export default class GetOrganizationByIdResponseDto {
     @ApiProperty()
     public name: string;
 
-    @ApiProperty({ type: [String] })
-    public collaborators: string[];
+    @ApiProperty()
+    public collaborators: Collaborator[];
 
     @ApiProperty()
     public phoneNumber: string;
@@ -21,7 +22,7 @@ export default class GetOrganizationByIdResponseDto {
 
     constructor(
         id: string,
-        collaborators: string[],
+        collaborators: Collaborator[],
         name: string,
         phoneNumber: string,
         address: string,

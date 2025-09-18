@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { CollaboratorRole } from 'src/types/user';
 import BaseSchema from '../../../BaseSchema';
 
 export type OrganizationDocument = HydratedDocument<Organization>;
@@ -10,7 +11,10 @@ export class Organization extends BaseSchema {
     name: string;
 
     @Prop({ required: true })
-    collaborators: mongoose.Types.ObjectId[];
+    collaborators: {
+        id: mongoose.Types.ObjectId;
+        role: CollaboratorRole;
+    }[];
 
     @Prop({ required: true })
     phoneNumber: string;

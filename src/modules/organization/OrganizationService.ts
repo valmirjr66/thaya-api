@@ -36,7 +36,10 @@ export default class OrganizationService {
 
             return new GetOrganizationByIdResponseModel(
                 organization._id.toString(),
-                organization.collaborators.map((id) => id.toString()),
+                organization.collaborators.map(({ id, role }) => ({
+                    id: id.toString(),
+                    role,
+                })),
                 organization.name,
                 organization.address,
                 organization.phoneNumber,
@@ -69,9 +72,10 @@ export default class OrganizationService {
                     (organization) =>
                         new GetOrganizationByIdResponseModel(
                             organization._id.toString(),
-                            organization.collaborators.map((id) =>
-                                id.toString(),
-                            ),
+                            organization.collaborators.map(({ id, role }) => ({
+                                id: id.toString(),
+                                role,
+                            })),
                             organization.name,
                             organization.address,
                             organization.phoneNumber,
@@ -107,7 +111,10 @@ export default class OrganizationService {
                 { _id: organization._id },
                 {
                     name: model.name,
-                    collaborators: model.collaborators,
+                    collaborators: model.collaborators.map(({ id, role }) => ({
+                        id: new mongoose.Types.ObjectId(id),
+                        role,
+                    })),
                     address: model.address,
                     phoneNumber: model.phoneNumber,
                     timezoneOffset: model.timezoneOffset,
@@ -127,30 +134,31 @@ export default class OrganizationService {
     }
 
     async insertOrganization(
-        organization: InsertOrganizationRequestModel,
+        model: InsertOrganizationRequestModel,
     ): Promise<void> {
-        this.logger.log(
-            `Inserting organization with name: ${organization.name}`,
-        );
+        this.logger.log(`Inserting organization with name: ${model.name}`);
 
         try {
             await this.organizationModel.create({
                 _id: new mongoose.Types.ObjectId(),
-                name: organization.name,
-                collaborators: organization.collaborators,
-                address: organization.address,
-                phoneNumber: organization.phoneNumber,
-                timezoneOffset: organization.timezoneOffset,
+                name: model.name,
+                collaborators: model.collaborators.map(({ id, role }) => ({
+                    id: new mongoose.Types.ObjectId(id),
+                    role,
+                })),
+                address: model.address,
+                phoneNumber: model.phoneNumber,
+                timezoneOffset: model.timezoneOffset,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
 
             this.logger.log(
-                `Organization with name ${organization.name} inserted successfully`,
+                `Organization with name ${model.name} inserted successfully`,
             );
         } catch (error) {
             this.logger.error(
-                `Error inserting organization with name ${organization.name}: ${error}`,
+                `Error inserting organization with name ${model.name}: ${error}`,
             );
             throw error;
         }

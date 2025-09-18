@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Collaborator } from 'src/types/user';
 
 export default class InsertOrganizationRequestDto {
     @ApiProperty()
     public name: string;
 
-    @ApiProperty({ type: [String] })
-    public collaborators: string[];
+    @ApiProperty()
+    public collaborators: Collaborator[];
 
     @ApiProperty()
     public phoneNumber: string;
@@ -18,7 +19,7 @@ export default class InsertOrganizationRequestDto {
 
     constructor(
         name: string,
-        collaborators: string[],
+        collaborators: Collaborator[],
         phoneNumber: string,
         address: string,
         timezoneOffset: number,

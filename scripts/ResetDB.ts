@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
+import { CollaboratorRole } from 'src/types/user';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
@@ -136,14 +137,21 @@ async function resetMongoDB() {
             },
         ];
 
-        const collaborators: mongoose.Types.ObjectId[] = [];
+        const collaborators: {
+            id: mongoose.Types.ObjectId;
+            role: CollaboratorRole;
+        }[] = [];
 
         console.log(`Inserting ${usersToBeInserted.length} users...`);
         for (const user of usersToBeInserted) {
             console.log(`Inserting user: ${user.fullname} (${user.role})`);
+
+            const userWithoutRole = { ...user };
+            delete userWithoutRole.role;
+
             const insertionResponse = await db
                 .collection(`${user.role}users`)
-                .insertOne(user);
+                .insertOne(userWithoutRole);
 
             const userId = insertionResponse.insertedId.toString();
             console.log(`Inserted user with _id: ${userId}`);
@@ -162,7 +170,10 @@ async function resetMongoDB() {
                     `Inserted ${OCCURRENCES.length} calendar occurrences for patient.`,
                 );
             } else if (user.role === 'doctor' || user.role === 'support') {
-                collaborators.push(insertionResponse.insertedId);
+                collaborators.push({
+                    id: insertionResponse.insertedId,
+                    role: user.role,
+                });
                 console.log(`Added ${user.fullname} to collaborators list.`);
             }
 
