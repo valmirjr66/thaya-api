@@ -28,7 +28,7 @@ export default class CalendarService {
 
         try {
             const userCalendar = await this.calendarModel
-                .find({ userId })
+                .find({ userId: new mongoose.Types.ObjectId(userId) })
                 .exec();
 
             this.logger.debug(
