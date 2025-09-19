@@ -221,14 +221,26 @@ async function resetMongoDB() {
                 console.log(
                     `Inserting calendar occurrences for patient: ${user.fullname}`,
                 );
+
+                const randomPatientId = new mongoose.Types.ObjectId(
+                    pickRandomItemFromArray(patientIds),
+                );
+
                 await db.collection('calendars').insertMany(
                     user.occurrences.map((occurrence) => ({
                         ...occurrence,
-                        patientId: new mongoose.Types.ObjectId(
-                            pickRandomItemFromArray(patientIds),
-                        ),
+                        patientId: randomPatientId,
                         userId: new mongoose.Types.ObjectId(userId),
                     })),
+                );
+
+                await db.collection('patientusers').updateOne(
+                    { _id: randomPatientId },
+                    {
+                        $addToSet: {
+                            doctorsId: new mongoose.Types.ObjectId(userId),
+                        },
+                    },
                 );
 
                 console.log(
