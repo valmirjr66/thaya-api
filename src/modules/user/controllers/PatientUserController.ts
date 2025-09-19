@@ -170,15 +170,22 @@ export default class PatientUserController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async insertUser(@Body() body: InsertPatientUserRequestDto): Promise<void> {
+    async insertUser(
+        @Body() body: InsertPatientUserRequestDto,
+    ): Promise<{ id: string }> {
         const response = await this.patientUserService.insertUser(body);
         if (response === 'existing email') {
             throw new HttpException(
                 'E-mail already has an assigned account',
                 HttpStatus.CONFLICT,
             );
-        } else if (response === 'inserted') {
-            return;
+        } else if (response === 'existing phone number') {
+            throw new HttpException(
+                'Phone number already has an assigned account',
+                HttpStatus.CONFLICT,
+            );
+        } else {
+            return response;
         }
     }
 
