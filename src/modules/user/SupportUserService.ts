@@ -152,7 +152,7 @@ export default class SupportUserService {
             await this.organizationModel.updateOne(
                 { _id: new mongoose.Types.ObjectId(model.organizationId) },
                 {
-                    $push: {
+                    $addToSet: {
                         collaborators: { id: createdUser._id, role: 'support' },
                     },
                 },
