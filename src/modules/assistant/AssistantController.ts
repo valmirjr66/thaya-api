@@ -10,7 +10,7 @@ import {
 import {
     ApiBadRequestResponse,
     ApiInternalServerErrorResponse,
-    ApiNotFoundResponse,
+    ApiNoContentResponse,
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
@@ -34,7 +34,7 @@ export default class AssistantController extends BaseController {
         description: RESPONSE_DESCRIPTIONS.OK,
         type: GetChatByUserIdResponseDto,
     })
-    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -52,7 +52,6 @@ export default class AssistantController extends BaseController {
         type: HandleIncomingMessageResponseDto,
     })
     @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
-    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
