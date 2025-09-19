@@ -35,7 +35,7 @@ import ListPatientUsersInfoResponseDto from '../dto/patient/ListPatientUsersInfo
 import UpdatePatientUserRequestDto from '../dto/patient/UpdatePatientUserRequestDto';
 import PatientUserService from '../PatientUserService';
 
-@ApiTags('User')
+@ApiTags('Patient User')
 @Controller('patient-users')
 export default class PatientUserController extends BaseController {
     constructor(private readonly patientUserService: PatientUserService) {

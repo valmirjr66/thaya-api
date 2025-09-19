@@ -19,7 +19,7 @@ import GetAdminUserInfoResponseDto from '../dto/admin/GetAdminUserInfoResponseDt
 import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
 import AdminUserService from '../AdminUserService';
 
-@ApiTags('User')
+@ApiTags('Admin User')
 @Controller('admin-users')
 export default class AdminUserController extends BaseController {
     constructor(private readonly adminUserService: AdminUserService) {

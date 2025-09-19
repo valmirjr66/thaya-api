@@ -30,7 +30,7 @@ import GetSupportUserInfoResponseDto from '../dto/support/GetSupportUserInfoResp
 import InsertSupportUserRequestDto from '../dto/support/InsertSupportUserRequestDto';
 import SupportUserService from '../SupportUserService';
 
-@ApiTags('User')
+@ApiTags('Support User')
 @Controller('support-users')
 export default class SupportUserController extends BaseController {
     constructor(private readonly supportUserService: SupportUserService) {

@@ -30,8 +30,6 @@ async function bootstrap() {
             "This is a RESTful API created to interface with Thaya's intelligence.",
         )
         .setVersion('1.0')
-        .addTag('Assistant')
-        .addTag('User')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
