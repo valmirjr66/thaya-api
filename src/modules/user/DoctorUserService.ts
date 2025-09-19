@@ -24,7 +24,7 @@ export default class DoctorUserService {
     constructor(
         @InjectModel(DoctorUser.name)
         private readonly userModel: Model<DoctorUser>,
-        @InjectModel(DoctorUser.name)
+        @InjectModel(PatientUser.name)
         private readonly patientUserModel: Model<PatientUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
