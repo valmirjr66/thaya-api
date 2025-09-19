@@ -6,6 +6,7 @@ export const DEFAULT_2_DOCTOR_EMAIL = 'thaya.doctor2@gmail.com';
 export const DEFAULT_SUPPORT_EMAIL = 'thaya.support@gmail.com';
 
 export const DEFAULT_TELEGRAM_ID = 761249989;
+export const DEFAULT_PASSWORD = '123';
 
 export function shiftOccurrenceDateBy_N_Months(
     occurrences: { datetime: Date; description: string }[],

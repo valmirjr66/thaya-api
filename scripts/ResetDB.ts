@@ -1,10 +1,6 @@
+import axios from 'axios';
 import * as dotenv from 'dotenv';
-import { readFile } from 'fs/promises';
-import { MongoClient } from 'mongodb';
-import mongoose from 'mongoose';
-import { join } from 'path';
-import { CollaboratorRole } from 'src/types/user';
-import BlobStorageManager from '../src/handlers/cloud/BlobStorageManager';
+import { Db, MongoClient } from 'mongodb';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
@@ -12,6 +8,7 @@ import {
     DEFAULT_2_DOCTOR_EMAIL,
     DEFAULT_2_PATIENT_EMAIL,
     DEFAULT_ADMIN_EMAIL,
+    DEFAULT_PASSWORD,
     DEFAULT_SUPPORT_EMAIL,
     DEFAULT_TELEGRAM_ID,
     DOCTOR_1_OCCURRENCES,
@@ -27,16 +24,24 @@ const DATABASE_URL = isProd
     ? process.env.PROD_DATABASE_URL
     : process.env.DATABASE_URL;
 
+if (!DATABASE_URL) {
+    throw new Error('DATABASE_URL is not defined in environment variables');
+}
+
+const API_URL = process.env.API_URL || 'http://localhost:4000/api';
+
 function pickRandomItemFromArray<T>(array: T[]): T {
     const randomIndex = Math.floor(Math.random() * array.length);
     return array[randomIndex];
 }
 
-function generateRandomSequenceOfDigits(length: number): string {
-    let result = '';
+function generateRandomPhoneNumber(): string {
+    const PHONE_NUMBER_LENGTH = 13;
+
+    let result = '5531999';
     const characters = '0123456789';
     const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; result.length <= PHONE_NUMBER_LENGTH; i++) {
         result += characters.charAt(
             Math.floor(Math.random() * charactersLength),
         );
@@ -53,6 +58,140 @@ function generateRandomBirthdate(): string {
     return birthdate.toISOString().split('T')[0];
 }
 
+async function insertOrganization(): Promise<string> {
+    console.log('Inserting default organization');
+
+    const { data: organizationInsertionData } = await axios.post(
+        `${API_URL}/organizations`,
+        {
+            name: 'Thaya Health',
+            collaborators: [],
+            phoneNumber: '5531999999999',
+            address: 'Belo Horizonte, MG, Brazil',
+            timezoneOffset: -180,
+        },
+    );
+
+    const organizationId = organizationInsertionData.id as string;
+
+    console.log(`Inserted organization with id: ${organizationId}`);
+
+    return organizationId;
+}
+
+async function insertAdminUser(db: Db): Promise<void> {
+    console.log('Inserting admin user');
+
+    const { insertedId } = await db.collection('adminusers').insertOne({
+        fullname: 'Valmir Martins Júnior',
+        email: DEFAULT_ADMIN_EMAIL,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
+
+    await db.collection('credentials').insertOne({
+        userId: insertedId,
+        email: DEFAULT_ADMIN_EMAIL,
+        password: DEFAULT_PASSWORD,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
+
+    console.log(`Inserted admin user with id: ${insertedId}`);
+}
+
+async function insertDoctorUser(
+    organizationId: string,
+    fullname: string,
+    email: string,
+): Promise<string> {
+    console.log('Inserting doctor user with email:', email);
+
+    const { data: doctorInsertionData } = await axios.post(
+        `${API_URL}/doctor-users`,
+        {
+            fullname,
+            email,
+            phoneNumber: generateRandomPhoneNumber(),
+            birthdate: generateRandomBirthdate(),
+            password: DEFAULT_PASSWORD,
+            organizationId: organizationId,
+        },
+    );
+
+    console.log(`Inserted doctor user with id: ${doctorInsertionData.id}`);
+
+    return doctorInsertionData.id as string;
+}
+
+async function insertSupportUser(
+    organizationId: string,
+    fullname: string,
+    email: string,
+): Promise<string> {
+    console.log('Inserting support user with email:', email);
+
+    const { data: supportInsertionData } = await axios.post(
+        `${API_URL}/support-users`,
+        {
+            fullname,
+            email,
+            password: DEFAULT_PASSWORD,
+            organizationId: organizationId,
+        },
+    );
+
+    console.log(`Inserted support user with id: ${supportInsertionData.id}`);
+
+    return supportInsertionData.id as string;
+}
+
+async function insertPatientUser(
+    doctorsId: string[],
+    fullname: string,
+    email: string,
+    nickname?: string,
+): Promise<string> {
+    console.log('Inserting default patient user with email:', email);
+
+    const { data: patientInsertionData } = await axios.post(
+        `${API_URL}/patient-users`,
+        {
+            doctorsId,
+            fullname,
+            email,
+            nickname,
+            phoneNumber: generateRandomPhoneNumber(),
+            birthdate: generateRandomBirthdate(),
+            password: DEFAULT_PASSWORD,
+        },
+    );
+
+    console.log(`Inserted patient user with id: ${patientInsertionData.id}`);
+
+    return patientInsertionData.id as string;
+}
+
+async function insertCalendarOccurrence(
+    userId: string,
+    patientId: string,
+    datetime: string,
+    description: string,
+): Promise<void> {
+    console.log(
+        `Inserting calendar occurrence for user ${userId} and patient ${patientId}`,
+    );
+
+    await axios.post(`${API_URL}/calendar/occurrences`, {
+        userId,
+        patientId,
+        datetime,
+        description,
+    });
+
+    console.log(`Inserted calendar occurrence`);
+}
+
 async function resetMongoDB() {
     if (isProd) {
         await askForConfirmation(
@@ -60,9 +199,6 @@ async function resetMongoDB() {
         );
     }
 
-    console.log(
-        `Starting assistants reset process. Environment: ${isProd ? 'Production' : 'Development'}`,
-    );
     console.log(`Connecting to MongoDB at: ${DATABASE_URL}`);
 
     const client = new MongoClient(DATABASE_URL);
@@ -75,8 +211,9 @@ async function resetMongoDB() {
         const collections = await db.collections();
 
         console.log(
-            `Found ${collections.length} collections. Clearing all collections...`,
+            `Found ${collections.length} collections. Clearing all collections`,
         );
+
         for (const collection of collections) {
             console.log(`Clearing collection: ${collection.collectionName}`);
             const result = await collection.deleteMany({});
@@ -85,201 +222,80 @@ async function resetMongoDB() {
             );
         }
 
-        console.log('Inserting default organization...');
+        await insertAdminUser(db);
 
-        const insertedOrganization = await db
-            .collection('organizations')
-            .insertOne({
-                name: 'Thaya Health',
-                collaborators: [],
-                phoneNumber: '5531999999999',
-                address: 'Belo Horizonte, MG, Brazil',
-                timezoneOffset: -180,
-            });
-        console.log(
-            `Inserted organization with _id: ${insertedOrganization.insertedId}`,
+        const organizationId = await insertOrganization();
+
+        console.log('Inserting doctors');
+
+        const doctorId1 = await insertDoctorUser(
+            organizationId,
+            'Alessandra Matos Vieira',
+            DEFAULT_1_DOCTOR_EMAIL,
         );
 
-        const usersToBeInserted = [
-            {
-                fullname: 'Rodrigo Medeiros Chaia',
-                role: 'patient',
-                email: DEFAULT_1_PATIENT_EMAIL,
-                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-                birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample1.jpg',
-                nickname: 'Rô',
-                telegramChatId: DEFAULT_TELEGRAM_ID,
-                telegramUserId: DEFAULT_TELEGRAM_ID,
-            },
-            {
-                fullname: 'Alex Silva Gomes',
-                role: 'patient',
-                email: DEFAULT_2_PATIENT_EMAIL,
-                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-                birthdate: generateRandomBirthdate(),
-                telegramChatId: DEFAULT_TELEGRAM_ID,
-                telegramUserId: DEFAULT_TELEGRAM_ID,
-            },
-            {
-                fullname: 'Valmir Martins Júnior',
-                role: 'admin',
-                email: DEFAULT_ADMIN_EMAIL,
-            },
-            {
-                fullname: 'Alessandra Matos Vieira',
-                role: 'doctor',
-                email: DEFAULT_1_DOCTOR_EMAIL,
-                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-                birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample2.jpg',
-                organizationId: new mongoose.Types.ObjectId(
-                    insertedOrganization.insertedId,
-                ),
-                occurrences: shiftOccurrenceDateBy_N_Months(
-                    DOCTOR_1_OCCURRENCES,
-                    0,
-                ),
-            },
-            {
-                fullname: 'Anderson Paiva Rocha',
-                role: 'doctor',
-                email: DEFAULT_2_DOCTOR_EMAIL,
-                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-                birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample3.jpg',
-                organizationId: new mongoose.Types.ObjectId(
-                    insertedOrganization.insertedId,
-                ),
-                occurrences: shiftOccurrenceDateBy_N_Months(
-                    DOCTOR_2_OCCURRENCES,
-                    0,
-                ),
-            },
-            {
-                fullname: 'Viviane Silva Costa',
-                role: 'support',
-                email: DEFAULT_SUPPORT_EMAIL,
-                organizationId: new mongoose.Types.ObjectId(
-                    insertedOrganization.insertedId,
-                ),
-            },
-        ];
+        const doctorId2 = await insertDoctorUser(
+            organizationId,
+            'Anderson Paiva Rocha',
+            DEFAULT_2_DOCTOR_EMAIL,
+        );
 
-        const collaborators: {
-            id: mongoose.Types.ObjectId;
-            role: CollaboratorRole;
-        }[] = [];
+        console.log('Inserting patients');
 
-        const patientIds: mongoose.Types.ObjectId[] = [];
+        const patientId1 = await insertPatientUser(
+            [doctorId1, doctorId2],
+            'Rodrigo Medeiros Chaia',
+            DEFAULT_1_PATIENT_EMAIL,
+            'Rô',
+        );
 
-        console.log(`Inserting ${usersToBeInserted.length} users...`);
+        const patientId2 = await insertPatientUser(
+            [doctorId2],
+            'Alex Silva Gomes',
+            DEFAULT_2_PATIENT_EMAIL,
+        );
 
-        const blobStorageManager = new BlobStorageManager();
-
-        for (const user of usersToBeInserted) {
-            console.log(`Inserting user: ${user.fullname} (${user.role})`);
-
-            const userWithoutRole = { ...user };
-            delete userWithoutRole.role;
-
-            const insertionResponse = await db
-                .collection(`${user.role}users`)
-                .insertOne(userWithoutRole);
-
-            const userId = insertionResponse.insertedId.toString();
-            console.log(`Inserted user with _id: ${userId}`);
-
-            if (user.profilePicFileName) {
-                const filePath = join(
-                    __dirname,
-                    'assets',
-                    user.profilePicFileName,
-                );
-
-                console.log(
-                    `Uploading profile picture for user ${user.fullname} from ${filePath}...`,
-                );
-
-                const fileBuffer = await readFile(filePath);
-
-                await blobStorageManager.write(
-                    `profile_pics/${user.profilePicFileName}`,
-                    fileBuffer,
-                );
-
-                console.log('Profile picture uploaded to blob storage.');
-
-                console.log('User document updated with profilePicUrl.');
-            }
-
-            if (user.role === 'patient') {
-                patientIds.push(new mongoose.Types.ObjectId(userId));
-            }
-
-            if (user.occurrences) {
-                console.log(
-                    `Inserting calendar occurrences for patient: ${user.fullname}`,
-                );
-
-                const randomPatientId = new mongoose.Types.ObjectId(
-                    pickRandomItemFromArray(patientIds),
-                );
-
-                await db.collection('calendars').insertMany(
-                    user.occurrences.map((occurrence) => ({
-                        ...occurrence,
-                        patientId: randomPatientId,
-                        userId: new mongoose.Types.ObjectId(userId),
-                    })),
-                );
-
-                await db.collection('patientusers').updateOne(
-                    { _id: randomPatientId },
-                    {
-                        $addToSet: {
-                            doctorsId: new mongoose.Types.ObjectId(userId),
-                        },
-                    },
-                );
-
-                console.log(
-                    `Inserted ${user.occurrences.length} calendar occurrences for patient.`,
-                );
-            }
-
-            if (user.role === 'doctor' || user.role === 'support') {
-                collaborators.push({
-                    id: insertionResponse.insertedId,
-                    role: user.role,
-                });
-                console.log(`Added ${user.fullname} to collaborators list.`);
-            }
-
-            console.log(`Inserting credentials for user: ${user.email}`);
-            await db.collection('credentials').insertOne({
-                userId: new mongoose.Types.ObjectId(userId),
-                email: user.email,
-                password: '123',
-            });
-        }
-
-        console.log('Updating organization with collaborators...');
-        await db.collection('organizations').updateOne(
-            {
-                _id: insertedOrganization.insertedId,
-            },
+        await db.collection('patientusers').updateMany(
+            {},
             {
                 $set: {
-                    collaborators: collaborators,
+                    telegramChatId: DEFAULT_TELEGRAM_ID,
+                    telegramUserId: DEFAULT_TELEGRAM_ID,
                 },
             },
         );
-        console.log('Organization updated with collaborators.');
 
-        console.log(
-            'All collections cleared and default data inserted successfully.',
+        await insertSupportUser(
+            organizationId,
+            'Sofia Andrade Lima',
+            DEFAULT_SUPPORT_EMAIL,
         );
+
+        for (const occurrence of shiftOccurrenceDateBy_N_Months(
+            DOCTOR_1_OCCURRENCES,
+            0,
+        )) {
+            await insertCalendarOccurrence(
+                doctorId1,
+                patientId1,
+                occurrence.datetime.toISOString(),
+                occurrence.description,
+            );
+        }
+
+        for (const occurrence of shiftOccurrenceDateBy_N_Months(
+            DOCTOR_2_OCCURRENCES,
+            0,
+        )) {
+            await insertCalendarOccurrence(
+                doctorId2,
+                pickRandomItemFromArray([patientId1, patientId2]),
+                occurrence.datetime.toISOString(),
+                occurrence.description,
+            );
+        }
+
+        console.log('Database reset process completed successfully.');
     } catch (error) {
         console.error('Error clearing collections:', error);
     } finally {
