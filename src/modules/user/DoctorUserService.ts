@@ -10,9 +10,11 @@ import ChangeProfilePictureRequestModel from './model/ChangeProfilePictureReques
 import GetDoctorUserInfoResponseModel from './model/doctor/GetDoctorUserInfoResponseModel';
 import InsertDoctorRequestModel from './model/doctor/InsertDoctorUserRequestModel';
 import ListDoctorUsersInfoResponseModel from './model/doctor/ListDoctorUsersInfoResponseModel';
+import ListLinkedPatientsResponseModel from './model/doctor/ListLinkedPatientsResponseModel';
 import UpdateDoctorRequestModel from './model/doctor/UpdateDoctorUserRequestModel';
 import { Credential } from './schemas/CredentialSchema';
 import { DoctorUser } from './schemas/DoctorUserSchema';
+import { PatientUser } from './schemas/PatientUserSchema';
 
 @Injectable()
 export default class DoctorUserService {
@@ -22,6 +24,8 @@ export default class DoctorUserService {
     constructor(
         @InjectModel(DoctorUser.name)
         private readonly userModel: Model<DoctorUser>,
+        @InjectModel(DoctorUser.name)
+        private readonly patientUserModel: Model<PatientUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
         @InjectModel(Organization.name)
@@ -284,6 +288,46 @@ export default class DoctorUserService {
             );
         } catch (error) {
             this.logger.error(`Error listing users: ${error}`);
+            throw error;
+        }
+    }
+
+    async listPatients(doctorId: string) {
+        this.logger.log(`Listing patients for doctor with id: ${doctorId}`);
+
+        try {
+            const doctor = await this.userModel
+                .findById(new mongoose.Types.ObjectId(doctorId))
+                .exec()
+                .then((doc) => doc?.toObject());
+
+            if (!doctor) {
+                this.logger.error(`Doctor with id ${doctorId} not found`);
+                throw new NotFoundException();
+            }
+
+            const patients = await this.patientUserModel
+                .find({
+                    doctorsId: { $in: [new mongoose.Types.ObjectId(doctorId)] },
+                })
+                .exec()
+                .then((docs) => docs.map((doc) => doc.toObject()));
+
+            this.logger.log(
+                `Found ${patients.length} patients for doctor with id: ${doctorId}`,
+            );
+
+            return new ListLinkedPatientsResponseModel(
+                patients.map((item) => ({
+                    id: item._id.toString(),
+                    fullname: item.fullname,
+                    nickname: item.nickname,
+                })),
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error listing patients for doctor with id ${doctorId}: ${error}`,
+            );
             throw error;
         }
     }

@@ -31,6 +31,20 @@ export const UI_ASSISTANT_TOOLS: AssistantTool[] = [
     {
         type: 'function',
         function: {
+            name: 'list_doctor_patients',
+            description:
+                "Retrieves doctor's patients basic information (id, fullname and optional nickname)",
+            strict: false,
+            parameters: {
+                type: 'object',
+                properties: {},
+                required: [],
+            },
+        },
+    },
+    {
+        type: 'function',
+        function: {
             name: 'get_user_agenda',
             description:
                 "Returns occurrences within a specified date range from the doctor's schedule; make sure to retrieve the current datetime for a precise response",

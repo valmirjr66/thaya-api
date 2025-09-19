@@ -346,6 +346,7 @@ export default class ChatAssistant {
 
             await this.calendarTool.insertUserCalendarOccurrence(
                 userId,
+                args.patientId,
                 datetime,
                 args.description,
             );
@@ -402,6 +403,17 @@ export default class ChatAssistant {
             toolOutputs.push({
                 tool_call_id: toolCall.id,
                 output: JSON.stringify({ success: true }),
+            });
+        } else if (toolCall.function.name === 'list_doctor_patients') {
+            this.logger.log(`get_patients called for user: ${userId}`);
+
+            const patients = await this.userInfoTool.getDoctorPatients(userId);
+
+            this.logger.log(`get_patients result: ${JSON.stringify(patients)}`);
+
+            toolOutputs.push({
+                tool_call_id: toolCall.id,
+                output: JSON.stringify(patients),
             });
         } else {
             this.logger.error(`Unknown function: ${toolCall.function.name}`);

@@ -147,6 +147,7 @@ export default class CalendarTool {
 
     async insertUserCalendarOccurrence(
         userId: string,
+        patientId: string,
         datetime: Date,
         description: string,
     ) {
@@ -156,6 +157,7 @@ export default class CalendarTool {
 
         await this.calendarService.insertCalendarOccurrence({
             userId,
+            patientId,
             datetime,
             description,
         });

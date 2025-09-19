@@ -156,7 +156,7 @@ export default class CalendarService {
     async updateCalendarOccurrence(
         model: UpdateCalendarOccurenceRequestModel,
     ): Promise<void> {
-        const { id, patientId, datetime, description } = model;
+        const { id, datetime, description } = model;
 
         this.logger.log(
             `[updateCalendarOccurrence] Updating occurrence with id: ${id}`,
@@ -176,7 +176,6 @@ export default class CalendarService {
 
             const updatedFields: Partial<Calendar> = {
                 updatedAt: new Date(),
-                patientId: new mongoose.Types.ObjectId(patientId),
                 datetime,
                 description,
             };

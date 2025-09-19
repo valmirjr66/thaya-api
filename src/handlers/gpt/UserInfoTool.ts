@@ -37,4 +37,22 @@ export default class UserInfoTool {
             throw error;
         }
     }
+
+    async getDoctorPatients(userId: string) {
+        this.logger.log(`Fetching doctor's patients`);
+
+        try {
+            const patients = await this.doctorUserService.listPatients(userId);
+
+            this.logger.debug(`Received patients: ${JSON.stringify(patients)}`);
+
+            return patients;
+        } catch (error) {
+            this.logger.error(
+                `Error fetching doctor's patients`,
+                error.stack || error.message,
+            );
+            throw error;
+        }
+    }
 }
