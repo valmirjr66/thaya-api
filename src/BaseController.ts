@@ -1,13 +1,10 @@
 import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
-import GenericCollectionResponse from './types/generic';
 
 export default class BaseController {
-    protected validateGetResponse<T>(
-        response: T | GenericCollectionResponse<T>,
-    ): void {
+    protected validateGetResponse<T>(response: T): void {
         if (
-            response instanceof GenericCollectionResponse &&
-            response.items.length === 0
+            Object.prototype.hasOwnProperty.call(response, 'items') &&
+            response['items'] === 0
         ) {
             throw new HttpException('No content', HttpStatus.NO_CONTENT);
         } else if (!response) {

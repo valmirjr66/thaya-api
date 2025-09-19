@@ -1,8 +1,8 @@
-import GenericCollectionResponse from 'src/types/generic';
-import { Message } from '../schemas/MessageSchema';
+import { ListResponse } from 'src/types/generic';
+import GetMessageResponseModel from './GetMessageResponseModel';
 
-export default class GetChatByUserIdResponseModel extends GenericCollectionResponse<Message> {
-    constructor(public items: Message[]) {
-        super(items);
-    }
+export default class GetChatByUserIdResponseModel
+    implements ListResponse<GetMessageResponseModel>
+{
+    constructor(public items: GetMessageResponseModel[]) {}
 }

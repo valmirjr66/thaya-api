@@ -5,6 +5,7 @@ import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
 import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
 import GetChatByUserIdResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
 import { Annotation } from 'src/types/gpt';
+import GetMessageResponseModel from './model/GetMessageResponseModel';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import HandleIncomingMessageResponseModel from './model/HandleIncomingMessageResponseModel';
 import { Chat } from './schemas/ChatSchema';
@@ -44,7 +45,16 @@ export default class AssistantService {
         }
 
         const response = new GetChatByUserIdResponseModel(
-            chatMessages.map((item) => item.toObject()),
+            chatMessages.map((item) => {
+                const pojoItem = item.toObject();
+                return new GetMessageResponseModel(
+                    pojoItem._id.toString(),
+                    pojoItem.content,
+                    pojoItem.role,
+                    chat._id.toString(),
+                    pojoItem.references,
+                );
+            }),
         );
 
         this.logger.debug(

@@ -1,8 +1,14 @@
-import GenericCollectionResponse from 'src/types/generic';
-import { Message } from '../schemas/MessageSchema';
+import { ApiProperty } from '@nestjs/swagger';
+import { ListResponse } from 'src/types/generic';
+import GetMessageResponseDto from './GetMessageResponseDto';
 
-export default class GetChatByUserIdResponseDto extends GenericCollectionResponse<Message> {
-    constructor(items: Message[]) {
-        super(items);
+export default class GetChatByUserIdResponseDto
+    implements ListResponse<GetMessageResponseDto>
+{
+    @ApiProperty({ type: [GetMessageResponseDto] })
+    items: GetMessageResponseDto[];
+
+    constructor(items: GetMessageResponseDto[]) {
+        this.items = items;
     }
 }
