@@ -96,7 +96,7 @@ export default class CalendarService {
                 _id: new mongoose.Types.ObjectId(),
                 datetime,
                 description,
-                userId,
+                userId: new mongoose.Types.ObjectId(userId),
                 patientId: new mongoose.Types.ObjectId(model.patientId),
                 createdAt: new Date(),
                 updatedAt: new Date(),
