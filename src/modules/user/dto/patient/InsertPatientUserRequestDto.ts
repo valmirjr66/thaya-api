@@ -20,8 +20,6 @@ export default class InsertPatientUserRequestDto {
     @ApiProperty({ required: true })
     public birthdate: string;
 
-    public profilePicFileName: string;
-
     public nickname: string;
 
     @ApiProperty({ required: true })
@@ -33,7 +31,6 @@ export default class InsertPatientUserRequestDto {
         email: string,
         phoneNumber: string,
         birthdate: string,
-        profilePicFileName: string,
         nickname: string,
         password: string,
     ) {
@@ -42,7 +39,6 @@ export default class InsertPatientUserRequestDto {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthdate = birthdate;
-        this.profilePicFileName = profilePicFileName;
         this.nickname = nickname;
         this.password = password;
     }

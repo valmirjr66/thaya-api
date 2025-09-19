@@ -21,9 +21,6 @@ export default class UpdatePatientUserRequestDto {
     public birthdate: string;
 
     @ApiProperty()
-    public profilePicFileName: string;
-
-    @ApiProperty()
     public nickname: string;
 
     @ApiProperty()
@@ -35,7 +32,6 @@ export default class UpdatePatientUserRequestDto {
         email: string,
         phoneNumber: string,
         birthdate: string,
-        profilePicFileName: string,
         nickname: string,
         password: string,
     ) {
@@ -44,7 +40,6 @@ export default class UpdatePatientUserRequestDto {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthdate = birthdate;
-        this.profilePicFileName = profilePicFileName;
         this.nickname = nickname;
         this.password = password;
     }
