@@ -42,7 +42,8 @@ export default class UserInfoTool {
         this.logger.log(`Fetching doctor's patients`);
 
         try {
-            const patients = await this.doctorUserService.listPatients(userId);
+            const patients =
+                await this.doctorUserService.listLinkedPatients(userId);
 
             this.logger.debug(`Received patients: ${JSON.stringify(patients)}`);
 

@@ -292,7 +292,7 @@ export default class DoctorUserService {
         }
     }
 
-    async listPatients(doctorId: string) {
+    async listLinkedPatients(doctorId: string) {
         this.logger.log(`Listing patients for doctor with id: ${doctorId}`);
 
         try {
