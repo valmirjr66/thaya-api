@@ -69,8 +69,8 @@ export default class OrganizationController extends BaseController {
     })
     async insertOrganization(
         @Body() body: InsertOrganizationRequestDto,
-    ): Promise<void> {
-        await this.organizationService.insertOrganization(body);
+    ): Promise<{ id: string }> {
+        return await this.organizationService.insertOrganization(body);
     }
 
     @Delete(':id')

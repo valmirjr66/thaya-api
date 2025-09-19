@@ -135,11 +135,11 @@ export default class OrganizationService {
 
     async insertOrganization(
         model: InsertOrganizationRequestModel,
-    ): Promise<void> {
+    ): Promise<{ id: string }> {
         this.logger.log(`Inserting organization with name: ${model.name}`);
 
         try {
-            await this.organizationModel.create({
+            const createdResource = await this.organizationModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 name: model.name,
                 collaborators: model.collaborators.map(({ id, role }) => ({
@@ -156,6 +156,8 @@ export default class OrganizationService {
             this.logger.log(
                 `Organization with name ${model.name} inserted successfully`,
             );
+
+            return { id: createdResource._id.toString() };
         } catch (error) {
             this.logger.error(
                 `Error inserting organization with name ${model.name}: ${error}`,
