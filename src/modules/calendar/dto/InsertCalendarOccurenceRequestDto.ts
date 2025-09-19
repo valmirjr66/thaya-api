@@ -5,6 +5,9 @@ export default class InsertCalendarOccurenceRequestDto {
     public userId: string;
 
     @ApiProperty()
+    public patientId: string;
+
+    @ApiProperty()
     public datetime: Date;
 
     @ApiProperty()

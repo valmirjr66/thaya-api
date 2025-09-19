@@ -10,6 +10,9 @@ export class Calendar extends BaseSchema {
     userId: mongoose.Types.ObjectId;
 
     @Prop({ required: true })
+    patientId: mongoose.Types.ObjectId;
+
+    @Prop({ required: true })
     datetime: Date;
 
     @Prop({ required: true })

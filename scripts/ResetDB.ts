@@ -8,11 +8,15 @@ import BlobStorageManager from '../src/handlers/cloud/BlobStorageManager';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
+    DEFAULT_1_PATIENT_EMAIL,
     DEFAULT_2_DOCTOR_EMAIL,
+    DEFAULT_2_PATIENT_EMAIL,
     DEFAULT_ADMIN_EMAIL,
-    DEFAULT_PATIENT_EMAIL,
     DEFAULT_SUPPORT_EMAIL,
-    OCCURRENCES,
+    DEFAULT_TELEGRAM_ID,
+    DOCTOR_1_OCCURRENCES,
+    DOCTOR_2_OCCURRENCES,
+    shiftOccurrenceDateBy_N_Months,
 } from './Utils';
 
 dotenv.config();
@@ -22,6 +26,11 @@ const isProd = process.env.ENVIRONMENT === 'prod';
 const DATABASE_URL = isProd
     ? process.env.PROD_DATABASE_URL
     : process.env.DATABASE_URL;
+
+function pickRandomItemFromArray<T>(array: T[]): T {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+}
 
 function generateRandomSequenceOfDigits(length: number): string {
     let result = '';
@@ -92,6 +101,26 @@ async function resetMongoDB() {
 
         const usersToBeInserted = [
             {
+                fullname: 'Rodrigo Medeiros Chaia',
+                role: 'patient',
+                email: DEFAULT_1_PATIENT_EMAIL,
+                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
+                birthdate: generateRandomBirthdate(),
+                profilePicFileName: 'sample1.jpg',
+                nickname: 'Rô',
+                telegramChatId: DEFAULT_TELEGRAM_ID,
+                telegramUserId: DEFAULT_TELEGRAM_ID,
+            },
+            {
+                fullname: 'Alex Silva Gomes',
+                role: 'patient',
+                email: DEFAULT_2_PATIENT_EMAIL,
+                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
+                birthdate: generateRandomBirthdate(),
+                telegramChatId: DEFAULT_TELEGRAM_ID,
+                telegramUserId: DEFAULT_TELEGRAM_ID,
+            },
+            {
                 fullname: 'Valmir Martins Júnior',
                 role: 'admin',
                 email: DEFAULT_ADMIN_EMAIL,
@@ -106,6 +135,10 @@ async function resetMongoDB() {
                 organizationId: new mongoose.Types.ObjectId(
                     insertedOrganization.insertedId,
                 ),
+                occurrences: shiftOccurrenceDateBy_N_Months(
+                    DOCTOR_1_OCCURRENCES,
+                    0,
+                ),
             },
             {
                 fullname: 'Anderson Paiva Rocha',
@@ -117,6 +150,10 @@ async function resetMongoDB() {
                 organizationId: new mongoose.Types.ObjectId(
                     insertedOrganization.insertedId,
                 ),
+                occurrences: shiftOccurrenceDateBy_N_Months(
+                    DOCTOR_2_OCCURRENCES,
+                    0,
+                ),
             },
             {
                 fullname: 'Viviane Silva Costa',
@@ -126,23 +163,14 @@ async function resetMongoDB() {
                     insertedOrganization.insertedId,
                 ),
             },
-            {
-                fullname: 'Rodrigo Medeiros Chaia',
-                role: 'patient',
-                email: DEFAULT_PATIENT_EMAIL,
-                phoneNumber: `5531999${generateRandomSequenceOfDigits(6)}`,
-                birthdate: generateRandomBirthdate(),
-                profilePicFileName: 'sample1.jpg',
-                nickname: 'Rô',
-                telegramChatId: 761249989,
-                telegramUserId: 761249989,
-            },
         ];
 
         const collaborators: {
             id: mongoose.Types.ObjectId;
             role: CollaboratorRole;
         }[] = [];
+
+        const patientIds: mongoose.Types.ObjectId[] = [];
 
         console.log(`Inserting ${usersToBeInserted.length} users...`);
 
@@ -185,17 +213,25 @@ async function resetMongoDB() {
             }
 
             if (user.role === 'patient') {
+                patientIds.push(new mongoose.Types.ObjectId(userId));
+            }
+
+            if (user.occurrences) {
                 console.log(
                     `Inserting calendar occurrences for patient: ${user.fullname}`,
                 );
                 await db.collection('calendars').insertMany(
-                    OCCURRENCES.map((occurrence) => ({
+                    user.occurrences.map((occurrence) => ({
                         ...occurrence,
-                        userId,
+                        patientId: new mongoose.Types.ObjectId(
+                            pickRandomItemFromArray(patientIds),
+                        ),
+                        userId: new mongoose.Types.ObjectId(userId),
                     })),
                 );
+
                 console.log(
-                    `Inserted ${OCCURRENCES.length} calendar occurrences for patient.`,
+                    `Inserted ${user.occurrences.length} calendar occurrences for patient.`,
                 );
             } else if (user.role === 'doctor' || user.role === 'support') {
                 collaborators.push({
@@ -207,7 +243,7 @@ async function resetMongoDB() {
 
             console.log(`Inserting credentials for user: ${user.email}`);
             await db.collection('credentials').insertOne({
-                userId,
+                userId: new mongoose.Types.ObjectId(userId),
                 email: user.email,
                 password: '123',
             });

@@ -50,12 +50,14 @@ export default class CalendarService {
                 CalendarUtils.mapMonthAbbreviationToNumber(month);
 
             const filteredRecords = userCalendar
+                .map((item) => item.toObject())
                 .map(
                     (item) =>
                         ({
-                            id: item.id,
-                            datetime: item.toObject().datetime,
-                            description: item.toObject().description,
+                            id: item._id.toString(),
+                            datetime: item.datetime,
+                            description: item.description,
+                            patientId: item.patientId.toString(),
                         }) as Occurrence,
                 )
                 .filter((item) => {
@@ -95,6 +97,7 @@ export default class CalendarService {
                 datetime,
                 description,
                 userId,
+                patientId: new mongoose.Types.ObjectId(model.patientId),
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -153,7 +156,7 @@ export default class CalendarService {
     async updateCalendarOccurrence(
         model: UpdateCalendarOccurenceRequestModel,
     ): Promise<void> {
-        const { id, datetime, description } = model;
+        const { id, patientId, datetime, description } = model;
 
         this.logger.log(
             `[updateCalendarOccurrence] Updating occurrence with id: ${id}`,
@@ -173,6 +176,7 @@ export default class CalendarService {
 
             const updatedFields: Partial<Calendar> = {
                 updatedAt: new Date(),
+                patientId: new mongoose.Types.ObjectId(patientId),
                 datetime,
                 description,
             };
