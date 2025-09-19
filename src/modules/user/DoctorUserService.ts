@@ -143,7 +143,7 @@ export default class DoctorUserService {
 
     async insertUser(
         model: InsertDoctorRequestModel,
-    ): Promise<'existing email' | 'existing phone number' | 'inserted'> {
+    ): Promise<'existing email' | 'existing phone number' | { id: string }> {
         this.logger.log(`Inserting user with email: ${model.email}`);
 
         try {
@@ -209,7 +209,7 @@ export default class DoctorUserService {
             this.logger.log(
                 `User with email ${model.email} inserted successfully`,
             );
-            return 'inserted';
+            return { id: createdUser.toObject()._id.toString() };
         } catch (error) {
             this.logger.error(
                 `Error inserting user with email ${model.email}: ${error}`,
