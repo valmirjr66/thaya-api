@@ -23,7 +23,12 @@ export default class PatientUserService {
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
         private readonly blobStorageManager: BlobStorageManager,
-    ) {}
+    ) {
+        this.coreCredentialService = new CoreCredentialService(
+            this.credentialModel,
+            this.logger,
+        );
+    }
 
     async authenticateUser(
         model: AuthenticateUserRequestModel,
