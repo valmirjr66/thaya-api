@@ -86,6 +86,7 @@ async function resetMongoDB() {
         }
 
         console.log('Inserting default organization...');
+
         const insertedOrganization = await db
             .collection('organizations')
             .insertOne({
@@ -233,7 +234,9 @@ async function resetMongoDB() {
                 console.log(
                     `Inserted ${user.occurrences.length} calendar occurrences for patient.`,
                 );
-            } else if (user.role === 'doctor' || user.role === 'support') {
+            }
+
+            if (user.role === 'doctor' || user.role === 'support') {
                 collaborators.push({
                     id: insertionResponse.insertedId,
                     role: user.role,
