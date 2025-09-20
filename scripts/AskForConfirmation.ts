@@ -24,12 +24,6 @@ export default async function askForConfirmation(query: string) {
     const confirmed = await getUserInput(query);
 
     if (confirmed) {
-        const doubleCheck = await getUserInput(
-            'Are you sure? This action cannot be undone.',
-        );
-
-        if (!doubleCheck) await exitProcess();
-
         console.log('Operation confirmed. Proceeding...');
     } else {
         exitProcess();
