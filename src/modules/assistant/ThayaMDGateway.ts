@@ -8,20 +8,19 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UserChatOrigin } from 'src/types/gpt';
-import AssistantService from './AssistantService';
+import ThayaMDService from './ThayaMDService';
 import HandleIncomingMessageRequestPayload from './events/payloads/HandleIncomingMessageRequestPayload';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import { FileMetadata } from './schemas/FileMetadataSchema';
 
 @WebSocketGateway({ cors: true })
-export class AssistantGateway
+export default class ThayaMDGateway
     implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-    constructor(private readonly assistantService: AssistantService) {}
+    constructor(private readonly thayaMDService: ThayaMDService) {}
 
     @WebSocketServer() server: Server;
-    private readonly logger: Logger = new Logger('AssistantGateway');
+    private readonly logger: Logger = new Logger('ThayaMDGateway');
 
     @SubscribeMessage('message')
     handleMessage(
@@ -31,17 +30,10 @@ export class AssistantGateway
         this.logger.log(`Received 'message' event from client: ${client.id}`);
         this.logger.debug(`Payload: ${JSON.stringify(payload)}`);
 
-        const userChatOrigin = client.handshake.headers[
-            'x-user-chat-origin'
-        ] as UserChatOrigin;
-
         const { userId, content } = payload;
-
-        this.logger.log(`User: ${userId}, Chat origin: ${userChatOrigin}`);
 
         const messageModel = new HandleIncomingMessageRequestModel(
             userId,
-            userChatOrigin,
             content,
         );
 
@@ -70,7 +62,7 @@ export class AssistantGateway
         };
 
         this.logger.log('Calling assistantService.handleIncomingMessage...');
-        this.assistantService.handleIncomingMessage(
+        this.thayaMDService.handleIncomingMessage(
             messageModel,
             streamingCallback,
         );

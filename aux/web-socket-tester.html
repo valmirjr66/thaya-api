@@ -49,9 +49,6 @@
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
         reconnectionAttempts: Infinity,
-        extraHeaders: {
-          'x-user-chat-origin': 'ui',
-        },
       });
 
       clientWS.on("connect", () => {

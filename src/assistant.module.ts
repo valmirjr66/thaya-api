@@ -1,18 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import AssistantController from './modules/assistant/AssistantController';
-import { Chat, ChatSchema } from './modules/assistant/schemas/ChatSchema';
+import AssistantController from './modules/assistant/ThayaConnectController';
 import {
     Message,
     MessageSchema,
 } from './modules/assistant/schemas/MessageSchema';
+import {
+    ThayaConnectChat,
+    ThayaConnectChatSchema,
+} from './modules/assistant/schemas/ThayaConnectChatSchema';
+import {
+    ThayaMDChat,
+    ThayaMDChatSchema,
+} from './modules/assistant/schemas/ThayaMDChatSchema';
 
 import { CalendarModule } from './calendar.module';
 import CalendarTool from './handlers/gpt/CalendarTool';
 import ChatAssistant from './handlers/gpt/ChatAssistant';
 import UserInfoTool from './handlers/gpt/UserInfoTool';
-import { AssistantGateway } from './modules/assistant/AssistantGateway';
-import AssistantService from './modules/assistant/AssistantService';
+import ThayaConnectService from './modules/assistant/ThayaConnectService';
+import ThayaMDGateway from './modules/assistant/ThayaMDGateway';
+import ThayaMDService from './modules/assistant/ThayaMDService';
 import {
     FileMetadata,
     FileMetadataSchema,
@@ -22,8 +30,9 @@ import { UserModule } from './user.module';
 @Module({
     controllers: [AssistantController],
     providers: [
-        AssistantGateway,
-        AssistantService,
+        ThayaMDGateway,
+        ThayaMDService,
+        ThayaConnectService,
         ChatAssistant,
         UserInfoTool,
         CalendarTool,
@@ -33,10 +42,11 @@ import { UserModule } from './user.module';
         CalendarModule,
         MongooseModule.forFeature([
             { name: Message.name, schema: MessageSchema },
-            { name: Chat.name, schema: ChatSchema },
+            { name: ThayaMDChat.name, schema: ThayaMDChatSchema },
+            { name: ThayaConnectChat.name, schema: ThayaConnectChatSchema },
             { name: FileMetadata.name, schema: FileMetadataSchema },
         ]),
     ],
-    exports: [AssistantService, MongooseModule],
+    exports: [ThayaMDService, ThayaConnectService, MongooseModule],
 })
 export class AssistantModule {}

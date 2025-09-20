@@ -1,7 +1,5 @@
 export const MESSAGE_ROLES = ['system', 'user', 'assistant', 'tool'] as const;
 
-export const USER_CHAT_ORIGINS = ['ui', 'telegram'] as const;
-
 export const MONTHS_ABBREVIATION = [
     'jan',
     'feb',

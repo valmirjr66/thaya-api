@@ -1,6 +1,6 @@
-import { MESSAGE_ROLES, USER_CHAT_ORIGINS } from 'src/constants';
+import { MESSAGE_ROLES } from 'src/constants';
 
-export type Role = (typeof MESSAGE_ROLES)[number];
+export type MessageRole = (typeof MESSAGE_ROLES)[number];
 
 export type Annotation = {
     start_index: number;
@@ -10,5 +10,3 @@ export type Annotation = {
     downloadURL?: string;
     displayName?: string;
 };
-
-export type UserChatOrigin = (typeof USER_CHAT_ORIGINS)[number];

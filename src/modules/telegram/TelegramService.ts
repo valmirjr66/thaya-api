@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
-import AssistantService from '../assistant/AssistantService';
+import ThayaConnectService from '../assistant/ThayaConnectService';
 import PatientUserService from '../user/PatientUserService';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
@@ -10,7 +10,7 @@ export default class TelegramService {
 
     constructor(
         private readonly patientUserService: PatientUserService,
-        private readonly assistantService: AssistantService,
+        private readonly thayaConnectService: ThayaConnectService,
         private readonly telegramHandler: TelegramHandler,
     ) {}
 
@@ -48,10 +48,9 @@ export default class TelegramService {
             );
             try {
                 const assistantResponse =
-                    await this.assistantService.handleIncomingMessage({
+                    await this.thayaConnectService.handleIncomingMessage({
                         content: model.text,
                         userId: linkedUser.id,
-                        userChatOrigin: 'telegram',
                     });
 
                 this.logger.debug(

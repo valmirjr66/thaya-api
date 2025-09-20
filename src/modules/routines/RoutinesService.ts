@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
-import AssistantService from '../assistant/AssistantService';
+import ThayaConnectService from '../assistant/ThayaConnectService';
 import CalendarService from '../calendar/CalendarService';
 import PatientUserService from '../user/PatientUserService';
 
@@ -15,7 +15,7 @@ export default class RoutinesService {
         private readonly telegramHandler: TelegramHandler,
         private readonly patientUserService: PatientUserService,
         private readonly calendarService: CalendarService,
-        private readonly assistantService: AssistantService,
+        private readonly thayaConnectService: ThayaConnectService,
     ) {}
 
     async triggerPatientReminder(): Promise<void> {
@@ -106,7 +106,7 @@ export default class RoutinesService {
                 );
 
                 const message =
-                    await this.assistantService.composeRoutineMessage(
+                    await this.thayaConnectService.composeRoutineMessage(
                         user.nickname || user.fullname,
                         `from ${today.toISOString().split('T')[0]} to ${N_DaysLater.toISOString().split('T')[0]}`,
                         eventsToNotifyAbout.map((item) => ({

@@ -1,6 +1,6 @@
 import { AssistantTool } from 'openai/resources/beta/assistants.mjs';
 
-export const UI_ASSISTANT_TOOLS: AssistantTool[] = [
+export const THAYA_MD_TOOLS: AssistantTool[] = [
     {
         type: 'function',
         function: {
@@ -171,7 +171,7 @@ export const UI_ASSISTANT_TOOLS: AssistantTool[] = [
     },
 ];
 
-export const TELEGRAM_ASSISTANT_TOOLS: AssistantTool[] = [
+export const THAYA_CONNECT_TOOLS: AssistantTool[] = [
     {
         type: 'function',
         function: {

@@ -1,30 +1,39 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import CalendarTool from 'src/handlers/gpt/CalendarTool';
 import ChatAssistant, { TextResponse } from 'src/handlers/gpt/ChatAssistant';
-import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
+import UserInfoTool from 'src/handlers/gpt/UserInfoTool';
 import GetChatByUserIdResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
 import { Annotation } from 'src/types/gpt';
 import GetMessageResponseModel from './model/GetMessageResponseModel';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import HandleIncomingMessageResponseModel from './model/HandleIncomingMessageResponseModel';
-import { Chat } from './schemas/ChatSchema';
 import { FileMetadata } from './schemas/FileMetadataSchema';
 import { Message } from './schemas/MessageSchema';
+import { ThayaMDChat } from './schemas/ThayaMDChatSchema';
 
 @Injectable()
-export default class AssistantService {
-    private readonly logger: Logger = new Logger('AssistantService');
+export default class ThayaMDService {
+    private readonly logger: Logger = new Logger('ThayaMDService');
+    private readonly chatAssistant: ChatAssistant;
 
     constructor(
-        private readonly chatAssistant: ChatAssistant,
+        private readonly userInfoTool: UserInfoTool,
+        private readonly calendarTool: CalendarTool,
         @InjectModel(Message.name)
         private readonly messageModel: Model<Message>,
-        @InjectModel(Chat.name)
-        private readonly chatModel: Model<Chat>,
+        @InjectModel(ThayaMDChat.name)
+        private readonly thayaMDChatModel: Model<ThayaMDChat>,
         @InjectModel(FileMetadata.name)
         private readonly fileMetadataModel: Model<FileMetadata>,
-    ) {}
+    ) {
+        this.chatAssistant = new ChatAssistant(
+            this.userInfoTool,
+            this.calendarTool,
+            'thaya-m.d.',
+        );
+    }
 
     async getChatByUserId(
         userId: string,
@@ -87,7 +96,6 @@ export default class AssistantService {
             content: model.content,
             role: 'user',
             chatId: chatId,
-            userChatOrigin: model.userChatOrigin,
         });
 
         let messageAddedToThread: TextResponse;
@@ -97,7 +105,6 @@ export default class AssistantService {
             );
             messageAddedToThread =
                 await this.chatAssistant.addMessageToThreadByStream(
-                    model.userChatOrigin,
                     threadId,
                     model.content,
                     model.userId,
@@ -120,7 +127,6 @@ export default class AssistantService {
                 `Using non-streaming message for user: ${model.userId}`,
             );
             messageAddedToThread = await this.chatAssistant.addMessageToThread(
-                model.userChatOrigin,
                 threadId,
                 model.content,
                 model.userId,
@@ -153,7 +159,7 @@ export default class AssistantService {
         }
 
         this.logger.debug(`Updating chat updatedAt for chatId: ${chatId}`);
-        await this.chatModel.updateOne(
+        await this.thayaMDChatModel.updateOne(
             { _id: chatId },
             { updatedAt: new Date() },
         );
@@ -166,7 +172,6 @@ export default class AssistantService {
                 role: 'assistant',
                 references: decoratedAnnotations,
                 chatId: chatId,
-                userChatOrigin: model.userChatOrigin,
             })
             .then((doc) => doc.toObject());
 
@@ -182,66 +187,11 @@ export default class AssistantService {
         );
     }
 
-    async composeRoutineMessage(
-        userName: string,
-        evaluatedPeriod: string,
-        agendaItems: { datetime: string; description: string }[],
-    ): Promise<string> {
-        this.logger.debug(
-            `Composing routine message for userName: ${userName} for period: ${evaluatedPeriod} with ${agendaItems.length} agenda items`,
-        );
-
-        if (agendaItems.length === 0) {
-            this.logger.warn(
-                `No agenda items provided for userName: ${userName}. Returning empty message.`,
-            );
-            return `Hello ${userName}, you have no agenda items for the period of ${evaluatedPeriod}. Enjoy your day! 🎉`;
-        }
-
-        this.logger.debug(
-            `Agenda items: ${JSON.stringify(agendaItems, null, 2)}`,
-        );
-
-        const setupMessage = `
-You are Thaya, an assistant created to compose messages containing the items in the user's agenda for the given period, thus helping the user to remember their commitments. Always be concise and clear, but also sympathetic.
-Your messages will be sent via Telegram, so enrich your answers with emojis, but never use Markdown.
-If formatting is needed, you have following options available:
-    <b>bold</b>
-
-    <i>italic</i>
-
-    <u>underline</u>
-
-    <s>strikethrough</s>
-
-    <a href="https://www.someurl.com">Link</a>
-
-    <code>inline code</code>
-    <pre>
-    multiline
-    code block
-    </pre>
-Be structured, quickly readable and visually intuititive.
-`.trim();
-
-        const assistant = new SimpleCompletionAssistant(setupMessage);
-
-        const formattedAgendaItems = agendaItems
-            .map((item) => `- ${item.datetime} | ${item.description}`)
-            .join('\n');
-
-        const completion = await assistant.createCompletion(
-            `User ${userName} has the following events/reminder for the evaluated period of ${evaluatedPeriod}:\n${formattedAgendaItems}\n\nMake sure to compose a friendly message that will be sent.`,
-        );
-
-        return completion;
-    }
-
     private async findUserChatAndCreateIfNotExists(
         userId: string,
-    ): Promise<Chat> {
+    ): Promise<ThayaMDChat> {
         let chat = (
-            await this.chatModel.findOne({ userId }).exec()
+            await this.thayaMDChatModel.findOne({ userId }).exec()
         )?.toObject();
 
         if (!chat) {
@@ -251,7 +201,7 @@ Be structured, quickly readable and visually intuititive.
             const threadId = await this.chatAssistant.startThread();
             this.logger.debug(`Started new thread with threadId: ${threadId}`);
 
-            chat = await this.chatModel.create({
+            chat = await this.thayaMDChatModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 createdAt: new Date(),
                 updatedAt: new Date(),

@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import BaseSchema from '../../../BaseSchema';
 
-export type ChatDocument = HydratedDocument<Chat>;
+export type ThayaConnectChatDocument = HydratedDocument<ThayaConnectChat>;
 
 @Schema({ timestamps: true })
-export class Chat extends BaseSchema {
+export class ThayaConnectChat extends BaseSchema {
     @Prop({ required: true })
     userId: mongoose.Types.ObjectId;
 
@@ -13,4 +13,5 @@ export class Chat extends BaseSchema {
     threadId: string;
 }
 
-export const ChatSchema = SchemaFactory.createForClass(Chat);
+export const ThayaConnectChatSchema =
+    SchemaFactory.createForClass(ThayaConnectChat);

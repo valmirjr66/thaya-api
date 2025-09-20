@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MESSAGE_ROLES } from 'src/constants';
-import { Role } from 'src/types/gpt';
+import { MessageRole } from 'src/types/gpt';
 import GetFileMetadataResponseDto from './GetFileMetadataResponseDto';
 
 export default class HandleIncomingMessageResponseDto {
@@ -11,7 +11,7 @@ export default class HandleIncomingMessageResponseDto {
     public content: string;
 
     @ApiProperty({ enum: MESSAGE_ROLES })
-    public role: Role;
+    public role: MessageRole;
 
     @ApiProperty({ type: [GetFileMetadataResponseDto] })
     public references: GetFileMetadataResponseDto[];
@@ -19,7 +19,7 @@ export default class HandleIncomingMessageResponseDto {
     constructor(
         id: string,
         content: string,
-        role: Role,
+        role: MessageRole,
         references: GetFileMetadataResponseDto[] = [],
     ) {
         this.id = id;
