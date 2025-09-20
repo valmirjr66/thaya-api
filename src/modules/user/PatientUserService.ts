@@ -417,7 +417,7 @@ export default class PatientUserService {
 
             const listLinkedDoctors = await this.doctorUserModel
                 .find({
-                    id: { $in: patient.doctorsId },
+                    _id: { $in: patient.doctorsId },
                 })
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
