@@ -26,7 +26,7 @@ export class PatientUser extends BaseSchema {
     phoneNumber: string;
 
     @Prop()
-    birthdate?: string;
+    birthdate: string;
 
     @Prop()
     telegramUserId?: number;

@@ -19,7 +19,7 @@ export class DoctorUser extends BaseSchema {
     phoneNumber: string;
 
     @Prop()
-    birthdate?: string;
+    birthdate: string;
 
     @Prop({ required: true })
     organizationId: mongoose.Types.ObjectId;
