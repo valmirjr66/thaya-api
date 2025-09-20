@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import AssistantController from './modules/assistant/ThayaConnectController';
+import ThayaConnectController from './modules/assistant/ThayaConnectController';
+import ThayaMDController from './modules/assistant/ThayaMDController';
 import {
     Message,
     MessageSchema,
@@ -28,7 +29,7 @@ import {
 import { UserModule } from './user.module';
 
 @Module({
-    controllers: [AssistantController],
+    controllers: [ThayaConnectController, ThayaMDController],
     providers: [
         ThayaMDGateway,
         ThayaMDService,
