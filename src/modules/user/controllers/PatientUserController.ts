@@ -31,6 +31,7 @@ import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
 import ChangeProfilePictureRequestDto from '../dto/ChangeProfilePictureRequestDto';
 import GetPatientInfoResponseDto from '../dto/patient/GetPatientUserInfoResponseDto';
 import InsertPatientUserRequestDto from '../dto/patient/InsertPatientUserRequestDto';
+import ListLinkedDoctorsResponseDto from '../dto/patient/ListLinkedDoctorsResponseDto';
 import ListPatientUsersInfoResponseDto from '../dto/patient/ListPatientUsersInfoResponseDto';
 import UpdatePatientUserRequestDto from '../dto/patient/UpdatePatientUserRequestDto';
 import PatientUserService from '../PatientUserService';
@@ -213,6 +214,23 @@ export default class PatientUserController extends BaseController {
     })
     async listUsers(): Promise<ListPatientUsersInfoResponseDto> {
         const response = await this.patientUserService.listUsers();
+        this.validateGetResponse(response);
+        return response;
+    }
+
+    @Get(':id/linked-doctors')
+    @ApiOkResponse({
+        description: RESPONSE_DESCRIPTIONS.OK,
+        type: ListLinkedDoctorsResponseDto,
+    })
+    @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async listLinkedDoctors(
+        @Param('id') id: string,
+    ): Promise<ListLinkedDoctorsResponseDto> {
+        const response = await this.patientUserService.listLinkedDoctors(id);
         this.validateGetResponse(response);
         return response;
     }

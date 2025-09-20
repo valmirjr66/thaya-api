@@ -8,9 +8,11 @@ import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
 import ChangeProfilePictureRequestModel from './model/ChangeProfilePictureRequestModel';
 import GetPatientUserInfoResponseModel from './model/patient/GetPatientUserInfoResponseModel';
 import InsertPatientUserRequestModel from './model/patient/InsertPatientUserRequestModel';
+import ListLinkedDoctorsResponseModel from './model/patient/ListLinkedDoctorsResponseModel';
 import ListPatientUsersInfoResponseModel from './model/patient/ListPatientUsersInfoResponseModel';
 import UpdatePatientUserRequestModel from './model/patient/UpdatePatientUserRequestModel';
 import { Credential } from './schemas/CredentialSchema';
+import { DoctorUser } from './schemas/DoctorUserSchema';
 import { PatientUser } from './schemas/PatientUserSchema';
 
 export default class PatientUserService {
@@ -20,6 +22,8 @@ export default class PatientUserService {
     constructor(
         @InjectModel(PatientUser.name)
         private readonly userModel: Model<PatientUser>,
+        @InjectModel(DoctorUser.name)
+        private readonly doctorUserModel: Model<DoctorUser>,
         @InjectModel(Credential.name)
         private readonly credentialModel: Model<Credential>,
         private readonly blobStorageManager: BlobStorageManager,
@@ -392,6 +396,46 @@ export default class PatientUserService {
         } catch (error) {
             this.logger.error(
                 `Error fetching user with telegramUserId ${telegramUserId}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async listLinkedDoctors(patientId: string) {
+        this.logger.log(`Listing doctors for patient with id: ${patientId}`);
+
+        try {
+            const patient = await this.userModel
+                .findById(new mongoose.Types.ObjectId(patientId))
+                .exec()
+                .then((doc) => doc?.toObject());
+
+            if (!patient) {
+                this.logger.error(`Patient with id ${patientId} not found`);
+                throw new NotFoundException();
+            }
+
+            const listLinkedDoctors = await this.doctorUserModel
+                .find({
+                    id: { $in: patient.doctorsId },
+                })
+                .exec()
+                .then((docs) => docs.map((doc) => doc.toObject()));
+
+            this.logger.log(
+                `Found ${listLinkedDoctors.length} doctors for patient with id: ${patientId}`,
+            );
+
+            return new ListLinkedDoctorsResponseModel(
+                listLinkedDoctors.map((item) => ({
+                    id: item._id.toString(),
+                    fullname: item.fullname,
+                    email: item.email,
+                })),
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error listing doctors for patient with id ${patientId}: ${error}`,
             );
             throw error;
         }
