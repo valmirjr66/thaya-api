@@ -7,8 +7,4 @@ export default class ListPatientUsersInfoResponseDto
 {
     @ApiProperty({ type: [GetPatientUserInfoResponseDto] })
     items: GetPatientUserInfoResponseDto[];
-
-    constructor(items: GetPatientUserInfoResponseDto[]) {
-        this.items = items;
-    }
 }

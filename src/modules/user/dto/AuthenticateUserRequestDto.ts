@@ -6,9 +6,4 @@ export default class AuthenticateUserRequestDto {
 
     @ApiProperty({ required: true })
     public password: string;
-
-    constructor(email: string, password: string) {
-        this.email = email;
-        this.password = password;
-    }
 }

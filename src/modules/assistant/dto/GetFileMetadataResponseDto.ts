@@ -9,14 +9,4 @@ export default class GetFileMetadataResponseDto {
 
     @ApiProperty()
     previewImageURL?: string;
-
-    constructor(
-        downloadURL: string,
-        displayName?: string,
-        previewImageURL?: string,
-    ) {
-        this.downloadURL = downloadURL;
-        this.displayName = displayName;
-        this.previewImageURL = previewImageURL;
-    }
 }

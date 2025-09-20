@@ -7,8 +7,4 @@ export default class ListLinkedPatientsResponseDto
 {
     @ApiProperty({ type: [GetLinkedPatientResponseDto] })
     items: GetLinkedPatientResponseDto[];
-
-    constructor(items: GetLinkedPatientResponseDto[]) {
-        this.items = items;
-    }
 }

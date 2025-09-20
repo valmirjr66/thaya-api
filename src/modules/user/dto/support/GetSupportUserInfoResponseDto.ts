@@ -12,16 +12,4 @@ export default class GetSupportUserInfoResponseDto {
 
     @ApiProperty({ required: true })
     public email: string;
-
-    constructor(
-        id: string,
-        organizationId: string,
-        fullname: string,
-        email: string,
-    ) {
-        this.id = id;
-        this.organizationId = organizationId;
-        this.fullname = fullname;
-        this.email = email;
-    }
 }

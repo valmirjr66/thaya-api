@@ -12,16 +12,4 @@ export default class InsertSupportUserRequestDto {
 
     @ApiProperty({ required: true })
     public password: string;
-
-    constructor(
-        organizationId: string,
-        fullname: string,
-        email: string,
-        password: string,
-    ) {
-        this.organizationId = organizationId;
-        this.fullname = fullname;
-        this.email = email;
-        this.password = password;
-    }
 }

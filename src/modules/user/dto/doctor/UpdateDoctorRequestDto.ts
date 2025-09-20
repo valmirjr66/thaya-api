@@ -12,16 +12,4 @@ export default class UpdateDoctorRequestDto {
 
     @ApiProperty({ required: true })
     public phoneNumber: string;
-
-    constructor(
-        email: string,
-        fullname: string,
-        birthdate: string,
-        phoneNumber: string,
-    ) {
-        this.email = email;
-        this.fullname = fullname;
-        this.birthdate = birthdate;
-        this.phoneNumber = phoneNumber;
-    }
 }

@@ -18,20 +18,4 @@ export default class InsertDoctorUserRequestDto {
 
     @ApiProperty({ required: true })
     public birthdate: string;
-
-    constructor(
-        organizationId: string,
-        fullname: string,
-        email: string,
-        phoneNumber: string,
-        password: string,
-        birthdate: string,
-    ) {
-        this.organizationId = organizationId;
-        this.fullname = fullname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-        this.birthdate = birthdate;
-    }
 }

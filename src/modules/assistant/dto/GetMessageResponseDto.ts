@@ -18,18 +18,4 @@ export default class GetMessageResponseDto {
 
     @ApiProperty({ type: [GetFileMetadataResponseDto] })
     references: GetFileMetadataResponseDto[];
-
-    constructor(
-        id: string,
-        content: string,
-        role: MessageRole,
-        chatId: string,
-        references: GetFileMetadataResponseDto[],
-    ) {
-        this.id = id;
-        this.content = content;
-        this.role = role;
-        this.chatId = chatId;
-        this.references = references;
-    }
 }

@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Collaborator } from 'src/types/user';
+import { CollaboratorRole } from 'src/types/user';
+
+class CollaboratorDto {
+    @ApiProperty()
+    public id: string;
+
+    @ApiProperty()
+    public role: CollaboratorRole;
+}
 
 export default class GetOrganizationByIdResponseDto {
     @ApiProperty()
@@ -9,7 +17,7 @@ export default class GetOrganizationByIdResponseDto {
     public name: string;
 
     @ApiProperty()
-    public collaborators: Collaborator[];
+    public collaborators: CollaboratorDto[];
 
     @ApiProperty()
     public phoneNumber: string;
@@ -19,20 +27,4 @@ export default class GetOrganizationByIdResponseDto {
 
     @ApiProperty()
     public timezoneOffset: number;
-
-    constructor(
-        id: string,
-        collaborators: Collaborator[],
-        name: string,
-        phoneNumber: string,
-        address: string,
-        timezoneOffset: number,
-    ) {
-        this.id = id;
-        this.collaborators = collaborators;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.timezoneOffset = timezoneOffset;
-    }
 }

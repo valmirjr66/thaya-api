@@ -7,8 +7,4 @@ export default class ListOrganizationsResponseDto
 {
     @ApiProperty({ type: [GetOrganizationByIdResponseDto] })
     items: GetOrganizationByIdResponseDto[];
-
-    constructor(items: GetOrganizationByIdResponseDto[]) {
-        this.items = items;
-    }
 }

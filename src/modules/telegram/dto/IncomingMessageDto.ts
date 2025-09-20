@@ -52,9 +52,4 @@ export default class IncomingMessageDto {
 
     @ApiProperty({ required: true, type: MessagePayloadDto })
     public message: MessagePayloadDto;
-
-    constructor(update_id: number, message: MessagePayloadDto) {
-        this.update_id = update_id;
-        this.message = message;
-    }
 }

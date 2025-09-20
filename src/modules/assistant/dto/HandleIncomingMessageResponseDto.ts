@@ -15,16 +15,4 @@ export default class HandleIncomingMessageResponseDto {
 
     @ApiProperty({ type: [GetFileMetadataResponseDto] })
     public references: GetFileMetadataResponseDto[];
-
-    constructor(
-        id: string,
-        content: string,
-        role: MessageRole,
-        references: GetFileMetadataResponseDto[] = [],
-    ) {
-        this.id = id;
-        this.content = content;
-        this.role = role;
-        this.references = references;
-    }
 }

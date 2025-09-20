@@ -7,8 +7,4 @@ export default class GetUserCalendarResponseDto
 {
     @ApiProperty({ type: [GetCalendarOccurrenceResponseDto] })
     items: GetCalendarOccurrenceResponseDto[];
-
-    constructor(items: GetCalendarOccurrenceResponseDto[]) {
-        this.items = items;
-    }
 }

@@ -25,22 +25,4 @@ export default class UpdatePatientUserRequestDto {
 
     @ApiProperty()
     public password: string;
-
-    constructor(
-        doctorsId: string[],
-        fullname: string,
-        email: string,
-        phoneNumber: string,
-        birthdate: string,
-        nickname: string,
-        password: string,
-    ) {
-        this.doctorsId = doctorsId;
-        this.fullname = fullname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.birthdate = birthdate;
-        this.nickname = nickname;
-        this.password = password;
-    }
 }

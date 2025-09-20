@@ -9,10 +9,4 @@ export default class GetAdminUserInfoResponseDto {
 
     @ApiProperty()
     public email: string;
-
-    constructor(id: string, fullname: string, email: string) {
-        this.id = id;
-        this.fullname = fullname;
-        this.email = email;
-    }
 }

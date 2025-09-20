@@ -12,16 +12,4 @@ export class GetCalendarOccurrenceResponseDto {
 
     @ApiProperty()
     description: string;
-
-    constructor(
-        id: string,
-        patientId: string,
-        datetime: Date,
-        description: string,
-    ) {
-        this.id = id;
-        this.patientId = patientId;
-        this.datetime = datetime;
-        this.description = description;
-    }
 }

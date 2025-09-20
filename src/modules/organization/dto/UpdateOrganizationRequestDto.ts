@@ -16,18 +16,4 @@ export default class UpdateOrganizationRequestDto {
 
     @ApiProperty()
     public timezoneOffset: number;
-
-    constructor(
-        name: string,
-        collaborators: Collaborator[],
-        phoneNumber: string,
-        address: string,
-        timezoneOffset: number,
-    ) {
-        this.name = name;
-        this.collaborators = collaborators;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.timezoneOffset = timezoneOffset;
-    }
 }

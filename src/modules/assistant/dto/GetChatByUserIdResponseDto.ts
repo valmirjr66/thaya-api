@@ -7,8 +7,4 @@ export default class GetChatByUserIdResponseDto
 {
     @ApiProperty({ type: [GetMessageResponseDto] })
     items: GetMessageResponseDto[];
-
-    constructor(items: GetMessageResponseDto[]) {
-        this.items = items;
-    }
 }
