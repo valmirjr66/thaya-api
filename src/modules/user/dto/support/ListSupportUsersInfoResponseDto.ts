@@ -1,8 +1,14 @@
-import GenericCollectionResponse from 'src/types/generic';
+import { ApiProperty } from '@nestjs/swagger';
+import { ListResponse } from 'src/types/generic';
 import GetSupportUserInfoResponseDto from './GetSupportUserInfoResponseDto';
 
-export default class ListSupportUsersInfoResponseDto extends GenericCollectionResponse<GetSupportUserInfoResponseDto> {
-    constructor(public items: GetSupportUserInfoResponseDto[]) {
-        super(items);
+export default class ListSupportUsersInfoResponseDto
+    implements ListResponse<GetSupportUserInfoResponseDto>
+{
+    @ApiProperty({ type: [GetSupportUserInfoResponseDto] })
+    items: GetSupportUserInfoResponseDto[];
+
+    constructor(items: GetSupportUserInfoResponseDto[]) {
+        this.items = items;
     }
 }

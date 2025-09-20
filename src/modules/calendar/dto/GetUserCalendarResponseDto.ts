@@ -1,8 +1,14 @@
-import { Occurrence } from 'src/types/calendar';
-import GenericCollectionResponse from 'src/types/generic';
+import { ApiProperty } from '@nestjs/swagger';
+import { GetCalendarOccurrenceResponseDto } from './GetCalendarOccurrenceResponseDto';
+import { ListResponse } from 'src/types/generic';
 
-export default class GetUserCalendarResponseDto extends GenericCollectionResponse<Occurrence> {
-    constructor(public items: Occurrence[]) {
-        super(items);
+export default class GetUserCalendarResponseDto
+    implements ListResponse<GetCalendarOccurrenceResponseDto>
+{
+    @ApiProperty({ type: [GetCalendarOccurrenceResponseDto] })
+    items: GetCalendarOccurrenceResponseDto[];
+
+    constructor(items: GetCalendarOccurrenceResponseDto[]) {
+        this.items = items;
     }
 }

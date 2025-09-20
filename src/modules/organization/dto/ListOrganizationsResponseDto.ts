@@ -1,8 +1,14 @@
-import GenericCollectionResponse from 'src/types/generic';
+import { ApiProperty } from '@nestjs/swagger';
+import { ListResponse } from 'src/types/generic';
 import GetOrganizationByIdResponseDto from './GetOrganizationByIdResponseDto';
 
-export default class ListOrganizationsResponseDto extends GenericCollectionResponse<GetOrganizationByIdResponseDto> {
-    constructor(public items: GetOrganizationByIdResponseDto[]) {
-        super(items);
+export default class ListOrganizationsResponseDto
+    implements ListResponse<GetOrganizationByIdResponseDto>
+{
+    @ApiProperty({ type: [GetOrganizationByIdResponseDto] })
+    items: GetOrganizationByIdResponseDto[];
+
+    constructor(items: GetOrganizationByIdResponseDto[]) {
+        this.items = items;
     }
 }

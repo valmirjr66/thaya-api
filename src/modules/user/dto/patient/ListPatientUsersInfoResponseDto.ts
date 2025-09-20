@@ -1,8 +1,14 @@
-import GenericCollectionResponse from 'src/types/generic';
+import { ApiProperty } from '@nestjs/swagger';
+import { ListResponse } from 'src/types/generic';
 import GetPatientUserInfoResponseDto from './GetPatientUserInfoResponseDto';
 
-export default class ListPatientUsersInfoResponseDto extends GenericCollectionResponse<GetPatientUserInfoResponseDto> {
-    constructor(public items: GetPatientUserInfoResponseDto[]) {
-        super(items);
+export default class ListPatientUsersInfoResponseDto
+    implements ListResponse<GetPatientUserInfoResponseDto>
+{
+    @ApiProperty({ type: [GetPatientUserInfoResponseDto] })
+    items: GetPatientUserInfoResponseDto[];
+
+    constructor(items: GetPatientUserInfoResponseDto[]) {
+        this.items = items;
     }
 }
