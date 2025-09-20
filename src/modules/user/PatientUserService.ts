@@ -52,7 +52,7 @@ export default class PatientUserService {
             const user = await this.userModel
                 .findById(new mongoose.Types.ObjectId(id))
                 .exec()
-                .then((doc) => doc.toObject());
+                .then((doc) => doc?.toObject());
 
             if (!user) {
                 this.logger.error(`User with id ${id} not found`);
@@ -202,7 +202,7 @@ export default class PatientUserService {
             const user = await this.userModel
                 .findById(new mongoose.Types.ObjectId(model.id))
                 .exec()
-                .then((doc) => doc.toObject());
+                .then((doc) => doc?.toObject());
 
             if (!user) {
                 this.logger.error(`User with id ${id} not found`);

@@ -213,7 +213,7 @@ export default class SupportUserService {
             const user = await this.userModel
                 .findById(new mongoose.Types.ObjectId(model.id))
                 .exec()
-                .then((doc) => doc.toObject());
+                .then((doc) => doc?.toObject());
 
             if (!user) {
                 this.logger.error(`User with id ${id} not found`);

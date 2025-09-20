@@ -25,7 +25,7 @@ export default class OrganizationService {
             const organization = await this.organizationModel
                 .findById(new mongoose.Types.ObjectId(id))
                 .exec()
-                .then((doc) => doc.toObject());
+                .then((doc) => doc?.toObject());
 
             if (!organization) {
                 this.logger.warn(`Organization with ID ${id} not found`);
@@ -98,7 +98,7 @@ export default class OrganizationService {
             const organization = await this.organizationModel
                 .findById(new mongoose.Types.ObjectId(model.id))
                 .exec()
-                .then((doc) => doc.toObject());
+                .then((doc) => doc?.toObject());
 
             if (!organization) {
                 this.logger.warn(`Organization with ID ${model.id} not found`);
