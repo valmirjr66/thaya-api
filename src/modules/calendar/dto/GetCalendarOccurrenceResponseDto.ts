@@ -12,4 +12,7 @@ export class GetCalendarOccurrenceResponseDto {
 
     @ApiProperty()
     description: string;
+
+    @ApiProperty()
+    patientName: string;
 }

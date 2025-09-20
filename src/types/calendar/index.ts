@@ -5,6 +5,7 @@ export type Occurrence = {
     patientId: string;
     datetime: Date;
     description: string;
+    patientName: string;
 };
 
 export type AbbreviatedMonth = (typeof MONTHS_ABBREVIATION)[number];

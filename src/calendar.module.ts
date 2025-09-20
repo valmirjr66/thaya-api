@@ -6,6 +6,10 @@ import {
     Calendar,
     CalendarSchema,
 } from './modules/calendar/schemas/CalendarSchema';
+import {
+    PatientUser,
+    PatientUserSchema,
+} from './modules/user/schemas/PatientUserSchema';
 
 @Module({
     controllers: [CalendarController],
@@ -13,6 +17,7 @@ import {
     imports: [
         MongooseModule.forFeature([
             { name: Calendar.name, schema: CalendarSchema },
+            { name: PatientUser.name, schema: PatientUserSchema },
         ]),
     ],
     exports: [CalendarService, MongooseModule],

@@ -7,6 +7,7 @@ import GetUserCalendarResponseModel from './model/GetUserCalendarResponseModel';
 import InsertCalendarOccurenceRequestModel from './model/InsertCalendarOccurenceRequestModel';
 import UpdateCalendarOccurenceRequestModel from './model/UpdateCalendarOccurenceRequestModel';
 import { Calendar } from './schemas/CalendarSchema';
+import { PatientUser } from '../user/schemas/PatientUserSchema';
 
 @Injectable()
 export default class CalendarService {
@@ -15,6 +16,8 @@ export default class CalendarService {
     constructor(
         @InjectModel(Calendar.name)
         private readonly calendarModel: Model<Calendar>,
+        @InjectModel(PatientUser.name)
+        private readonly patientUserModel: Model<PatientUser>,
     ) {}
 
     async getUserCalendarByUserId(
@@ -49,26 +52,35 @@ export default class CalendarService {
             const monthNumber =
                 CalendarUtils.mapMonthAbbreviationToNumber(month);
 
-            const filteredRecords = userCalendar
-                .map((item) => item.toObject())
-                .map(
-                    (item) =>
-                        ({
-                            id: item._id.toString(),
-                            datetime: item.datetime,
-                            description: item.description,
-                            patientId: item.patientId.toString(),
-                        }) as Occurrence,
-                )
-                .filter((item) => {
-                    const match =
-                        item.datetime.getUTCFullYear() === year &&
-                        item.datetime.getUTCMonth() === monthNumber;
-                    this.logger.debug(
-                        `[getUserCalendarByUserId] Checking record: ${JSON.stringify(item)}, match: ${match}`,
-                    );
-                    return match;
-                });
+            const filteredRecords: Occurrence[] = [];
+
+            for (const item of userCalendar) {
+                const obj = item.toObject();
+
+                const patientInfo = await this.patientUserModel
+                    .findById(obj.patientId)
+                    .exec()
+                    .then((patient) => patient?.toObject());
+
+                const occurrence: Occurrence = {
+                    id: obj._id.toString(),
+                    datetime: obj.datetime,
+                    description: obj.description,
+                    patientId: obj.patientId.toString(),
+                    patientName: patientInfo.fullname,
+                };
+                const match =
+                    occurrence.datetime.getUTCFullYear() === year &&
+                    occurrence.datetime.getUTCMonth() === monthNumber;
+                this.logger.debug(
+                    `[getUserCalendarByUserId] Checking record: ${JSON.stringify(
+                        occurrence,
+                    )}, match: ${match}`,
+                );
+                if (match) {
+                    filteredRecords.push(occurrence);
+                }
+            }
 
             this.logger.log(
                 `[getUserCalendarByUserId] Filtered ${filteredRecords.length} records for month '${month}' and year '${year}'`,
