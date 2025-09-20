@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { COLLABORATOR_ROLES } from 'src/constants';
 import { CollaboratorRole } from 'src/types/user';
 
 class CollaboratorDto {
     @ApiProperty()
     public id: string;
 
-    @ApiProperty()
+    @ApiProperty({ enum: COLLABORATOR_ROLES })
     public role: CollaboratorRole;
 }
 

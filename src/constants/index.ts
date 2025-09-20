@@ -34,3 +34,5 @@ export const TELEGRAM_CHAT_TYPES = [
 ] as const;
 
 export const USER_ROLES = ['admin', 'doctor', 'support', 'patient'] as const;
+
+export const COLLABORATOR_ROLES = ['doctor', 'support'] as const;
