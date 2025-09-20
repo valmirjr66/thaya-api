@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Collaborator } from 'src/types/user';
+import { CollaboratorDto } from './GetOrganizationByIdResponseDto';
 
 export default class UpdateOrganizationRequestDto {
     @ApiProperty()
     public name: string;
 
     @ApiProperty()
-    public collaborators: Collaborator[];
+    public collaborators: CollaboratorDto[];
 
     @ApiProperty()
     public phoneNumber: string;
