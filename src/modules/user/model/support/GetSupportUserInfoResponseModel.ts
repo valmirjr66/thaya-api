@@ -4,5 +4,6 @@ export default class GetSupportUserInfoResponseModel {
         public organizationId: string,
         public fullname: string,
         public email: string,
+        public profilePicFileName?: string,
     ) {}
 }

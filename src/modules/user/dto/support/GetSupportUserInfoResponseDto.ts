@@ -12,4 +12,7 @@ export default class GetSupportUserInfoResponseDto {
 
     @ApiProperty()
     public email: string;
+
+    @ApiProperty()
+    public profilePicFileName?: string;
 }

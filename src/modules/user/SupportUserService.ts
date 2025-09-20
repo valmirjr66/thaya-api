@@ -1,9 +1,12 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import { v4 as uuidv4 } from 'uuid';
 import { Organization } from '../organization/schemas/OrganizationSchema';
 import CoreCredentialService from './CoreCredentialService';
 import AuthenticateUserRequestModel from './model/AuthenticateUserRequestModel';
+import ChangeProfilePictureRequestModel from './model/ChangeProfilePictureRequestModel';
 import GetSupportUserInfoResponseModel from './model/support/GetSupportUserInfoResponseModel';
 import InsertSupportUserRequestModel from './model/support/InsertSupportUserRequestModel';
 import ListSupportUsersInfoResponseModel from './model/support/ListSupportUsersInfoResponseModel';
@@ -23,6 +26,7 @@ export default class SupportUserService {
         private readonly credentialModel: Model<Credential>,
         @InjectModel(Organization.name)
         private readonly organizationModel: Model<Organization>,
+        private readonly blobStorageManager: BlobStorageManager,
     ) {
         this.coreCredentialService = new CoreCredentialService(
             this.credentialModel,
@@ -69,6 +73,7 @@ export default class SupportUserService {
                 user.organizationId.toString(),
                 user.fullname,
                 user.email,
+                user.profilePicFileName,
             );
         } catch (error) {
             this.logger.error(
@@ -110,6 +115,20 @@ export default class SupportUserService {
             this.logger.log(
                 `User with id ${id} removed from organization ${user.organizationId}`,
             );
+
+            if (user.profilePicFileName) {
+                this.logger.log(
+                    `Deleting profile picture for user with id ${id}: ${user.profilePicFileName}`,
+                );
+
+                await this.blobStorageManager.delete(
+                    `profile_pics/${user.profilePicFileName}`,
+                );
+
+                this.logger.log(
+                    `Profile picture deleted for user with id ${id}`,
+                );
+            }
         } catch (error) {
             this.logger.error(`Error deleting user with id ${id}: ${error}`);
             throw error;
@@ -219,6 +238,89 @@ export default class SupportUserService {
         }
     }
 
+    async changeProfilePicture(model: ChangeProfilePictureRequestModel) {
+        this.logger.log(
+            `Changing profile picture for user with id: ${model.userId}`,
+        );
+
+        try {
+            const fileExtension = model.profilePicture.originalname
+                .split('.')
+                .pop();
+            const profilePicFileName = `${uuidv4()}.${fileExtension}`;
+
+            this.logger.log(
+                `Uploading new profile picture for user with id ${model.userId}: ${profilePicFileName}`,
+            );
+
+            await this.blobStorageManager.write(
+                `profile_pics/${profilePicFileName}`,
+                model.profilePicture.buffer,
+            );
+
+            await this.userModel.updateOne(
+                { _id: new mongoose.Types.ObjectId(model.userId) },
+                {
+                    $set: {
+                        profilePicFileName,
+                    },
+                },
+            );
+
+            this.logger.log(
+                `Profile picture updated for user with id ${model.userId}: ${profilePicFileName}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error changing profile picture for user with id ${model.userId}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async removeProfilePicture(userId: string): Promise<void> {
+        this.logger.log(`Removing profile picture for user with id: ${userId}`);
+
+        try {
+            const user = await this.userModel
+                .findById(new mongoose.Types.ObjectId(userId))
+                .exec();
+
+            if (!user) {
+                this.logger.error(`User with id ${userId} not found`);
+                return;
+            }
+
+            if (user.profilePicFileName) {
+                this.logger.log(
+                    `Deleting profile picture for user with id ${userId}: ${user.profilePicFileName}`,
+                );
+
+                await this.userModel.updateOne(
+                    { _id: user._id },
+                    {
+                        $set: {
+                            profilePicFileName: null,
+                        },
+                    },
+                );
+
+                this.logger.log(
+                    `Profile picture removed for user with id ${userId}`,
+                );
+            } else {
+                this.logger.log(
+                    `No profile picture to remove for user with id ${userId}`,
+                );
+            }
+        } catch (error) {
+            this.logger.error(
+                `Error removing profile picture for user with id ${userId}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
     async listUsers(): Promise<ListSupportUsersInfoResponseModel> {
         this.logger.log('Listing all users');
 
@@ -243,6 +345,7 @@ export default class SupportUserService {
                             user.organizationId.toString(),
                             user.fullname,
                             user.email,
+                            user.profilePicFileName,
                         ),
                 ),
             );
