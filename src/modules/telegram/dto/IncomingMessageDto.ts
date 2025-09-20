@@ -1,32 +1,59 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChatType } from 'src/types/telegram';
 
-type MessagePayload = {
+class MessagePayloadChatDto {
+    @ApiProperty({ required: true })
+    id: number;
+
+    @ApiProperty({ required: true })
+    type: ChatType;
+}
+
+class MessagePayloadFromDto {
+    @ApiProperty({ required: true })
+    id: number;
+
+    @ApiProperty({ required: true })
+    is_bot: boolean;
+
+    @ApiProperty()
+    first_name?: string;
+
+    @ApiProperty()
+    last_name?: string;
+
+    @ApiProperty()
+    username?: string;
+
+    @ApiProperty()
+    language_code?: string;
+}
+
+class MessagePayloadDto {
+    @ApiProperty({ required: true })
     message_id: number;
-    from: {
-        id: number;
-        is_bot: boolean;
-        first_name?: string;
-        last_name?: string;
-        username?: string;
-        language_code?: string;
-    };
-    chat: {
-        id: number;
-        type: ChatType;
-    };
+
+    @ApiProperty({ required: true })
+    from: MessagePayloadFromDto;
+
+    @ApiProperty({ required: true })
+    chat: MessagePayloadChatDto;
+
+    @ApiProperty({ required: true })
     date: number;
+
+    @ApiProperty()
     text?: string;
-};
+}
 
 export default class IncomingMessageDto {
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public update_id: number;
 
-    @ApiProperty()
-    public message: MessagePayload;
+    @ApiProperty({ required: true, type: MessagePayloadDto })
+    public message: MessagePayloadDto;
 
-    constructor(update_id: number, message: MessagePayload) {
+    constructor(update_id: number, message: MessagePayloadDto) {
         this.update_id = update_id;
         this.message = message;
     }
