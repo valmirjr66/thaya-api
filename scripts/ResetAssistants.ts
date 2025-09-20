@@ -146,7 +146,7 @@ async function resetAssistants() {
     );
 
     await createOrUpdateAssistant(
-        isProd ? 'Prod Thaya MD' : 'Thaya MD',
+        isProd ? 'Prod Thaya MD' : 'Dev Thaya MD',
         THAYA_MD_INSTRUCTIONS,
         isProd ? null : 'THAYA_MD_ID',
         process.env.THAYA_MD_ID_SECRET_NAME,
@@ -154,12 +154,10 @@ async function resetAssistants() {
     );
 
     await createOrUpdateAssistant(
-        isProd ? 'Prod Thaya Connect' : 'Thaya Connect',
+        isProd ? 'Prod Thaya Connect' : 'Dev Thaya Connect',
         THAYA_CONNECT_INSTRUCTIONS,
         isProd ? null : 'THAYA_CONNECT_ID',
-        isProd
-            ? process.env.PROD_THAYA_CONNECT_ID_SECRET_NAME
-            : process.env.THAYA_CONNECT_ID_SECRET_NAME,
+        process.env.THAYA_CONNECT_ID_SECRET_NAME,
         THAYA_CONNECT_TOOLS,
     );
 

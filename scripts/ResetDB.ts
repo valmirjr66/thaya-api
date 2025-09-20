@@ -18,11 +18,8 @@ import {
 
 dotenv.config();
 
-const isProd = process.env.ENVIRONMENT === 'prod';
-
-const DATABASE_URL = isProd
-    ? process.env.PROD_DATABASE_URL
-    : process.env.DATABASE_URL;
+const IS_PROD = process.env.ENVIRONMENT === 'prod';
+const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
     throw new Error('DATABASE_URL is not defined in environment variables');
@@ -193,7 +190,7 @@ async function insertCalendarOccurrence(
 }
 
 async function resetMongoDB() {
-    if (isProd) {
+    if (IS_PROD) {
         await askForConfirmation(
             'You are about to reset DB in PRODUCTION environment. Do you want to proceed?',
         );
