@@ -3,6 +3,7 @@ import { MONTHS_ABBREVIATION } from 'src/constants';
 import TelegramHandler from 'src/handlers/messaging/TelegramHandler';
 import ThayaConnectService from '../assistant/ThayaConnectService';
 import CalendarService from '../calendar/CalendarService';
+import { GetCalendarOccurrenceResponseModel } from '../calendar/model/GetCalendarOccurrenceResponseModel';
 import PatientUserService from '../user/PatientUserService';
 
 @Injectable()
@@ -38,29 +39,38 @@ export default class RoutinesService {
             this.logger.log(
                 `Fetching calendar for ${user.email} for ${MONTHS_ABBREVIATION[currentMonth]} ${currentYear}`,
             );
-            const { items: userCalendar } =
-                await this.calendarService.getUserCalendarByUserId(
-                    user.email,
-                    MONTHS_ABBREVIATION[currentMonth],
-                    currentYear,
-                );
-            this.logger.log(
-                `Fetched ${userCalendar.length} events for current month.`,
-            );
+
+            let eventsToNotifyAbout: GetCalendarOccurrenceResponseModel[] = [];
 
             const N_DaysLater = new Date(today);
             N_DaysLater.setDate(today.getDate() + this.DAYS_TO_CHECK_AHEAD);
-            this.logger.log(
-                `Checking events between ${today.toISOString()} and ${N_DaysLater.toISOString()}`,
-            );
 
-            let eventsToNotifyAbout = userCalendar.filter(
-                (event) =>
-                    event.datetime >= today && event.datetime <= N_DaysLater,
-            );
-            this.logger.log(
-                `Found ${eventsToNotifyAbout.length} events in current month within range.`,
-            );
+            for (const doctorId of user.doctorsId) {
+                const { items: userCalendar } =
+                    await this.calendarService.getUserCalendarByUserId(
+                        doctorId,
+                        MONTHS_ABBREVIATION[currentMonth],
+                        currentYear,
+                    );
+
+                this.logger.log(
+                    `Fetched ${userCalendar.length} events for current month.`,
+                );
+
+                this.logger.log(
+                    `Checking events between ${today.toISOString()} and ${N_DaysLater.toISOString()}`,
+                );
+
+                eventsToNotifyAbout = userCalendar.filter(
+                    (event) =>
+                        event.datetime >= today &&
+                        event.datetime <= N_DaysLater &&
+                        event.patientId === user.id,
+                );
+                this.logger.log(
+                    `Found ${eventsToNotifyAbout.length} events in current month within range.`,
+                );
+            }
 
             const daysInMonth = new Date(
                 currentYear,
@@ -78,26 +88,30 @@ export default class RoutinesService {
                     `Also checking next month: ${MONTHS_ABBREVIATION[nextMonth]} ${nextYear}`,
                 );
 
-                const { items: nextMonthCalendar } =
-                    await this.calendarService.getUserCalendarByUserId(
-                        user.email,
-                        MONTHS_ABBREVIATION[nextMonth],
-                        nextYear,
+                for (const doctorId of user.doctorsId) {
+                    const { items: nextMonthCalendar } =
+                        await this.calendarService.getUserCalendarByUserId(
+                            doctorId,
+                            MONTHS_ABBREVIATION[nextMonth],
+                            nextYear,
+                        );
+                    this.logger.log(
+                        `Fetched ${nextMonthCalendar.length} events for next month.`,
                     );
-                this.logger.log(
-                    `Fetched ${nextMonthCalendar.length} events for next month.`,
-                );
 
-                const nextMonthEvents = nextMonthCalendar.filter(
-                    (event) =>
-                        event.datetime > today && event.datetime <= N_DaysLater,
-                );
-                this.logger.log(
-                    `Found ${nextMonthEvents.length} events in next month within range.`,
-                );
+                    const nextMonthEvents = nextMonthCalendar.filter(
+                        (event) =>
+                            event.datetime > today &&
+                            event.datetime <= N_DaysLater &&
+                            event.patientId === user.id,
+                    );
+                    this.logger.log(
+                        `Found ${nextMonthEvents.length} events in next month within range.`,
+                    );
 
-                eventsToNotifyAbout =
-                    eventsToNotifyAbout.concat(nextMonthEvents);
+                    eventsToNotifyAbout =
+                        eventsToNotifyAbout.concat(nextMonthEvents);
+                }
             }
 
             if (eventsToNotifyAbout.length > 0) {
