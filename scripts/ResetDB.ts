@@ -219,6 +219,9 @@ async function resetMongoDB() {
             );
         }
 
+        console.log('Waiting for 5 seconds before proceeding...');
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
         await insertAdminUser(db);
 
         const organizationId = await insertOrganization();
