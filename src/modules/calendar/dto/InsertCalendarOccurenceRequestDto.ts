@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class InsertCalendarOccurenceRequestDto {
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public userId: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public patientId: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public datetime: Date;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public description: string;
 }

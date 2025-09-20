@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class UpdateCalendarOccurenceRequestDto {
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public datetime: Date;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public description: string;
 }

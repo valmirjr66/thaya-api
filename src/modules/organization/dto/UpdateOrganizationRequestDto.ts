@@ -2,18 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CollaboratorDto } from './GetOrganizationByIdResponseDto';
 
 export default class UpdateOrganizationRequestDto {
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public name: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public collaborators: CollaboratorDto[];
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public phoneNumber: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public address: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
     public timezoneOffset: number;
 }

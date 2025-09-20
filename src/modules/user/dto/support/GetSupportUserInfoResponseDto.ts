@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class GetSupportUserInfoResponseDto {
-    @ApiProperty({ required: true })
+    @ApiProperty()
     public id: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty()
     public organizationId: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty()
     public fullname: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty()
     public email: string;
 }
