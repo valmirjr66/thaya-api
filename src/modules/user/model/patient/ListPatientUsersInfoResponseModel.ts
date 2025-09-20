@@ -1,8 +1,8 @@
-import GenericCollectionResponse from 'src/types/generic';
+import { ListResponse } from 'src/types/generic';
 import GetPatientInfoResponseModel from './GetPatientUserInfoResponseModel';
 
-export default class ListPatientUsersInfoResponseModel extends GenericCollectionResponse<GetPatientInfoResponseModel> {
-    constructor(public items: GetPatientInfoResponseModel[]) {
-        super(items);
-    }
+export default class ListPatientUsersInfoResponseModel
+    implements ListResponse<GetPatientInfoResponseModel>
+{
+    constructor(public items: GetPatientInfoResponseModel[]) {}
 }

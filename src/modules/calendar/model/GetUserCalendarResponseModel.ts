@@ -1,8 +1,8 @@
-import { Occurrence } from 'src/types/calendar';
-import GenericCollectionResponse from 'src/types/generic';
+import { ListResponse } from 'src/types/generic';
+import { GetCalendarOccurrenceResponseModel } from './GetCalendarOccurrenceResponseModel';
 
-export default class GetUserCalendarResponseModel extends GenericCollectionResponse<Occurrence> {
-    constructor(public items: Occurrence[]) {
-        super(items);
-    }
+export default class GetUserCalendarResponseModel
+    implements ListResponse<GetCalendarOccurrenceResponseModel>
+{
+    constructor(public items: GetCalendarOccurrenceResponseModel[]) {}
 }

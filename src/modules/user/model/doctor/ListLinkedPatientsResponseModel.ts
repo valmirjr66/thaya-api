@@ -1,17 +1,13 @@
-import GenericCollectionResponse from 'src/types/generic';
+import { ListResponse } from 'src/types/generic';
 
-export default class ListLinkedPatientsResponseModel extends GenericCollectionResponse<{
+type LinkedPatient = {
     id: string;
     fullname: string;
-    nickname?: string;
-}> {
-    constructor(
-        public readonly patients: {
-            id: string;
-            fullname: string;
-            nickname: string;
-        }[],
-    ) {
-        super(patients);
-    }
+    nickname: string;
+};
+
+export default class ListLinkedPatientsResponseModel
+    implements ListResponse<LinkedPatient>
+{
+    constructor(public items: LinkedPatient[]) {}
 }
