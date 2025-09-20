@@ -219,8 +219,8 @@ async function resetMongoDB() {
             );
         }
 
-        console.log('Waiting for 5 seconds before proceeding...');
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        console.log('Waiting for 10 seconds before proceeding...');
+        await new Promise((resolve) => setTimeout(resolve, 10000));
 
         await insertAdminUser(db);
 
