@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SeriesType } from 'src/types/patient-record';
+import { SeriesDto } from './GetPatientRecordResponseDto';
 
 export default class InsertPatientRecordRequestDto {
     @ApiProperty({ required: true })
@@ -15,9 +15,5 @@ export default class InsertPatientRecordRequestDto {
     content: string;
 
     @ApiProperty({ required: true })
-    series: {
-        title: string;
-        type: SeriesType;
-        records: { datetime: Date; value: number }[];
-    }[];
+    series: SeriesDto[];
 }

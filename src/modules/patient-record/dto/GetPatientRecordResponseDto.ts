@@ -1,5 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SERIES_TYPES } from 'src/constants';
 import { SeriesType } from 'src/types/patient-record';
+
+export class SeriesDto {
+    @ApiProperty()
+    title: string;
+
+    @ApiProperty({ enum: SERIES_TYPES })
+    type: SeriesType;
+
+    @ApiProperty({ type: [Object] })
+    records: { datetime: Date; value: number }[];
+}
 
 export default class GetPatientRecordResponseDto {
     @ApiProperty()
@@ -18,9 +30,5 @@ export default class GetPatientRecordResponseDto {
     content: string;
 
     @ApiProperty()
-    series: {
-        title: string;
-        type: SeriesType;
-        records: { datetime: Date; value: number }[];
-    }[];
+    series: SeriesDto[];
 }
