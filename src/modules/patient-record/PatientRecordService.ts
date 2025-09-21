@@ -14,29 +14,31 @@ export default class PatientRecordService {
 
     constructor(
         @InjectModel(PatientRecord.name)
-        private readonly patientModel: Model<PatientRecord>,
+        private readonly patientRecordModel: Model<PatientRecord>,
     ) {}
 
     async findAll(
         model: ListPatientRecordsRequestModel,
     ): Promise<ListPatientRecordsResponseModel> {
         try {
-            this.logger.log('Fetching all patient records');
+            this.logger.log(
+                `Fetching all patient records with filter: ${JSON.stringify(model)}`,
+            );
 
-            const filterObj = {};
-
-            if (model.doctorId)
-                filterObj['doctorId'] = new mongoose.Types.ObjectId(
+            const filter = {};
+            if (model.doctorId && typeof model.doctorId === 'string') {
+                filter['doctorId'] = new mongoose.Types.ObjectId(
                     model.doctorId,
                 );
-
-            if (model.patientId)
-                filterObj['patientId'] = new mongoose.Types.ObjectId(
+            }
+            if (model.patientId && typeof model.patientId === 'string') {
+                filter['patientId'] = new mongoose.Types.ObjectId(
                     model.patientId,
                 );
+            }
 
-            const records = await this.patientModel
-                .find(filterObj)
+            const records = await this.patientRecordModel
+                .find(filter)
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
@@ -70,7 +72,7 @@ export default class PatientRecordService {
         try {
             this.logger.log(`Fetching patient record with id: ${id}`);
 
-            const record = await this.patientModel
+            const record = await this.patientRecordModel
                 .findById(id)
                 .exec()
                 .then((doc) => doc?.toObject() || null);
@@ -107,7 +109,7 @@ export default class PatientRecordService {
         );
 
         try {
-            const createdPatientRecord = await this.patientModel.create({
+            const createdPatientRecord = await this.patientRecordModel.create({
                 _id: new mongoose.Types.ObjectId(),
                 doctorId: new mongoose.Types.ObjectId(model.doctorId),
                 patientId: new mongoose.Types.ObjectId(model.patientId),
@@ -134,7 +136,7 @@ export default class PatientRecordService {
         this.logger.log(`Updating patient record with id: ${model.id}`);
 
         try {
-            const updatedRecord = await this.patientModel
+            const updatedRecord = await this.patientRecordModel
                 .findByIdAndUpdate(
                     model.id,
                     {
@@ -169,7 +171,7 @@ export default class PatientRecordService {
         this.logger.log(`Deleting patient record with id: ${id}`);
 
         try {
-            const deletedRecord = await this.patientModel
+            const deletedRecord = await this.patientRecordModel
                 .findByIdAndDelete(id)
                 .exec()
                 .then((doc) => doc?.toObject() || null);
