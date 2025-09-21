@@ -13,7 +13,8 @@ import {
     DEFAULT_TELEGRAM_ID,
     DOCTOR_1_OCCURRENCES,
     DOCTOR_2_OCCURRENCES,
-    PATIENT_RECORD,
+    PATIENT_RECORD_1,
+    PATIENT_RECORD_2,
     shiftOccurrenceDateBy_N_Months,
 } from './Utils';
 
@@ -325,9 +326,17 @@ async function resetMongoDB() {
         await insertPatientRecord(
             doctorId1,
             patientId1,
-            PATIENT_RECORD.summary,
-            PATIENT_RECORD.content,
-            PATIENT_RECORD.series,
+            PATIENT_RECORD_1.summary,
+            PATIENT_RECORD_1.content,
+            PATIENT_RECORD_1.series,
+        );
+
+        await insertPatientRecord(
+            doctorId1,
+            patientId1,
+            PATIENT_RECORD_2.summary,
+            PATIENT_RECORD_2.content,
+            PATIENT_RECORD_2.series,
         );
 
         console.log('Database reset process completed successfully.');
