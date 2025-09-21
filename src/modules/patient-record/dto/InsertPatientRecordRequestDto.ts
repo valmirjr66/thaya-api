@@ -15,5 +15,5 @@ export default class InsertPatientRecordRequestDto {
     content: string;
 
     @ApiProperty({ required: true })
-    series: SeriesDto[];
+    series: Omit<SeriesDto, 'id'>[];
 }

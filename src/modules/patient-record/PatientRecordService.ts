@@ -7,6 +7,7 @@ import InsertPatientRecordRequestModel from './model/InsertPatientRecordRequestM
 import ListPatientRecordsResponseModel from './model/ListPatientRecordsResponseModel';
 import UpdatePatientRecordRequestModel from './model/UpdatePatientRecordRequestModel';
 import { PatientRecord } from './schemas/PatientRecordSchema';
+import { PatientRecordSeries } from './schemas/PatientRecordSeriesSchema';
 
 @Injectable()
 export default class PatientRecordService {
@@ -15,7 +16,40 @@ export default class PatientRecordService {
     constructor(
         @InjectModel(PatientRecord.name)
         private readonly patientRecordModel: Model<PatientRecord>,
+        @InjectModel(PatientRecordSeries.name)
+        private readonly patientRecordSeriesModel: Model<PatientRecordSeries>,
     ) {}
+
+    private async decoratePatientRecordWithSeries(
+        record: PatientRecord,
+    ): Promise<GetPatientRecordResponseModel> {
+        this.logger.log(
+            `Mapping series for patient record with id: ${record._id.toString()}`,
+        );
+
+        const recordSeries = await this.patientRecordSeriesModel
+            .find({ id: { $in: record.seriesIds || [] } })
+            .exec()
+            .then((docs) => docs.map((doc) => doc.toObject()));
+
+        this.logger.log(
+            `Mapped ${recordSeries.length} series for patient record with id: ${record._id.toString()}`,
+        );
+
+        return new GetPatientRecordResponseModel(
+            record._id.toString(),
+            record.doctorId.toString(),
+            record.patientId.toString(),
+            record.summary,
+            record.content,
+            recordSeries.map((serie) => ({
+                id: serie._id.toString(),
+                title: serie.title,
+                type: serie.type,
+                records: serie.records,
+            })),
+        );
+    }
 
     async findAll(
         model: ListPatientRecordsRequestModel,
@@ -49,22 +83,13 @@ export default class PatientRecordService {
 
             this.logger.log(`Fetched ${records.length} patient records`);
 
-            return new ListPatientRecordsResponseModel(
-                records.map(
-                    (record) =>
-                        new GetPatientRecordResponseModel(
-                            record._id.toString(),
-                            record.doctorId.toString(),
-                            record.patientId.toString(),
-                            record.summary,
-                            record.content,
-                            record.series.map((serie) => ({
-                                ...serie,
-                                id: serie.id.toString(),
-                            })),
-                        ),
+            const mappedRecords = await Promise.all(
+                records.map((record) =>
+                    this.decoratePatientRecordWithSeries(record),
                 ),
             );
+
+            return new ListPatientRecordsResponseModel(mappedRecords);
         } catch (error) {
             this.logger.error('Error fetching patient records', error.stack);
             throw error;
@@ -86,18 +111,7 @@ export default class PatientRecordService {
                 this.logger.warn(`No patient record found with id: ${id}`);
                 return null;
             }
-
-            return new GetPatientRecordResponseModel(
-                record._id.toString(),
-                record.doctorId.toString(),
-                record.patientId.toString(),
-                record.summary,
-                record.content,
-                record.series.map((serie) => ({
-                    ...serie,
-                    id: serie.id.toString(),
-                })),
-            );
+            return this.decoratePatientRecordWithSeries(record);
         } catch (error) {
             this.logger.error(
                 `Error fetching patient record with id: ${id}`,
@@ -115,25 +129,56 @@ export default class PatientRecordService {
         );
 
         try {
-            const createdPatientRecord = await this.patientRecordModel.create({
-                _id: new mongoose.Types.ObjectId(),
-                doctorId: new mongoose.Types.ObjectId(model.doctorId),
-                patientId: new mongoose.Types.ObjectId(model.patientId),
-                summary: model.summary || '',
-                content: model.content || '',
-                series:
-                    model.series?.map((serie) => ({
-                        ...serie,
-                        id: new mongoose.Types.ObjectId(),
-                    })) || [],
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
+            const createdPatientRecord = await this.patientRecordModel
+                .create({
+                    _id: new mongoose.Types.ObjectId(),
+                    doctorId: new mongoose.Types.ObjectId(model.doctorId),
+                    patientId: new mongoose.Types.ObjectId(model.patientId),
+                    summary: model.summary || '',
+                    content: model.content || '',
+                    seriesIds: [],
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                })
+                .then((doc) => doc.toObject());
+
+            this.logger.log(
+                `Patient record for patientId ${model.patientId} inserted with id ${createdPatientRecord._id}`,
+            );
+
+            if (model.series?.length > 0) {
+                const createdPatientRecordSeries =
+                    await this.patientRecordSeriesModel
+                        .insertMany(
+                            model.series.map((serie) => ({
+                                _id: new mongoose.Types.ObjectId(),
+                                title: serie.title,
+                                type: serie.type,
+                                records: serie.records,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            })) || [],
+                        )
+                        .then((docs) => docs.map((doc) => doc.toObject()));
+
+                this.logger.log(
+                    `Inserted ${createdPatientRecordSeries.length} series for patient record with id ${createdPatientRecord._id}`,
+                );
+
+                await this.patientRecordModel.findByIdAndUpdate(
+                    createdPatientRecord._id,
+                    {
+                        seriesIds: createdPatientRecordSeries.map(
+                            (serie) => serie._id,
+                        ),
+                    },
+                );
+            }
 
             this.logger.log(
                 `Patient record for patientId ${model.patientId} inserted successfully`,
             );
-            return { id: createdPatientRecord.toObject()._id.toString() };
+            return { id: createdPatientRecord._id.toString() };
         } catch (error) {
             this.logger.error(
                 `Error inserting patient record for patientId ${model.patientId}: ${error}`,
@@ -152,11 +197,6 @@ export default class PatientRecordService {
                     {
                         summary: model.summary,
                         content: model.content,
-                        series:
-                            model.series?.map((serie) => ({
-                                ...serie,
-                                id: new mongoose.Types.ObjectId(),
-                            })) || [],
                         updatedAt: new Date(),
                     },
                     { new: true },
@@ -194,6 +234,16 @@ export default class PatientRecordService {
                 this.logger.log(
                     `Patient record with id: ${id} deleted successfully`,
                 );
+
+                if (deletedRecord.seriesIds?.length > 0) {
+                    const deleteResult =
+                        await this.patientRecordSeriesModel.deleteMany({
+                            _id: { $in: deletedRecord.seriesIds },
+                        });
+                    this.logger.log(
+                        `Deleted ${deleteResult.deletedCount} series associated with patient record id: ${id}`,
+                    );
+                }
             } else {
                 this.logger.warn(
                     `No patient record found with id: ${id} to delete`,

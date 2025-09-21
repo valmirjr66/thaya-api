@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { SeriesType } from 'src/types/patient-record';
 
 @Injectable()
 export default class UpdatePatientRecordRequestModel {
@@ -7,10 +6,5 @@ export default class UpdatePatientRecordRequestModel {
         public id: string,
         public summary: string,
         public content: string,
-        public series: {
-            title: string;
-            type: SeriesType;
-            records: { datetime: Date; value: number }[];
-        }[],
     ) {}
 }

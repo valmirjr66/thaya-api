@@ -1,4 +1,4 @@
-import { SeriesType } from 'src/types/patient-record';
+import { Series } from 'src/types/patient-record';
 
 export default class InsertPatientRecordRequestModel {
     constructor(
@@ -6,10 +6,6 @@ export default class InsertPatientRecordRequestModel {
         public patientId: string,
         public summary: string,
         public content: string,
-        public series: {
-            title: string;
-            type: SeriesType;
-            records: { datetime: Date; value: number }[];
-        }[],
+        public series: Omit<Series, 'id'>[],
     ) {}
 }

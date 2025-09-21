@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { SeriesType } from 'src/types/patient-record';
 import BaseSchema from '../../../BaseSchema';
 
 export type PatientRecordDocument = HydratedDocument<PatientRecord>;
@@ -19,15 +18,8 @@ export class PatientRecord extends BaseSchema {
     @Prop({ required: true })
     content: string;
 
-    @Prop({
-        required: true,
-    })
-    series: {
-        id: mongoose.Types.ObjectId;
-        title: string;
-        type: SeriesType;
-        records: { datetime: Date; value: number }[];
-    }[];
+    @Prop({ required: true })
+    seriesIds: mongoose.Types.ObjectId[];
 }
 
 export const PatientRecordSchema = SchemaFactory.createForClass(PatientRecord);

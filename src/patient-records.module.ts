@@ -6,6 +6,10 @@ import {
     PatientRecord,
     PatientRecordSchema,
 } from './modules/patient-record/schemas/PatientRecordSchema';
+import {
+    PatientRecordSeries,
+    PatientRecordSeriesSchema,
+} from './modules/patient-record/schemas/PatientRecordSeriesSchema';
 
 @Module({
     controllers: [PatientRecordController],
@@ -13,6 +17,10 @@ import {
     imports: [
         MongooseModule.forFeature([
             { name: PatientRecord.name, schema: PatientRecordSchema },
+            {
+                name: PatientRecordSeries.name,
+                schema: PatientRecordSeriesSchema,
+            },
         ]),
     ],
     exports: [MongooseModule, PatientRecordService],
