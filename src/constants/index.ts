@@ -36,3 +36,10 @@ export const TELEGRAM_CHAT_TYPES = [
 export const USER_ROLES = ['admin', 'doctor', 'support', 'patient'] as const;
 
 export const COLLABORATOR_ROLES = ['doctor', 'support'] as const;
+
+export const SERIES_TYPES = [
+    'weight',
+    'blood-pressure',
+    'heart-rate',
+    'custom',
+] as const;
