@@ -24,7 +24,7 @@ export default class GetPatientRecordResponseDto {
     patientId: string;
 
     @ApiProperty()
-    sumary: string;
+    summary: string;
 
     @ApiProperty()
     content: string;

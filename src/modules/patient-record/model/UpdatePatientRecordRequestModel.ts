@@ -5,7 +5,7 @@ import { SeriesType } from 'src/types/patient-record';
 export default class UpdatePatientRecordRequestModel {
     constructor(
         public id: string,
-        public sumary: string,
+        public summary: string,
         public content: string,
         public series: {
             title: string;

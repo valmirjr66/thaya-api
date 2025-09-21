@@ -3,7 +3,7 @@ import { SeriesDto } from './GetPatientRecordResponseDto';
 
 export default class UpdatePatientRecordRequestDto {
     @ApiProperty({ required: true })
-    sumary: string;
+    summary: string;
 
     @ApiProperty({ required: true })
     content: string;

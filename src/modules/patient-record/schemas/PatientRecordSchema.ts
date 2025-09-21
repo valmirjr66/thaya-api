@@ -14,7 +14,7 @@ export class PatientRecord extends BaseSchema {
     patientId: mongoose.Types.ObjectId;
 
     @Prop({ required: true })
-    sumary: string;
+    summary: string;
 
     @Prop({ required: true })
     content: string;

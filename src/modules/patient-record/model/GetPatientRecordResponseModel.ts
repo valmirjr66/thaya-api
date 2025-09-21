@@ -5,7 +5,7 @@ export default class GetPatientRecordResponseModel {
         public id: string,
         public doctorId: string,
         public patientId: string,
-        public sumary: string,
+        public summary: string,
         public content: string,
         public series: {
             title: string;

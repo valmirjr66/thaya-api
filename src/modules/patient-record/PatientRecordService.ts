@@ -54,7 +54,7 @@ export default class PatientRecordService {
                             record._id.toString(),
                             record.doctorId.toString(),
                             record.patientId.toString(),
-                            record.sumary,
+                            record.summary,
                             record.content,
                             record.series,
                         ),
@@ -86,7 +86,7 @@ export default class PatientRecordService {
                 record._id.toString(),
                 record.doctorId.toString(),
                 record.patientId.toString(),
-                record.sumary,
+                record.summary,
                 record.content,
                 record.series,
             );
@@ -111,7 +111,7 @@ export default class PatientRecordService {
                 _id: new mongoose.Types.ObjectId(),
                 doctorId: new mongoose.Types.ObjectId(model.doctorId),
                 patientId: new mongoose.Types.ObjectId(model.patientId),
-                sumary: model.sumary || '',
+                summary: model.summary || '',
                 content: model.content || '',
                 series: model.series || [],
                 createdAt: new Date(),
@@ -138,7 +138,7 @@ export default class PatientRecordService {
                 .findByIdAndUpdate(
                     model.id,
                     {
-                        sumary: model.sumary,
+                        summary: model.summary,
                         content: model.content,
                         series: model.series,
                         updatedAt: new Date(),

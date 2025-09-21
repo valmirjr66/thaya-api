@@ -9,7 +9,7 @@ export default class InsertPatientRecordRequestDto {
     patientId: string;
 
     @ApiProperty({ required: true })
-    sumary: string;
+    summary: string;
 
     @ApiProperty({ required: true })
     content: string;

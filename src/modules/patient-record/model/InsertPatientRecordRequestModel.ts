@@ -4,7 +4,7 @@ export default class InsertPatientRecordRequestModel {
     constructor(
         public doctorId: string,
         public patientId: string,
-        public sumary: string,
+        public summary: string,
         public content: string,
         public series: {
             title: string;
