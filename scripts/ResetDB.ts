@@ -13,6 +13,7 @@ import {
     DEFAULT_TELEGRAM_ID,
     DOCTOR_1_OCCURRENCES,
     DOCTOR_2_OCCURRENCES,
+    PATIENT_RECORD,
     shiftOccurrenceDateBy_N_Months,
 } from './Utils';
 
@@ -189,6 +190,32 @@ async function insertCalendarOccurrence(
     console.log(`Inserted calendar occurrence`);
 }
 
+async function insertPatientRecord(
+    doctorId: string,
+    patientId: string,
+    summary: string,
+    content: string,
+    series: {
+        title: string;
+        type: string;
+        records: { datetime: string; value: number }[];
+    }[],
+): Promise<void> {
+    console.log(
+        `Inserting patient record for doctor ${doctorId} and patient ${patientId}`,
+    );
+
+    await axios.post(`${API_URL}/patient-records`, {
+        doctorId,
+        patientId,
+        summary,
+        content,
+        series,
+    });
+
+    console.log(`Inserted patient record`);
+}
+
 async function resetMongoDB() {
     if (IS_PROD) {
         await askForConfirmation(
@@ -243,14 +270,14 @@ async function resetMongoDB() {
         console.log('Inserting patients');
 
         const patientId1 = await insertPatientUser(
-            [doctorId1, doctorId2],
+            [doctorId1],
             'Rodrigo Medeiros Chaia',
             DEFAULT_1_PATIENT_EMAIL,
             'Rô',
         );
 
         const patientId2 = await insertPatientUser(
-            [doctorId2],
+            [doctorId1, doctorId2],
             'Alex Silva Gomes',
             DEFAULT_2_PATIENT_EMAIL,
         );
@@ -294,6 +321,14 @@ async function resetMongoDB() {
                 occurrence.description,
             );
         }
+
+        await insertPatientRecord(
+            doctorId1,
+            patientId1,
+            PATIENT_RECORD.summary,
+            PATIENT_RECORD.content,
+            PATIENT_RECORD.series,
+        );
 
         console.log('Database reset process completed successfully.');
     } catch (error) {

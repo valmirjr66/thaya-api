@@ -64,7 +64,6 @@ export const DOCTOR_1_OCCURRENCES = [
     },
 ];
 
-// DOCTOR_2_OCCURRENCES: similar structure, different times/descriptions
 export const DOCTOR_2_OCCURRENCES = [
     // September appointments
     {
@@ -105,3 +104,54 @@ export const DOCTOR_2_OCCURRENCES = [
         description: 'Patient evaluation meeting',
     },
 ];
+
+export const PATIENT_RECORD = {
+    summary:
+        'Paciente vem clamando insônia e dor de cabeça há algum tempo, investigação no efeito colateral do anti-depressivo',
+    content: `
+descartado: efeitos colaterais da sertralina
+
+04/10/24 =====
+
+Paciente relata sono irregular, acordando várias vezes à noite. Peso estável. Solicito exame de litemia para monitoramento terapêutico.
+
+03/11/24 =====
+
+Queixas persistentes de dor de cabeça. Peso discretamente aumentado. Resultado de litemia dentro da faixa terapêutica.
+
+10/12/24 =====
+
+Melhora parcial do quadro de insônia após ajustes de rotina. Peso segue em leve elevação. Nova coleta de lítio solicitada para acompanhamento.
+
+15/01/25 =====
+
+Paciente relata maior disposição. Peso estabilizado. Exame confirma lítio ainda em faixa terapêutica, sem sinais de toxicidade.
+  `,
+    series: [
+        {
+            title: 'Peso',
+            type: 'weight',
+            records: [
+                { datetime: '2024-12-10', value: 71.8 },
+                { datetime: '2025-01-15', value: 71.9 },
+                { datetime: '2024-10-04', value: 70.5 },
+                { datetime: '2024-11-03', value: 71.2 },
+                { datetime: '2024-12-10', value: 71.8 },
+            ],
+        },
+        {
+            title: 'Litemia (mmol/L)',
+            type: 'custom',
+            records: [
+                { datetime: '2024-10-04', value: 0.6 },
+                { datetime: '2024-11-03', value: 0.8 },
+                { datetime: '2024-12-10', value: 0.7 },
+                { datetime: '2025-01-15', value: 0.9 },
+                { datetime: '2024-10-04', value: 0.6 },
+                { datetime: '2024-11-03', value: 0.8 },
+                { datetime: '2024-12-10', value: 0.7 },
+                { datetime: '2025-01-15', value: 0.9 },
+            ],
+        },
+    ],
+};
