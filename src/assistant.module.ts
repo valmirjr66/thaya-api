@@ -16,9 +16,9 @@ import {
 } from './modules/assistant/schemas/ThayaMDChatSchema';
 
 import { CalendarModule } from './calendar.module';
-import CalendarTool from './handlers/gpt/CalendarTool';
-import ChatAssistant from './handlers/gpt/ChatAssistant';
-import UserInfoTool from './handlers/gpt/UserInfoTool';
+import CalendarTool from './handlers/gen-ai/CalendarTool';
+import ChatAssistant from './handlers/gen-ai/ChatAssistant';
+import UserInfoTool from './handlers/gen-ai/UserInfoTool';
 import ThayaConnectService from './modules/assistant/ThayaConnectService';
 import ThayaMDGateway from './modules/assistant/ThayaMDGateway';
 import ThayaMDService from './modules/assistant/ThayaMDService';

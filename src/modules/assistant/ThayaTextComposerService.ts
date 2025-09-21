@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import SimpleCompletionAssistant from 'src/handlers/gpt/SimpleCompletionAssistant';
+import SimpleCompletionAssistant from 'src/handlers/gen-ai/SimpleCompletionAssistant';
 
 @Injectable()
 export class ThayaTextComposerService {
