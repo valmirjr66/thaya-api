@@ -39,7 +39,8 @@ export const COLLABORATOR_ROLES = ['doctor', 'support'] as const;
 
 export const SERIES_TYPES = [
     'weight',
-    'blood-pressure',
+    'blood-pressure-systolic',
+    'blood-pressure-diastolic',
     'heart-rate',
     'custom',
 ] as const;

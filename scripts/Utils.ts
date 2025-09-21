@@ -107,36 +107,86 @@ export const DOCTOR_2_OCCURRENCES = [
 
 export const PATIENT_RECORD = {
     summary:
-        'Paciente vem clamando insônia e dor de cabeça há algum tempo, investigação no efeito colateral do anti-depressivo',
+        'Paciente apresenta histórico de insônia, dor de cabeça e variações de peso. Investigação de efeitos colaterais do anti-depressivo e acompanhamento de litemia.',
     content: `
-descartado: efeitos colaterais da sertralina
+## Histórico Clínico
 
-04/10/24 =====
+- **Diagnóstico principal:** Insônia e cefaleia recorrente
+- **Medicação em uso:** Sertralina, Lítio
+- **Acompanhamento:** Monitoramento de litemia e peso
 
-Paciente relata sono irregular, acordando várias vezes à noite. Peso estável. Solicito exame de litemia para monitoramento terapêutico.
+---
 
-03/11/24 =====
+### Evolução
 
-Queixas persistentes de dor de cabeça. Peso discretamente aumentado. Resultado de litemia dentro da faixa terapêutica.
+**Descartado:** efeitos colaterais da sertralina
 
-10/12/24 =====
+---
 
-Melhora parcial do quadro de insônia após ajustes de rotina. Peso segue em leve elevação. Nova coleta de lítio solicitada para acompanhamento.
+#### 04/10/24
 
-15/01/25 =====
+- Paciente relata sono irregular, acordando várias vezes à noite.
+- Peso estável.
+- Solicito exame de litemia para monitoramento terapêutico.
 
-Paciente relata maior disposição. Peso estabilizado. Exame confirma lítio ainda em faixa terapêutica, sem sinais de toxicidade.
+---
+
+#### 03/11/24
+
+- Queixas persistentes de dor de cabeça.
+- Peso discretamente aumentado.
+- Resultado de litemia dentro da faixa terapêutica.
+
+---
+
+#### 10/12/24
+
+- Melhora parcial do quadro de insônia após ajustes de rotina.
+- Peso segue em leve elevação.
+- Nova coleta de lítio solicitada para acompanhamento.
+
+---
+
+#### 15/01/25
+
+- Paciente relata maior disposição.
+- Peso estabilizado.
+- Exame confirma lítio ainda em faixa terapêutica, sem sinais de toxicidade.
+
+---
+
+#### 20/02/25
+
+- Sono regularizado, sem despertares noturnos.
+- Peso manteve-se estável.
+- Litemia dentro dos parâmetros, sem alterações clínicas.
+
+---
+
+#### 25/03/25
+
+- Sem queixas de dor de cabeça nas últimas semanas.
+- Peso apresenta leve redução.
+- Litemia permanece estável.
+
+---
+
+## Observações Adicionais
+
+- **Exames laboratoriais:** Hemograma, função renal e tireoidiana normais.
+- **Orientações:** Manter rotina de sono, acompanhamento nutricional e reavaliação psiquiátrica mensal.
   `,
     series: [
         {
             title: 'Peso',
             type: 'weight',
             records: [
-                { datetime: '2024-12-10', value: 71.8 },
-                { datetime: '2025-01-15', value: 71.9 },
                 { datetime: '2024-10-04', value: 70.5 },
                 { datetime: '2024-11-03', value: 71.2 },
                 { datetime: '2024-12-10', value: 71.8 },
+                { datetime: '2025-01-15', value: 71.9 },
+                { datetime: '2025-02-20', value: 71.9 },
+                { datetime: '2025-03-25', value: 71.2 },
             ],
         },
         {
@@ -147,10 +197,39 @@ Paciente relata maior disposição. Peso estabilizado. Exame confirma lítio ain
                 { datetime: '2024-11-03', value: 0.8 },
                 { datetime: '2024-12-10', value: 0.7 },
                 { datetime: '2025-01-15', value: 0.9 },
-                { datetime: '2024-10-04', value: 0.6 },
-                { datetime: '2024-11-03', value: 0.8 },
-                { datetime: '2024-12-10', value: 0.7 },
-                { datetime: '2025-01-15', value: 0.9 },
+                { datetime: '2025-02-20', value: 0.8 },
+                { datetime: '2025-03-25', value: 0.7 },
+            ],
+        },
+        {
+            title: 'Pressão Arterial (mmHg)',
+            type: 'blood-pressure-systolic',
+            records: [
+                { datetime: '2024-10-04', value: 120 },
+                { datetime: '2024-12-10', value: 122 },
+                { datetime: '2025-01-15', value: 118 },
+                { datetime: '2025-03-25', value: 119 },
+            ],
+        },
+        {
+            title: 'Pressão Arterial (mmHg)',
+            type: 'blood-pressure-diastolic',
+            records: [
+                { datetime: '2024-10-04', value: 80 },
+                { datetime: '2024-12-10', value: 82 },
+                { datetime: '2025-01-15', value: 78 },
+                { datetime: '2025-03-25', value: 79 },
+            ],
+        },
+        {
+            title: 'Qualidade do Sono (escala 1-10)',
+            type: 'custom',
+            records: [
+                { datetime: '2024-10-04', value: 4 },
+                { datetime: '2024-12-10', value: 6 },
+                { datetime: '2025-01-15', value: 7 },
+                { datetime: '2025-02-20', value: 8 },
+                { datetime: '2025-03-25', value: 9 },
             ],
         },
     ],
