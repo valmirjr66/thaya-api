@@ -16,7 +16,6 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
 import GetOrganizationByIdResponseDto from './dto/GetOrganizationByIdResponseDto';
 import InsertOrganizationRequestDto from './dto/InsertOrganizationRequestDto';
 import ListOrganizationsResponseDto from './dto/ListOrganizationsResponseDto';
@@ -25,10 +24,8 @@ import OrganizationService from './OrganizationService';
 
 @ApiTags('Organization')
 @Controller('organizations')
-export default class OrganizationController extends BaseController {
-    constructor(private readonly organizationService: OrganizationService) {
-        super();
-    }
+export default class OrganizationController {
+    constructor(private readonly organizationService: OrganizationService) {}
 
     @Get(':id')
     @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
@@ -43,7 +40,6 @@ export default class OrganizationController extends BaseController {
         @Param('id') id: string,
     ): Promise<GetOrganizationByIdResponseDto> {
         const response = await this.organizationService.getOrganizationById(id);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -58,7 +54,6 @@ export default class OrganizationController extends BaseController {
     })
     async listOrganizations(): Promise<ListOrganizationsResponseDto> {
         const response = await this.organizationService.listOrganizations();
-        this.validateGetResponse(response);
         return response;
     }
 

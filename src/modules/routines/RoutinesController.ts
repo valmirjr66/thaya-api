@@ -5,15 +5,12 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
 import RoutinesService from './RoutinesService';
 
 @ApiTags('Routine')
 @Controller('routines')
-export default class RoutinesController extends BaseController {
-    constructor(private readonly routinesService: RoutinesService) {
-        super();
-    }
+export default class RoutinesController {
+    constructor(private readonly routinesService: RoutinesService) {}
 
     @Post('trigger-patient-reminder')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })

@@ -7,7 +7,6 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
 import ThayaMDService from './ThayaMDService';
 import GetChatByUserIdResponseDto from './dto/GetChatByUserIdResponseDto';
 import HandleIncomingMessageRequestDto from './dto/HandleIncomingMessageRequestDto';
@@ -15,10 +14,8 @@ import HandleIncomingMessageResponseDto from './dto/HandleIncomingMessageRespons
 
 @ApiTags('Assistant')
 @Controller('assistants/thaya-md')
-export default class ThayaMDController extends BaseController {
-    constructor(private readonly thayaMDService: ThayaMDService) {
-        super();
-    }
+export default class ThayaMDController {
+    constructor(private readonly thayaMDService: ThayaMDService) {}
 
     @Get('/chat')
     @ApiOkResponse({
@@ -33,7 +30,6 @@ export default class ThayaMDController extends BaseController {
         @Query('userId') userId: string,
     ): Promise<GetChatByUserIdResponseDto> {
         const response = await this.thayaMDService.getChatByUserId(userId);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -53,8 +49,6 @@ export default class ThayaMDController extends BaseController {
             content: dto.content,
             userId: dto.content,
         });
-
-        this.validateGetResponse(response);
 
         return response;
     }

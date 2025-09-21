@@ -21,7 +21,6 @@ import {
 } from '@nestjs/swagger';
 import { MONTHS_ABBREVIATION, RESPONSE_DESCRIPTIONS } from 'src/constants';
 import { AbbreviatedMonth } from 'src/types/calendar';
-import BaseController from '../../BaseController';
 import CalendarService from './CalendarService';
 import GetUserCalendarResponseDto from './dto/GetUserCalendarResponseDto';
 import InsertCalendarOccurenceRequestDto from './dto/InsertCalendarOccurenceRequestDto';
@@ -29,10 +28,8 @@ import UpdateCalendarOccurenceRequestDto from './dto/UpdateCalendarOccurenceRequ
 
 @ApiTags('Calendar')
 @Controller('calendar/occurrences')
-export default class CalendarController extends BaseController {
-    constructor(private readonly calendarService: CalendarService) {
-        super();
-    }
+export default class CalendarController {
+    constructor(private readonly calendarService: CalendarService) {}
 
     @Get()
     @ApiNoContentResponse({ description: RESPONSE_DESCRIPTIONS.NO_CONTENT })
@@ -60,8 +57,6 @@ export default class CalendarController extends BaseController {
             month as AbbreviatedMonth,
             Number(year),
         );
-
-        this.validateGetResponse(response);
 
         return response;
     }

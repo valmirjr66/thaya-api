@@ -17,7 +17,6 @@ import {
     ApiOkResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import BaseController from 'src/BaseController';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
 import GetPatientRecordResponseDto from './dto/GetPatientRecordResponseDto';
 import InsertPatientRecordRequestDto from './dto/InsertPatientRecordRequestDto';
@@ -27,10 +26,8 @@ import PatientRecordService from './PatientRecordService';
 
 @ApiTags('Patient Record')
 @Controller('patient-records')
-export default class PatientRecordController extends BaseController {
-    constructor(private readonly patientRecordService: PatientRecordService) {
-        super();
-    }
+export default class PatientRecordController {
+    constructor(private readonly patientRecordService: PatientRecordService) {}
 
     @Get('/:id')
     @ApiOkResponse({
@@ -45,7 +42,6 @@ export default class PatientRecordController extends BaseController {
         @Param('id') id: string,
     ): Promise<GetPatientRecordResponseDto> {
         const response = await this.patientRecordService.findById(id);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -104,7 +100,6 @@ export default class PatientRecordController extends BaseController {
             doctorId,
             patientId,
         });
-        this.validateGetResponse(response);
         return response;
     }
 }

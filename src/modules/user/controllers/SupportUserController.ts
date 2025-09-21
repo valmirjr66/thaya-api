@@ -12,6 +12,7 @@ import {
     UploadedFiles,
     UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
     ApiBadRequestResponse,
     ApiBody,
@@ -25,23 +26,19 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../../BaseController';
 import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
+import ChangeProfilePictureRequestDto from '../dto/ChangeProfilePictureRequestDto';
 import ListDoctorsResponseDto from '../dto/doctor/ListDoctorUsersInfoResponseDto';
-import ListSupportUsersInfoResponseDto from '../dto/support/ListSupportUsersInfoResponseDto';
-import UpdateSupportUserRequestDto from '../dto/support/UpdateSupportUserRequestDto';
 import GetSupportUserInfoResponseDto from '../dto/support/GetSupportUserInfoResponseDto';
 import InsertSupportUserRequestDto from '../dto/support/InsertSupportUserRequestDto';
+import ListSupportUsersInfoResponseDto from '../dto/support/ListSupportUsersInfoResponseDto';
+import UpdateSupportUserRequestDto from '../dto/support/UpdateSupportUserRequestDto';
 import SupportUserService from '../SupportUserService';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import ChangeProfilePictureRequestDto from '../dto/ChangeProfilePictureRequestDto';
 
 @ApiTags('Support User')
 @Controller('support-users')
-export default class SupportUserController extends BaseController {
-    constructor(private readonly supportUserService: SupportUserService) {
-        super();
-    }
+export default class SupportUserController {
+    constructor(private readonly supportUserService: SupportUserService) {}
 
     @Post('/authenticate')
     @ApiOkResponse({
@@ -114,7 +111,6 @@ export default class SupportUserController extends BaseController {
         @Param('id') id: string,
     ): Promise<GetSupportUserInfoResponseDto> {
         const response = await this.supportUserService.getUserInfoById(id);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -170,7 +166,6 @@ export default class SupportUserController extends BaseController {
     })
     async listUsers(): Promise<ListSupportUsersInfoResponseDto> {
         const response = await this.supportUserService.listUsers();
-        this.validateGetResponse(response);
         return response;
     }
 

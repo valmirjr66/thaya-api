@@ -5,17 +5,14 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
 import TelegramService from './TelegramService';
 import IncomingMessageDto from './dto/IncomingMessageDto';
 import IncomingMessageModel from './model/IncomingMessageModel';
 
 @ApiTags('Telegram')
 @Controller('telegram')
-export default class TelegramController extends BaseController {
-    constructor(private readonly telegramService: TelegramService) {
-        super();
-    }
+export default class TelegramController {
+    constructor(private readonly telegramService: TelegramService) {}
 
     @Post('message-webhook')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })

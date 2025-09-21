@@ -26,7 +26,6 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../../BaseController';
 import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
 import ChangeProfilePictureRequestDto from '../dto/ChangeProfilePictureRequestDto';
 import GetPatientInfoResponseDto from '../dto/patient/GetPatientUserInfoResponseDto';
@@ -38,10 +37,8 @@ import PatientUserService from '../PatientUserService';
 
 @ApiTags('Patient User')
 @Controller('patient-users')
-export default class PatientUserController extends BaseController {
-    constructor(private readonly patientUserService: PatientUserService) {
-        super();
-    }
+export default class PatientUserController {
+    constructor(private readonly patientUserService: PatientUserService) {}
 
     @Post('/authenticate')
     @ApiOkResponse({
@@ -114,7 +111,6 @@ export default class PatientUserController extends BaseController {
         @Param('id') id: string,
     ): Promise<GetPatientInfoResponseDto> {
         const response = await this.patientUserService.getUserInfoById(id);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -214,7 +210,6 @@ export default class PatientUserController extends BaseController {
     })
     async listUsers(): Promise<ListPatientUsersInfoResponseDto> {
         const response = await this.patientUserService.listUsers();
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -231,7 +226,6 @@ export default class PatientUserController extends BaseController {
         @Param('id') id: string,
     ): Promise<ListLinkedDoctorsResponseDto> {
         const response = await this.patientUserService.listLinkedDoctors(id);
-        this.validateGetResponse(response);
         return response;
     }
 }

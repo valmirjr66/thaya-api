@@ -14,17 +14,14 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../../BaseController';
+import AdminUserService from '../AdminUserService';
 import GetAdminUserInfoResponseDto from '../dto/admin/GetAdminUserInfoResponseDto';
 import AuthenticateUserRequestDto from '../dto/AuthenticateUserRequestDto';
-import AdminUserService from '../AdminUserService';
 
 @ApiTags('Admin User')
 @Controller('admin-users')
-export default class AdminUserController extends BaseController {
-    constructor(private readonly adminUserService: AdminUserService) {
-        super();
-    }
+export default class AdminUserController {
+    constructor(private readonly adminUserService: AdminUserService) {}
 
     @Post('/authenticate')
     @ApiOkResponse({
@@ -69,7 +66,6 @@ export default class AdminUserController extends BaseController {
         @Param('id') id: string,
     ): Promise<GetAdminUserInfoResponseDto> {
         const response = await this.adminUserService.getUserInfoById(id);
-        this.validateGetResponse(response);
         return response;
     }
 }

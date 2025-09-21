@@ -7,7 +7,6 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
-import BaseController from '../../BaseController';
 import ThayaConnectService from './ThayaConnectService';
 import GetChatByUserIdResponseDto from './dto/GetChatByUserIdResponseDto';
 import HandleIncomingMessageRequestDto from './dto/HandleIncomingMessageRequestDto';
@@ -15,10 +14,8 @@ import HandleIncomingMessageResponseDto from './dto/HandleIncomingMessageRespons
 
 @ApiTags('Assistant')
 @Controller('assistants/thaya-connect')
-export default class ThayaConnectController extends BaseController {
-    constructor(private readonly thayaConnectService: ThayaConnectService) {
-        super();
-    }
+export default class ThayaConnectController {
+    constructor(private readonly thayaConnectService: ThayaConnectService) {}
 
     @Get('/chat')
     @ApiOkResponse({
@@ -34,7 +31,6 @@ export default class ThayaConnectController extends BaseController {
         @Query('userId') userId: string,
     ): Promise<GetChatByUserIdResponseDto> {
         const response = await this.thayaConnectService.getChatByUserId(userId);
-        this.validateGetResponse(response);
         return response;
     }
 
@@ -54,8 +50,6 @@ export default class ThayaConnectController extends BaseController {
             content: dto.content,
             userId: dto.content,
         });
-
-        this.validateGetResponse(response);
 
         return response;
     }
