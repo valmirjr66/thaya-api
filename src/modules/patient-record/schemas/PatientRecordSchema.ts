@@ -21,13 +21,6 @@ export class PatientRecord extends BaseSchema {
 
     @Prop({
         required: true,
-        type: [
-            {
-                title: String,
-                type: String,
-                records: [{ datetime: Date, value: Number }],
-            },
-        ],
     })
     series: {
         title: string;
