@@ -8,6 +8,7 @@ export default class GetPatientRecordResponseModel {
         public summary: string,
         public content: string,
         public series: {
+            id: string;
             title: string;
             type: SeriesType;
             records: { datetime: Date; value: number }[];

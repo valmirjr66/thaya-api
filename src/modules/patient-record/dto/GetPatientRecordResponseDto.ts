@@ -4,6 +4,9 @@ import { SeriesType } from 'src/types/patient-record';
 
 export class SeriesDto {
     @ApiProperty()
+    id: string;
+
+    @ApiProperty()
     title: string;
 
     @ApiProperty({ enum: SERIES_TYPES })

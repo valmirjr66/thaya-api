@@ -58,7 +58,10 @@ export default class PatientRecordService {
                             record.patientId.toString(),
                             record.summary,
                             record.content,
-                            record.series,
+                            record.series.map((serie) => ({
+                                ...serie,
+                                id: serie.id.toString(),
+                            })),
                         ),
                 ),
             );
@@ -90,7 +93,10 @@ export default class PatientRecordService {
                 record.patientId.toString(),
                 record.summary,
                 record.content,
-                record.series,
+                record.series.map((serie) => ({
+                    ...serie,
+                    id: serie.id.toString(),
+                })),
             );
         } catch (error) {
             this.logger.error(
@@ -115,7 +121,11 @@ export default class PatientRecordService {
                 patientId: new mongoose.Types.ObjectId(model.patientId),
                 summary: model.summary || '',
                 content: model.content || '',
-                series: model.series || [],
+                series:
+                    model.series?.map((serie) => ({
+                        ...serie,
+                        id: new mongoose.Types.ObjectId(),
+                    })) || [],
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
@@ -142,7 +152,11 @@ export default class PatientRecordService {
                     {
                         summary: model.summary,
                         content: model.content,
-                        series: model.series,
+                        series:
+                            model.series?.map((serie) => ({
+                                ...serie,
+                                id: new mongoose.Types.ObjectId(),
+                            })) || [],
                         updatedAt: new Date(),
                     },
                     { new: true },

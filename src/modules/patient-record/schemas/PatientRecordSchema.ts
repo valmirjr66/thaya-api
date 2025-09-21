@@ -23,6 +23,7 @@ export class PatientRecord extends BaseSchema {
         required: true,
     })
     series: {
+        id: mongoose.Types.ObjectId;
         title: string;
         type: SeriesType;
         records: { datetime: Date; value: number }[];
