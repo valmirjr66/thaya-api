@@ -22,6 +22,7 @@ import UserInfoTool from './handlers/gpt/UserInfoTool';
 import ThayaConnectService from './modules/assistant/ThayaConnectService';
 import ThayaMDGateway from './modules/assistant/ThayaMDGateway';
 import ThayaMDService from './modules/assistant/ThayaMDService';
+import { ThayaTextComposerService } from './modules/assistant/ThayaTextComposerService';
 import {
     FileMetadata,
     FileMetadataSchema,
@@ -34,6 +35,7 @@ import { UserModule } from './user.module';
         ThayaMDGateway,
         ThayaMDService,
         ThayaConnectService,
+        ThayaTextComposerService,
         ChatAssistant,
         UserInfoTool,
         CalendarTool,
@@ -48,6 +50,11 @@ import { UserModule } from './user.module';
             { name: FileMetadata.name, schema: FileMetadataSchema },
         ]),
     ],
-    exports: [ThayaMDService, ThayaConnectService, MongooseModule],
+    exports: [
+        ThayaMDService,
+        ThayaConnectService,
+        ThayaTextComposerService,
+        MongooseModule,
+    ],
 })
 export class AssistantModule {}
