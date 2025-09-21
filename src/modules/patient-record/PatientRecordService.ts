@@ -28,7 +28,7 @@ export default class PatientRecordService {
         );
 
         const recordSeries = await this.patientRecordSeriesModel
-            .find({ id: { $in: record.seriesIds || [] } })
+            .find({ _id: { $in: record.seriesIds || [] } })
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
 
