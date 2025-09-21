@@ -6,6 +6,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
 } from '@nestjs/common';
 import {
     ApiConflictResponse,
@@ -95,8 +96,14 @@ export default class PatientRecordController extends BaseController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async listPatientRecords(): Promise<ListPatientRecordsResponseDto> {
-        const response = await this.patientRecordService.findAll();
+    async listPatientRecords(
+        @Query() doctorId: string,
+        @Query() patientId: string,
+    ): Promise<ListPatientRecordsResponseDto> {
+        const response = await this.patientRecordService.findAll({
+            doctorId,
+            patientId,
+        });
         this.validateGetResponse(response);
         return response;
     }

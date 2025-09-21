@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import ListPatientRecordsRequestModel from '../assistant/model/ListPatientRecordsRequestModel';
 import GetPatientRecordResponseModel from './model/GetPatientRecordResponseModel';
 import InsertPatientRecordRequestModel from './model/InsertPatientRecordRequestModel';
 import ListPatientRecordsResponseModel from './model/ListPatientRecordsResponseModel';
@@ -16,11 +17,26 @@ export default class PatientRecordService {
         private readonly patientModel: Model<PatientRecord>,
     ) {}
 
-    async findAll(): Promise<ListPatientRecordsResponseModel> {
+    async findAll(
+        model: ListPatientRecordsRequestModel,
+    ): Promise<ListPatientRecordsResponseModel> {
         try {
             this.logger.log('Fetching all patient records');
+
+            const filterObj = {};
+
+            if (model.doctorId)
+                filterObj['doctorId'] = new mongoose.Types.ObjectId(
+                    model.doctorId,
+                );
+
+            if (model.patientId)
+                filterObj['patientId'] = new mongoose.Types.ObjectId(
+                    model.patientId,
+                );
+
             const records = await this.patientModel
-                .find()
+                .find(filterObj)
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
