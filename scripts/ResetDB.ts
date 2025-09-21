@@ -333,7 +333,7 @@ async function resetMongoDB() {
 
         await insertPatientRecord(
             doctorId1,
-            patientId1,
+            patientId2,
             PATIENT_RECORD_2.summary,
             PATIENT_RECORD_2.content,
             PATIENT_RECORD_2.series,
