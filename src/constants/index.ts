@@ -44,3 +44,5 @@ export const SERIES_TYPES = [
     'heart-rate',
     'custom',
 ] as const;
+
+export const PRESCRIPTION_STATUS = ['draft', 'ready', 'sent', 'cancelled'];
