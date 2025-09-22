@@ -300,7 +300,7 @@ async function resetMongoDB() {
         console.log('Updating organization profile picture');
 
         const orgPicPath = path.join(
-            path.resolve(__dirname, 'sample'),
+            path.resolve(__dirname, 'assets'),
             'org-logo.png',
         );
 
@@ -323,11 +323,11 @@ async function resetMongoDB() {
         console.log('Updating doctors profile picture');
 
         const doctor1PicPath = path.join(
-            path.resolve(__dirname, 'sample'),
+            path.resolve(__dirname, 'assets'),
             'doctor-pic-1.jpg',
         );
         const doctor2PicPath = path.join(
-            path.resolve(__dirname, 'sample'),
+            path.resolve(__dirname, 'assets'),
             'doctor-pic-2.jpg',
         );
 
