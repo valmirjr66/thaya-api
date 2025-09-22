@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import ListPatientRecordsRequestModel from '../assistant/model/ListPatientRecordsRequestModel';
 import GetPatientRecordResponseModel from './model/GetPatientRecordResponseModel';
 import InsertPatientRecordRequestModel from './model/InsertPatientRecordRequestModel';
+import ListPatientRecordsRequestModel from './model/ListPatientRecordsRequestModel';
 import ListPatientRecordsResponseModel from './model/ListPatientRecordsResponseModel';
 import UpdatePatientRecordRequestModel from './model/UpdatePatientRecordRequestModel';
 import { PatientRecord } from './schemas/PatientRecordSchema';
