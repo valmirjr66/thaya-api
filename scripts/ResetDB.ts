@@ -132,7 +132,7 @@ async function updateDoctorProfilePicture(
 ): Promise<void> {
     console.log(`Updating profile picture for doctor with id: ${doctorId}`);
     const profilePic: FormData = new FormData();
-    profilePic.append('profilePic', fs.createReadStream(picPath), '');
+    profilePic.append('profilePicture', fs.createReadStream(picPath), '');
     await axios.put(
         `${API_URL}/doctor-users/${doctorId}/profile-picture`,
         profilePic,
@@ -152,7 +152,7 @@ async function updateOrganizationProfilePicture(
 ): Promise<void> {
     console.log(`Updating profile picture for org with id: ${orgId}`);
     const profilePic: FormData = new FormData();
-    profilePic.append('profilePic', fs.createReadStream(picPath), '');
+    profilePic.append('profilePicture', fs.createReadStream(picPath), '');
     await axios.put(
         `${API_URL}/organizations/${orgId}/profile-picture`,
         profilePic,
