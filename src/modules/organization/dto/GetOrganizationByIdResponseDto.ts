@@ -28,4 +28,7 @@ export default class GetOrganizationByIdResponseDto {
 
     @ApiProperty()
     public timezoneOffset: number;
+
+    @ApiProperty()
+    public profilePicFileName?: string;
 }

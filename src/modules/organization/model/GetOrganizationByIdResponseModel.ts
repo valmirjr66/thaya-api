@@ -8,5 +8,6 @@ export default class GetOrganizationByIdResponseModel {
         public address: string,
         public phoneNumber: string,
         public timezoneOffset: number,
+        public profilePicFileName?: string,
     ) {}
 }

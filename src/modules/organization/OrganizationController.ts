@@ -6,8 +6,14 @@ import {
     Param,
     Post,
     Put,
+    UploadedFiles,
+    UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
+    ApiBadRequestResponse,
+    ApiBody,
+    ApiConsumes,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
@@ -16,6 +22,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { RESPONSE_DESCRIPTIONS } from 'src/constants';
+import ChangeProfilePictureRequestDto from './dto/ChangeProfilePictureRequestDto';
 import GetOrganizationByIdResponseDto from './dto/GetOrganizationByIdResponseDto';
 import InsertOrganizationRequestDto from './dto/InsertOrganizationRequestDto';
 import ListOrganizationsResponseDto from './dto/ListOrganizationsResponseDto';
@@ -88,5 +95,42 @@ export default class OrganizationController {
         @Body() body: UpdateOrganizationRequestDto,
     ): Promise<void> {
         await this.organizationService.updateOrganization({ ...body, id });
+    }
+
+    @Put('/:id/profile-picture')
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(
+        FileFieldsInterceptor([{ name: 'profilePicture', maxCount: 1 }]),
+    )
+    @ApiBody({
+        type: ChangeProfilePictureRequestDto,
+    })
+    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async changeProfilePicture(
+        @Param('id') organizationId: string,
+        @UploadedFiles()
+        files: {
+            profilePicture: Express.Multer.File[];
+        },
+    ): Promise<void> {
+        const { profilePicture } = files;
+
+        await this.organizationService.changeProfilePicture({
+            organizationId,
+            profilePicture: profilePicture[0],
+        });
+    }
+
+    @Delete('/:id/profile-picture')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async removeProfilePicture(@Param('id') id: string): Promise<void> {
+        await this.organizationService.removeProfilePicture(id);
     }
 }

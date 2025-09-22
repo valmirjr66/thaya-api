@@ -24,6 +24,9 @@ export class Organization extends BaseSchema {
 
     @Prop({ required: true })
     timezoneOffset: number;
+
+    @Prop()
+    profilePicFileName?: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
