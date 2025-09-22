@@ -59,6 +59,7 @@ export default class ThayaConnectService {
                 return new GetMessageResponseModel(
                     pojoItem._id.toString(),
                     pojoItem.content,
+                    pojoItem.createdAt,
                     pojoItem.role,
                     chat._id.toString(),
                     pojoItem.references,

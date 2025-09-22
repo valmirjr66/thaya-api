@@ -10,6 +10,9 @@ export default class GetMessageResponseDto {
     @ApiProperty()
     content: string;
 
+    @ApiProperty()
+    createdAt: Date;
+
     @ApiProperty({ enum: MESSAGE_ROLES })
     role: MessageRole;
 
