@@ -1,6 +1,9 @@
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import FormData from 'form-data';
+import * as fs from 'fs';
 import { Db, MongoClient } from 'mongodb';
+import * as path from 'path';
 import askForConfirmation from './AskForConfirmation';
 import {
     DEFAULT_1_DOCTOR_EMAIL,
@@ -121,6 +124,46 @@ async function insertDoctorUser(
     console.log(`Inserted doctor user with id: ${doctorInsertionData.id}`);
 
     return doctorInsertionData.id as string;
+}
+
+async function updateDoctorProfilePicture(
+    doctorId: string,
+    picPath: string,
+): Promise<void> {
+    console.log(`Updating profile picture for doctor with id: ${doctorId}`);
+    const profilePic: FormData = new FormData();
+    profilePic.append('profilePic', fs.createReadStream(picPath), '');
+    await axios.put(
+        `${API_URL}/doctor-users/${doctorId}/profile-picture`,
+        profilePic,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        },
+    );
+
+    console.log(`Updated profile picture for doctor with id: ${doctorId}`);
+}
+
+async function updateOrganizationProfilePicture(
+    orgId: string,
+    picPath: string,
+): Promise<void> {
+    console.log(`Updating profile picture for org with id: ${orgId}`);
+    const profilePic: FormData = new FormData();
+    profilePic.append('profilePic', fs.createReadStream(picPath), '');
+    await axios.put(
+        `${API_URL}/organizations/${orgId}/profile-picture`,
+        profilePic,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        },
+    );
+
+    console.log(`Updated profile picture for doctor with id: ${orgId}`);
 }
 
 async function insertSupportUser(
@@ -254,6 +297,15 @@ async function resetMongoDB() {
 
         const organizationId = await insertOrganization();
 
+        console.log('Updating organization profile picture');
+
+        const orgPicPath = path.join(
+            path.resolve(__dirname, 'sample'),
+            'org-logo.png',
+        );
+
+        await updateOrganizationProfilePicture(organizationId, orgPicPath);
+
         console.log('Inserting doctors');
 
         const doctorId1 = await insertDoctorUser(
@@ -267,6 +319,20 @@ async function resetMongoDB() {
             'Anderson Paiva Rocha',
             DEFAULT_2_DOCTOR_EMAIL,
         );
+
+        console.log('Updating doctors profile picture');
+
+        const doctor1PicPath = path.join(
+            path.resolve(__dirname, 'sample'),
+            'doctor-pic-1.jpg',
+        );
+        const doctor2PicPath = path.join(
+            path.resolve(__dirname, 'sample'),
+            'doctor-pic-2.jpg',
+        );
+
+        await updateDoctorProfilePicture(doctorId1, doctor1PicPath);
+        await updateDoctorProfilePicture(doctorId2, doctor2PicPath);
 
         console.log('Inserting patients');
 
