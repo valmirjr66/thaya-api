@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { ThayaTextComposerService } from '../assistant/ThayaTextComposerService';
+import { PatientUser } from '../user/schemas/PatientUserSchema';
 import GetPatientRecordResponseModel from './model/GetPatientRecordResponseModel';
 import InsertPatientRecordRequestModel from './model/InsertPatientRecordRequestModel';
 import ListPatientRecordsRequestModel from './model/ListPatientRecordsRequestModel';
@@ -14,10 +16,13 @@ export default class PatientRecordService {
     private readonly logger = new Logger('PatientRecordService');
 
     constructor(
+        @InjectModel(PatientUser.name)
+        private readonly patientUserModel: Model<PatientUser>,
         @InjectModel(PatientRecord.name)
         private readonly patientRecordModel: Model<PatientRecord>,
         @InjectModel(PatientRecordSeries.name)
         private readonly patientRecordSeriesModel: Model<PatientRecordSeries>,
+        private readonly thayaTextComposerService: ThayaTextComposerService,
     ) {}
 
     private async decoratePatientRecordWithSeries(
@@ -252,6 +257,56 @@ export default class PatientRecordService {
         } catch (error) {
             this.logger.error(
                 `Error deleting patient record with id: ${id}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async generateSummary(id: string): Promise<void> {
+        this.logger.log(`Generating summary for patient record with id: ${id}`);
+
+        try {
+            const record = await this.patientRecordModel
+                .findById(id)
+                .exec()
+                .then((doc) => doc?.toObject() || null);
+
+            if (!record) {
+                this.logger.warn(
+                    `No patient record found with id: ${id} to generate summary`,
+                );
+                return;
+            }
+
+            const patient = await this.patientUserModel.findById(
+                record.patientId,
+            );
+
+            this.logger.log(
+                `Generating summary for patient record with id: ${id} and patientId: ${record.patientId}`,
+            );
+
+            // Simulate summary generation logic
+            const generatedSummary =
+                await this.thayaTextComposerService.composePatientRecordSummary(
+                    record.content,
+                    patient.toObject().fullname,
+                );
+
+            record.summary = generatedSummary;
+            record.updatedAt = new Date();
+
+            await this.patientRecordModel.findByIdAndUpdate(id, {
+                summary: record.summary,
+                updatedAt: record.updatedAt,
+            });
+
+            this.logger.log(
+                `Summary generated and updated for patient record with id: ${id}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error generating summary for patient record with id: ${id}: ${error}`,
             );
             throw error;
         }

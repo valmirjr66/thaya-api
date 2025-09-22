@@ -59,4 +59,32 @@ export class ThayaTextComposerService {
 
         return completion;
     }
+
+    async composePatientRecordSummary(
+        patientName: string,
+        patientRecordContent: string,
+    ): Promise<string> {
+        this.logger.debug(
+            `Composing patient record summary for patientName: ${patientName}`,
+        );
+
+        if (!patientRecordContent || patientRecordContent.trim().length === 0) {
+            this.logger.warn(
+                `No patient record content provided for patientName: ${patientName}. Returning empty summary.`,
+            );
+            return `No content available to generate a summary.`;
+        }
+
+        const setupMessage = `
+  You are Thaya, an assistant created to help doctors by summarizing patient records into concise and clear summaries that can be easily reviewed later. Always be concise and clear, but also professional.
+  `.trim();
+
+        const assistant = new SimpleCompletionAssistant(setupMessage);
+
+        const completion = await assistant.createCompletion(
+            `Patient name is ${patientName}. Here is the content of the patient's record:\n${patientRecordContent}\n\nMake sure to compose a summary that is concise and clear.`,
+        );
+
+        return completion;
+    }
 }

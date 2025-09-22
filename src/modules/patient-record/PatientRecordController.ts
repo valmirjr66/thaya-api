@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    Patch,
     Post,
     Put,
     Query,
@@ -101,5 +102,15 @@ export default class PatientRecordController {
             patientId,
         });
         return response;
+    }
+
+    @Patch('/:id/generate-summary')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async generateSummary(@Param('id') id: string): Promise<void> {
+        await this.patientRecordService.generateSummary(id);
     }
 }
