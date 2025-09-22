@@ -1,10 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import BaseSchema from '../../../BaseSchema';
 
 export type PatientRecordDocument = HydratedDocument<PatientRecord>;
 
-@Schema({ timestamps: true })
 export class PatientRecord extends BaseSchema {
     @Prop({ required: true })
     doctorId: mongoose.Types.ObjectId;

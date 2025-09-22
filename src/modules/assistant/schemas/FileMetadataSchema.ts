@@ -1,10 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import BaseSchema from '../../../BaseSchema';
 
 export type FileMetadataDocument = HydratedDocument<FileMetadata>;
 
-@Schema({ timestamps: true })
 export class FileMetadata extends BaseSchema {
     @Prop({ required: true })
     downloadURL: string;
