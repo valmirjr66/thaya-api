@@ -1,4 +1,4 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import BaseSchema from 'src/BaseSchema';
 import { PRESCRIPTION_STATUS } from 'src/constants';
@@ -6,6 +6,7 @@ import { PrescriptionStatus } from 'src/types/prescription';
 
 export type MessageDocument = HydratedDocument<Prescription>;
 
+@Schema({ timestamps: true })
 export class Prescription extends BaseSchema {
     @Prop({ required: true })
     doctorId: mongoose.Types.ObjectId;
