@@ -1,4 +1,4 @@
-import { MessageRole } from 'src/types/gpt';
+import { MessageRole } from 'src/types/gen-ai';
 import GetFileMetadataResponseModel from './GetFileMetadataResponseModel';
 
 export default class GetMessageResponseModel {

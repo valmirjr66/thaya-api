@@ -5,7 +5,7 @@ import CalendarTool from 'src/handlers/gen-ai/CalendarTool';
 import ChatAssistant, { TextResponse } from 'src/handlers/gen-ai/ChatAssistant';
 import UserInfoTool from 'src/handlers/gen-ai/UserInfoTool';
 import GetChatByUserIdResponseModel from 'src/modules/assistant/model/GetChatByUserIdResponseModel';
-import { Annotation } from 'src/types/gpt';
+import { Annotation } from 'src/types/gen-ai';
 import GetMessageResponseModel from './model/GetMessageResponseModel';
 import HandleIncomingMessageRequestModel from './model/HandleIncomingMessageRequestModel';
 import HandleIncomingMessageResponseModel from './model/HandleIncomingMessageResponseModel';

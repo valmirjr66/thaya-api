@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MESSAGE_ROLES } from 'src/constants';
-import { MessageRole } from 'src/types/gpt';
+import { MessageRole } from 'src/types/gen-ai';
 import GetFileMetadataResponseDto from './GetFileMetadataResponseDto';
 
 export default class GetMessageResponseDto {

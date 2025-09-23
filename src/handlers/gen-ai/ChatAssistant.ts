@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages.mjs';
 import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/runs/runs.mjs';
 import { RequiredActionFunctionToolCall } from 'openai/src/resources/beta/threads/runs/runs.js';
-import { Annotation } from 'src/types/gpt';
+import { Annotation } from 'src/types/gen-ai';
 import CalendarTool from './CalendarTool';
 import UserInfoTool from './UserInfoTool';
 

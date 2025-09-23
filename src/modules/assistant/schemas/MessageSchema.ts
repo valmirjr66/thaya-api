@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { MessageRole } from 'src/types/gpt';
+import { MessageRole } from 'src/types/gen-ai';
 import BaseSchema from '../../../BaseSchema';
 import { FileMetadata } from './FileMetadataSchema';
 
