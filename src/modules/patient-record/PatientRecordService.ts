@@ -294,10 +294,13 @@ export default class PatientRecordService {
             record.summary = generatedSummary;
             record.updatedAt = new Date();
 
-            await this.patientRecordModel.findByIdAndUpdate(id, {
-                summary: record.summary,
-                updatedAt: record.updatedAt,
-            });
+            await this.patientRecordModel.findByIdAndUpdate(
+                new mongoose.Types.ObjectId(id),
+                {
+                    summary: record.summary,
+                    updatedAt: record.updatedAt,
+                },
+            );
 
             this.logger.log(
                 `Summary generated and updated for patient record with id: ${id}`,
