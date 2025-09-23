@@ -1,4 +1,4 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { MessageRole } from 'src/types/gpt';
 import BaseSchema from '../../../BaseSchema';
@@ -6,6 +6,7 @@ import { FileMetadata } from './FileMetadataSchema';
 
 export type MessageDocument = HydratedDocument<Message>;
 
+@Schema({ timestamps: true })
 export class Message extends BaseSchema {
     @Prop({ required: true })
     content: string;

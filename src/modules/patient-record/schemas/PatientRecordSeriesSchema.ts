@@ -1,10 +1,11 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { SeriesType } from 'src/types/patient-record';
 import BaseSchema from '../../../BaseSchema';
 
 export type PatientRecordSeriesDocument = HydratedDocument<PatientRecordSeries>;
 
+@Schema({ timestamps: true })
 export class PatientRecordSeries extends BaseSchema {
     @Prop({ required: true })
     title: string;
