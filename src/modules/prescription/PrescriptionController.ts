@@ -7,9 +7,15 @@ import {
     Post,
     Put,
     Query,
+    UploadedFiles,
+    UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
+    ApiBadRequestResponse,
+    ApiBody,
     ApiConflictResponse,
+    ApiConsumes,
     ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiNoContentResponse,
@@ -101,5 +107,40 @@ export default class PrescriptionController {
             patientId,
         });
         return response;
+    }
+
+    @Put('/:id/file')
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
+    @ApiBody({
+        type: UpdatePrescriptionRequestDto,
+    })
+    @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async changeProfilePicture(
+        @Param('id') prescriptionId: string,
+        @UploadedFiles()
+        files: {
+            file: Express.Multer.File[];
+        },
+    ): Promise<void> {
+        const { file } = files;
+
+        await this.prescriptionService.changeFile({
+            prescriptionId,
+            file: file[0],
+        });
+    }
+
+    @Delete('/:id/file')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async removeProfilePicture(@Param('id') id: string): Promise<void> {
+        await this.prescriptionService.removeFile(id);
     }
 }

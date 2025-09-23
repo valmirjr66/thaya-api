@@ -260,6 +260,44 @@ async function insertPatientRecord(
     console.log(`Inserted patient record`);
 }
 
+async function insertPrescription(
+    doctorId: string,
+    patientId: string,
+): Promise<string> {
+    console.log(
+        `Inserting prescription for doctor ${doctorId} and patient ${patientId}`,
+    );
+
+    const { data } = await axios.post(`${API_URL}/prescriptions`, {
+        doctorId,
+        patientId,
+    });
+
+    console.log(`Inserted prescription`);
+
+    return data.id as string;
+}
+
+async function attachPrescriptionPDF(
+    prescriptionId: string,
+    pdfPath: string,
+): Promise<void> {
+    console.log(`Attaching PDF to prescription with id: ${prescriptionId}`);
+    const pdfFile: FormData = new FormData();
+    pdfFile.append('file', fs.createReadStream(pdfPath), '');
+    await axios.put(
+        `${API_URL}/prescriptions/${prescriptionId}/file`,
+        pdfFile,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        },
+    );
+
+    console.log(`Attached PDF to prescription with id: ${prescriptionId}`);
+}
+
 async function resetMongoDB() {
     if (IS_PROD) {
         await askForConfirmation(
@@ -404,6 +442,14 @@ async function resetMongoDB() {
             PATIENT_RECORD_2.content,
             PATIENT_RECORD_2.series,
         );
+
+        const prescriptionId = await insertPrescription(doctorId1, patientId1);
+
+        const prescriptionPath = path.join(
+            path.resolve(__dirname, 'assets'),
+            'prescription.pdf',
+        );
+        await attachPrescriptionPDF(prescriptionId, prescriptionPath);
 
         console.log('Database reset process completed successfully.');
     } catch (error) {

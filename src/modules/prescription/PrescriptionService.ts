@@ -1,13 +1,15 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import { v4 as uuidv4 } from 'uuid';
 import GetPrescriptionResponseModel from './model/GetPrescriptionResponseModel';
 import InsertPrescriptionRequestModel from './model/InsertPrescriptionRequestModel';
 import ListPrescriptionsRequestModel from './model/ListPrescriptionsRequestModel';
 import ListPrescriptionsResponseModel from './model/ListPrescriptionsResponseModel';
+import UpdateFileRequestModel from './model/UpdateFileRequestModel';
 import UpdatePrescriptionRequestModel from './model/UpdatePrescriptionRequestModel';
 import { Prescription } from './schemas/PrescriptionSchema';
-
 @Injectable()
 export default class PrescriptionService {
     private readonly logger = new Logger('PrescriptionService');
@@ -15,6 +17,7 @@ export default class PrescriptionService {
     constructor(
         @InjectModel(Prescription.name)
         private readonly prescriptionModel: Model<Prescription>,
+        private readonly blobStorageManager: BlobStorageManager,
     ) {}
 
     async findAll(
@@ -211,6 +214,91 @@ export default class PrescriptionService {
         } catch (error) {
             this.logger.error(
                 `Error deleting prescription with id: ${id}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async changeFile(model: UpdateFileRequestModel) {
+        this.logger.log(
+            `Changing file for prescription with id: ${model.prescriptionId}`,
+        );
+
+        try {
+            const fileExtension = model.file.originalname.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExtension}`;
+
+            this.logger.log(
+                `Uploading new file for prescription with id ${model.prescriptionId}: ${fileName}`,
+            );
+
+            await this.blobStorageManager.write(
+                `prescriptions/${fileName}`,
+                model.file.buffer,
+            );
+
+            await this.prescriptionModel.updateOne(
+                { _id: new mongoose.Types.ObjectId(model.prescriptionId) },
+                {
+                    $set: {
+                        fileName: fileName,
+                    },
+                },
+            );
+
+            this.logger.log(
+                `File changed for prescription with id ${model.prescriptionId} to ${fileName}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error changing file for prescription with id: ${model.prescriptionId}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async removeFile(prescriptionId: string): Promise<void> {
+        this.logger.log(
+            `Removing file for prescription with id: ${prescriptionId}`,
+        );
+
+        try {
+            const prescription = await this.prescriptionModel
+                .findById(new mongoose.Types.ObjectId(prescriptionId))
+                .exec();
+
+            if (!prescription) {
+                this.logger.error(
+                    `No prescription found with id: ${prescriptionId}`,
+                );
+                return;
+            }
+
+            if (prescription.fileName) {
+                this.logger.log(
+                    `Removing file ${prescription.fileName} for prescription with id ${prescriptionId}`,
+                );
+
+                await this.prescriptionModel.updateOne(
+                    { _id: prescription._id },
+                    {
+                        $set: {
+                            fileName: null,
+                        },
+                    },
+                );
+
+                this.logger.log(
+                    `File record removed from prescription with id ${prescriptionId}, deleting from storage...`,
+                );
+            } else {
+                this.logger.log(
+                    `No file to remove for prescription with id ${prescriptionId}`,
+                );
+            }
+        } catch (error) {
+            this.logger.error(
+                `Error removing file for prescription with id: ${prescriptionId}: ${error}`,
             );
             throw error;
         }

@@ -112,14 +112,14 @@ export const PATIENT_RECORD_1 = {
 ## Histórico Clínico
 
 - **Diagnóstico principal:** Insônia e cefaleia recorrente
-- **Medicação em uso:** Sertralina, Lítio
+- **Medicação em uso:** Bupropiona, Lítio
 - **Acompanhamento:** Monitoramento de litemia e peso
 
 ---
 
 ### Evolução
 
-**Descartado:** efeitos colaterais da sertralina
+**Descartado:** efeitos colaterais da bupropiona
 
 ---
 
