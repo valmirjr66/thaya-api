@@ -1,3 +1,4 @@
+import speech from '@google-cloud/speech';
 import { Logger } from '@nestjs/common';
 import {
     OnGatewayConnection,
@@ -21,6 +22,8 @@ export default class ThayaMDGateway
 
     @WebSocketServer() server: Server;
     private readonly logger: Logger = new Logger('ThayaMDGateway');
+    private speechClient = new speech.SpeechClient();
+    private audioStreams = new Map<string, any>();
 
     @SubscribeMessage('message')
     handleMessage(
@@ -67,6 +70,51 @@ export default class ThayaMDGateway
             streamingCallback,
         );
     }
+
+    // TODO: REVISAR CÓDIGO DE PoC
+    @SubscribeMessage('audio_chunk')
+    handleAudio(client: Socket, payload: Buffer): void {
+        if (!this.audioStreams.has(client.id)) {
+            // create streaming recognition for the first chunk
+            const recognizeStream = this.speechClient
+                .streamingRecognize({
+                    config: {
+                        encoding: 'WEBM_OPUS', // matching frontend MediaRecorder
+                        sampleRateHertz: 48000, // typical for getUserMedia
+                        languageCode: 'pt-BR',
+                    },
+                    interimResults: true, // get partial results
+                })
+                .on('data', (data) => {
+                    if (data.results[0]) {
+                        client.emit('transcript', {
+                            text: data.results[0].alternatives[0].transcript,
+                            isFinal: data.results[0].isFinal,
+                        });
+                    }
+                })
+                .on('error', (err) => {
+                    this.audioStreams.get(client.id).end();
+                    this.audioStreams.delete(client.id);
+                    this.logger.error(`Speech API error: ${err}`);
+                });
+
+            this.audioStreams.set(client.id, recognizeStream);
+        }
+
+        const stream = this.audioStreams.get(client.id);
+        stream.write(payload);
+    }
+
+    @SubscribeMessage('end_recording')
+    handleEndRecording(client: Socket) {
+        const stream = this.audioStreams.get(client.id);
+        if (stream) {
+            stream.end();
+            this.audioStreams.delete(client.id);
+        }
+    }
+    // TODO: REVISAR CÓDIGO DE PoC
 
     afterInit() {
         this.logger.log('Init');
