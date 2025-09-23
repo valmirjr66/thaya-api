@@ -106,7 +106,7 @@ export default class PatientRecordService {
             this.logger.log(`Fetching patient record with id: ${id}`);
 
             const record = await this.patientRecordModel
-                .findById(id)
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc?.toObject() || null);
 
@@ -197,8 +197,8 @@ export default class PatientRecordService {
 
         try {
             const updated = await this.patientRecordModel
-                .findOneAndUpdate(
-                    { _id: new mongoose.Types.ObjectId(model.id) },
+                .findByIdAndUpdate(
+                    new mongoose.Types.ObjectId(model.id),
                     {
                         summary: model.summary,
                         content: model.content,
@@ -230,7 +230,7 @@ export default class PatientRecordService {
 
         try {
             const deletedRecord = await this.patientRecordModel
-                .findByIdAndDelete(id)
+                .findByIdAndDelete(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc?.toObject() || null);
 
