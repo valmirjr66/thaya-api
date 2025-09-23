@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    Patch,
     Post,
     Put,
     Query,
@@ -78,7 +79,8 @@ export default class PrescriptionController {
 
     @Put('/:id')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
-    @ApiConflictResponse({ description: RESPONSE_DESCRIPTIONS.CONFLICT })
+    @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
@@ -117,10 +119,11 @@ export default class PrescriptionController {
     })
     @ApiCreatedResponse({ description: RESPONSE_DESCRIPTIONS.OK })
     @ApiBadRequestResponse({ description: RESPONSE_DESCRIPTIONS.BAD_REQUEST })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async changeProfilePicture(
+    async changeFile(
         @Param('id') prescriptionId: string,
         @UploadedFiles()
         files: {
@@ -137,10 +140,41 @@ export default class PrescriptionController {
 
     @Delete('/:id/file')
     @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async removeProfilePicture(@Param('id') id: string): Promise<void> {
+    async removeFile(@Param('id') id: string): Promise<void> {
         await this.prescriptionService.removeFile(id);
+    }
+
+    @Patch('/:id/mark-as-ready')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async markAsReady(@Param('id') id: string): Promise<void> {
+        await this.prescriptionService.changeStatus(id, 'ready');
+    }
+
+    @Patch('/:id/mark-as-sent')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async markAsSent(@Param('id') id: string): Promise<void> {
+        await this.prescriptionService.changeStatus(id, 'sent');
+    }
+
+    @Patch('/:id/mark-as-cancelled')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async markAsCancelled(@Param('id') id: string): Promise<void> {
+        await this.prescriptionService.changeStatus(id, 'cancelled');
     }
 }

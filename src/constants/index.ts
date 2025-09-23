@@ -45,4 +45,9 @@ export const SERIES_TYPES = [
     'custom',
 ] as const;
 
-export const PRESCRIPTION_STATUS = ['draft', 'ready', 'sent', 'cancelled'];
+export const PRESCRIPTION_STATUS = [
+    'draft',
+    'ready',
+    'sent',
+    'cancelled',
+] as const;

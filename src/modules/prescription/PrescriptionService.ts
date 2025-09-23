@@ -1,7 +1,13 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    Logger,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
+import { PrescriptionStatus } from 'src/types/prescription';
 import { v4 as uuidv4 } from 'uuid';
 import GetPrescriptionResponseModel from './model/GetPrescriptionResponseModel';
 import InsertPrescriptionRequestModel from './model/InsertPrescriptionRequestModel';
@@ -10,6 +16,7 @@ import ListPrescriptionsResponseModel from './model/ListPrescriptionsResponseMod
 import UpdateFileRequestModel from './model/UpdateFileRequestModel';
 import UpdatePrescriptionRequestModel from './model/UpdatePrescriptionRequestModel';
 import { Prescription } from './schemas/PrescriptionSchema';
+
 @Injectable()
 export default class PrescriptionService {
     private readonly logger = new Logger('PrescriptionService');
@@ -143,17 +150,37 @@ export default class PrescriptionService {
         this.logger.log(`Updating prescription with id: ${model.id}`);
 
         try {
+            const prescription = await this.prescriptionModel
+                .findById(new mongoose.Types.ObjectId(model.id))
+                .exec()
+                .then((doc) => doc?.toObject() || null);
+
+            if (!prescription) {
+                this.logger.warn(
+                    `No prescription found with id: ${model.id} to update`,
+                );
+                throw new NotFoundException();
+            }
+
+            if (prescription.status !== 'draft') {
+                this.logger.warn(
+                    `Cannot update prescription with id: ${model.id} because its status is not 'draft'`,
+                );
+                throw new BadRequestException(
+                    `Cannot update prescription with status: ${prescription.status}`,
+                );
+            }
+
             const updatedPrescription = await this.prescriptionModel
                 .findByIdAndUpdate(
-                    model.id,
+                    prescription._id,
                     {
                         summary: model.summary,
                         updatedAt: new Date(),
                     },
                     { new: true },
                 )
-                .exec()
-                .then((doc) => doc?.toObject() || null);
+                .exec();
 
             if (updatedPrescription) {
                 this.logger.log(
@@ -299,6 +326,65 @@ export default class PrescriptionService {
         } catch (error) {
             this.logger.error(
                 `Error removing file for prescription with id: ${prescriptionId}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async changeStatus(
+        prescriptionId: string,
+        newStatus: PrescriptionStatus,
+    ): Promise<void> {
+        this.logger.log(
+            `Changing status for prescription with id: ${prescriptionId} to ${newStatus}`,
+        );
+
+        try {
+            const prescription = await this.prescriptionModel
+                .findById(new mongoose.Types.ObjectId(prescriptionId))
+                .exec();
+
+            if (!prescription) {
+                this.logger.error(
+                    `No prescription found with id: ${prescriptionId}`,
+                );
+                throw new NotFoundException();
+            }
+
+            const currentStatus = prescription.toObject().status;
+
+            if (currentStatus === 'draft') {
+                if (newStatus !== 'ready') {
+                    throw new Error(
+                        `Invalid status transition from ${currentStatus} to ${newStatus}`,
+                    );
+                }
+            } else if (currentStatus === 'ready') {
+                if (newStatus !== 'sent' && newStatus !== 'cancelled') {
+                    throw new Error(
+                        `Invalid status transition from ${currentStatus} to ${newStatus}`,
+                    );
+                }
+            } else if (
+                currentStatus === 'sent' ||
+                currentStatus === 'cancelled'
+            ) {
+                throw new Error(
+                    `No valid status transitions from ${currentStatus}`,
+                );
+            }
+
+            prescription.status = newStatus;
+            prescription.updatedAt = new Date();
+
+            await prescription.save();
+
+            this.logger.log(
+                `Status changed for prescription with id: ${prescriptionId} to ${newStatus}`,
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error changing status for prescription with id: ${prescriptionId} to ${newStatus}: ${error}`,
             );
             throw error;
         }
