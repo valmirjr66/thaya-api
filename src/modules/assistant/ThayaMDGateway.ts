@@ -74,8 +74,15 @@ export default class ThayaMDGateway
     // TODO: REVISAR CÓDIGO DE PoC
     @SubscribeMessage('audio_chunk')
     handleAudio(client: Socket, payload: Buffer): void {
+        this.logger.log(
+            `Received 'audio_chunk' event from client: ${client.id}`,
+        );
+
         if (!this.audioStreams.has(client.id)) {
-            // create streaming recognition for the first chunk
+            this.logger.log(
+                `Starting new audio stream for client: ${client.id}`,
+            );
+
             const recognizeStream = this.speechClient
                 .streamingRecognize({
                     config: {
