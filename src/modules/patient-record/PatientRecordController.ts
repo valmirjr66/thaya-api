@@ -110,7 +110,9 @@ export default class PatientRecordController {
     @ApiInternalServerErrorResponse({
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
-    async generateSummary(@Param('id') id: string): Promise<void> {
-        await this.patientRecordService.generateSummary(id);
+    async generateSummary(
+        @Param('id') id: string,
+    ): Promise<{ newSummary: string }> {
+        return await this.patientRecordService.generateSummary(id);
     }
 }
