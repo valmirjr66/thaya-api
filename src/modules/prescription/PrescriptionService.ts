@@ -165,9 +165,12 @@ export default class PrescriptionService {
                 throw new NotFoundException();
             }
 
-            if (prescription.status !== 'draft') {
+            if (
+                prescription.status !== 'draft' &&
+                prescription.status !== 'ready'
+            ) {
                 this.logger.warn(
-                    `Cannot update prescription with id: ${model.id} because its status is not 'draft'`,
+                    `Cannot update prescription with id: ${model.id} because its status is not 'draft' or 'ready'`,
                 );
                 throw new BadRequestException(
                     `Cannot update prescription with status: ${prescription.status}`,
