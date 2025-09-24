@@ -451,9 +451,12 @@ export default class PrescriptionService {
                 throw new NotFoundException();
             }
 
-            if (prescription.status !== 'draft') {
+            if (
+                prescription.status !== 'draft' &&
+                prescription.status !== 'ready'
+            ) {
                 this.logger.warn(
-                    `Cannot generate summary for prescription with id: ${id} because its status is not 'draft'`,
+                    `Cannot generate summary for prescription with id: ${id} because its status is not 'draft' or 'ready'`,
                 );
                 throw new BadRequestException(
                     `Cannot generate summary for prescription with status: ${prescription.status}`,
