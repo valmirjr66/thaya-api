@@ -88,7 +88,7 @@ export default class PrescriptionService {
             this.logger.log(`Fetching prescription with id: ${id}`);
 
             const prescription = await this.prescriptionModel
-                .findById(id)
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc?.toObject() || null);
 
@@ -207,7 +207,7 @@ export default class PrescriptionService {
 
         try {
             const findById = await this.prescriptionModel
-                .findById(id)
+                .findById(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc?.toObject() || null);
 
@@ -228,7 +228,7 @@ export default class PrescriptionService {
             }
 
             const deletedRecord = await this.prescriptionModel
-                .findByIdAndDelete(id)
+                .findByIdAndDelete(new mongoose.Types.ObjectId(id))
                 .exec()
                 .then((doc) => doc?.toObject() || null);
 
