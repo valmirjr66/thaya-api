@@ -22,7 +22,7 @@ export default class BlobStorageManager {
                 `Successfully read file "${path}" from bucket "${this.bucketName}"`,
             );
 
-            return contents[0].buffer;
+            return contents[0].buffer as ArrayBuffer;
         } catch (error) {
             this.logger.error(
                 `Failed to read file "${path}" from bucket "${this.bucketName}": ${error}`,
