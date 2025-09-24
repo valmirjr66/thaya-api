@@ -105,7 +105,7 @@ export class ThayaTextComposerService {
         const setupMessage = `
   You are an assistant created to help doctors by summarizing prescriptions into concise and clear summaries that can be easily reviewed later. Always be concise and clear, but also professional.
   Use medical terminology when appropriate, but ensure the summary is understandable for general medical professionals. Avoid overly complex language.
-  It must be a single paragraph summary with no bullet points, lists or titles. Maximum of 200 characters.
+  It must be a single paragraph summary with no bullet points, lists or titles. Maximum of 200 characters. Only return the medication name, dosage and frequency.
   `.trim();
 
         const assistant = new SimpleCompletionAssistant(setupMessage);
