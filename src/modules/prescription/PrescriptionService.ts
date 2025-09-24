@@ -255,6 +255,27 @@ export default class PrescriptionService {
         );
 
         try {
+            const prescription = await this.prescriptionModel
+                .findById(new mongoose.Types.ObjectId(model.prescriptionId))
+                .exec()
+                .then((doc) => doc?.toObject() || null);
+
+            if (!prescription) {
+                this.logger.warn(
+                    `No prescription found with id: ${model.prescriptionId} to update`,
+                );
+                throw new NotFoundException();
+            }
+
+            if (prescription.status !== 'draft') {
+                this.logger.warn(
+                    `Cannot update prescription with id: ${model.prescriptionId} because its status is not 'draft'`,
+                );
+                throw new BadRequestException(
+                    `Cannot update prescription with status: ${prescription.status}`,
+                );
+            }
+
             const fileExtension = model.file.originalname.split('.').pop();
             const fileName = `${uuidv4()}.${fileExtension}`;
 
@@ -301,7 +322,16 @@ export default class PrescriptionService {
                 this.logger.error(
                     `No prescription found with id: ${prescriptionId}`,
                 );
-                return;
+                throw new NotFoundException();
+            }
+
+            if (prescription.status !== 'draft') {
+                this.logger.warn(
+                    `Cannot remove file for prescription with id: ${prescriptionId} because its status is not 'draft'`,
+                );
+                throw new BadRequestException(
+                    `Cannot remove file for prescription with status: ${prescription.status}`,
+                );
             }
 
             if (prescription.fileName) {
@@ -314,6 +344,7 @@ export default class PrescriptionService {
                     {
                         $set: {
                             fileName: null,
+                            summary: null,
                         },
                     },
                 );
@@ -407,6 +438,24 @@ export default class PrescriptionService {
                     `No prescription found with id: ${id} to generate summary`,
                 );
                 throw new NotFoundException();
+            }
+
+            if (prescription.status !== 'draft') {
+                this.logger.warn(
+                    `Cannot generate summary for prescription with id: ${id} because its status is not 'draft'`,
+                );
+                throw new BadRequestException(
+                    `Cannot generate summary for prescription with status: ${prescription.status}`,
+                );
+            }
+
+            if (!prescription.fileName) {
+                this.logger.warn(
+                    `No file found for prescription with id: ${id} to generate summary`,
+                );
+                throw new BadRequestException(
+                    `No file found for prescription with id: ${id} to generate summary`,
+                );
             }
 
             this.logger.log(
