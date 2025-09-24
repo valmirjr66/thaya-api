@@ -411,6 +411,14 @@ export default class PrescriptionService {
                 );
             }
 
+            if (newStatus === 'sent') {
+                if (!prescription.summary) {
+                    throw new BadRequestException(
+                        `Cannot send prescription with id: ${prescriptionId} because it has no summary`,
+                    );
+                }
+            }
+
             prescription.status = newStatus;
             prescription.updatedAt = new Date();
 
