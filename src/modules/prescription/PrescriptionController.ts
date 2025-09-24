@@ -177,4 +177,16 @@ export default class PrescriptionController {
     async markAsCancelled(@Param('id') id: string): Promise<void> {
         await this.prescriptionService.changeStatus(id, 'cancelled');
     }
+
+    @Patch('/:id/generate-summary')
+    @ApiOkResponse({ description: RESPONSE_DESCRIPTIONS.OK })
+    @ApiNotFoundResponse({ description: RESPONSE_DESCRIPTIONS.NOT_FOUND })
+    @ApiInternalServerErrorResponse({
+        description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
+    })
+    async generateSummary(
+        @Param('id') id: string,
+    ): Promise<{ newSummary: string }> {
+        return await this.prescriptionService.generateSummary(id);
+    }
 }

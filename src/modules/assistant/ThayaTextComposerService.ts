@@ -76,7 +76,7 @@ export class ThayaTextComposerService {
         }
 
         const setupMessage = `
-  You are Thaya, an assistant created to help doctors by summarizing patient records into concise and clear summaries that can be easily reviewed later. Always be concise and clear, but also professional.
+  You are an assistant created to help doctors by summarizing patient records into concise and clear summaries that can be easily reviewed later. Always be concise and clear, but also professional.
   Use medical terminology when appropriate, but ensure the summary is understandable for general medical professionals. Avoid overly complex language.
   It must be a single paragraph summary with no bullet points, lists or titles. Maximum of 200 characters.
   `.trim();
@@ -85,6 +85,33 @@ export class ThayaTextComposerService {
 
         const completion = await assistant.createCompletion(
             `Patient name is ${patientName}. Here is the content of the patient's record:\n${patientRecordContent}\n\nMake sure to compose a summary that is concise and clear.`,
+        );
+
+        return completion;
+    }
+
+    async composePrescriptionSummary(prescription: string): Promise<string> {
+        this.logger.debug(
+            `Composing prescription summary for provided PDF file`,
+        );
+
+        if (!prescription || prescription.length === 0) {
+            this.logger.warn(
+                `No PDF file content provided. Returning empty summary.`,
+            );
+            return `No content available to generate a summary.`;
+        }
+
+        const setupMessage = `
+  You are an assistant created to help doctors by summarizing prescriptions into concise and clear summaries that can be easily reviewed later. Always be concise and clear, but also professional.
+  Use medical terminology when appropriate, but ensure the summary is understandable for general medical professionals. Avoid overly complex language.
+  It must be a single paragraph summary with no bullet points, lists or titles. Maximum of 200 characters.
+  `.trim();
+
+        const assistant = new SimpleCompletionAssistant(setupMessage);
+
+        const completion = await assistant.createCompletion(
+            `Here is the prescription PDF parsed into JSON format:\n${prescription}\n\nMake sure to compose a summary that is concise and clear.`,
         );
 
         return completion;

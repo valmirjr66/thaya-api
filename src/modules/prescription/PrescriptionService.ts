@@ -6,9 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { parsepdf } from 'node-pdf-parser';
 import BlobStorageManager from 'src/handlers/cloud/BlobStorageManager';
 import { PrescriptionStatus } from 'src/types/prescription';
 import { v4 as uuidv4 } from 'uuid';
+import { ThayaTextComposerService } from '../assistant/ThayaTextComposerService';
 import GetPrescriptionResponseModel from './model/GetPrescriptionResponseModel';
 import InsertPrescriptionRequestModel from './model/InsertPrescriptionRequestModel';
 import ListPrescriptionsRequestModel from './model/ListPrescriptionsRequestModel';
@@ -25,6 +27,7 @@ export default class PrescriptionService {
         @InjectModel(Prescription.name)
         private readonly prescriptionModel: Model<Prescription>,
         private readonly blobStorageManager: BlobStorageManager,
+        private readonly thayaTextComposerService: ThayaTextComposerService,
     ) {}
 
     async findAll(
@@ -385,6 +388,61 @@ export default class PrescriptionService {
         } catch (error) {
             this.logger.error(
                 `Error changing status for prescription with id: ${prescriptionId} to ${newStatus}: ${error}`,
+            );
+            throw error;
+        }
+    }
+
+    async generateSummary(id: string): Promise<{ newSummary: string }> {
+        this.logger.log(`Generating summary for prescription with id: ${id}`);
+
+        try {
+            const prescription = await this.prescriptionModel
+                .findById(new mongoose.Types.ObjectId(id))
+                .exec()
+                .then((doc) => doc?.toObject() || null);
+
+            if (!prescription) {
+                this.logger.warn(
+                    `No prescription found with id: ${id} to generate summary`,
+                );
+                throw new NotFoundException();
+            }
+
+            this.logger.log(
+                `Generating summary for prescription with id: ${id} and patientId: ${prescription.patientId}`,
+            );
+
+            const prescriptionFile = await this.blobStorageManager.read(
+                `prescriptions/${prescription.fileName}`,
+            );
+
+            const parsedPdf = await parsepdf(prescriptionFile);
+
+            const generatedSummary =
+                await this.thayaTextComposerService.composePrescriptionSummary(
+                    JSON.stringify(parsedPdf.pages),
+                );
+
+            prescription.summary = generatedSummary;
+            prescription.updatedAt = new Date();
+
+            await this.prescriptionModel.findByIdAndUpdate(
+                new mongoose.Types.ObjectId(id),
+                {
+                    summary: prescription.summary,
+                    updatedAt: prescription.updatedAt,
+                },
+            );
+
+            this.logger.log(
+                `Summary generated and updated for prescription with id: ${id}`,
+            );
+
+            return { newSummary: generatedSummary };
+        } catch (error) {
+            this.logger.error(
+                `Error generating summary for prescription with id: ${id}: ${error}`,
             );
             throw error;
         }

@@ -8,7 +8,7 @@ export default class BlobStorageManager {
     private readonly bucketName = process.env.BLOB_STORAGE_BUCKET_NAME;
     private readonly storage = new Storage();
 
-    async read(path: string): Promise<Buffer> {
+    async read(path: string): Promise<ArrayBuffer> {
         this.logger.log(
             `Reading file from bucket "${this.bucketName}" at path "${path}"`,
         );
@@ -21,7 +21,8 @@ export default class BlobStorageManager {
             this.logger.log(
                 `Successfully read file "${path}" from bucket "${this.bucketName}"`,
             );
-            return Buffer.from(contents.toString(), 'binary');
+
+            return contents[0].buffer;
         } catch (error) {
             this.logger.error(
                 `Failed to read file "${path}" from bucket "${this.bucketName}": ${error}`,
