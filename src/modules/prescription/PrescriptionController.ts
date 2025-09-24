@@ -101,8 +101,8 @@ export default class PrescriptionController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async listPrescriptions(
-        @Query() doctorId: string,
-        @Query() patientId: string,
+        @Query('doctorId') doctorId: string,
+        @Query('patientId') patientId: string,
     ): Promise<ListPrescriptionsResponseDto> {
         const response = await this.prescriptionService.findAll({
             doctorId,

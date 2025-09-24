@@ -94,8 +94,8 @@ export default class PatientRecordController {
         description: RESPONSE_DESCRIPTIONS.INTERNAL_SERVER_ERROR,
     })
     async listPatientRecords(
-        @Query() doctorId: string,
-        @Query() patientId: string,
+        @Query('doctorId') doctorId: string,
+        @Query('patientId') patientId: string,
     ): Promise<ListPatientRecordsResponseDto> {
         const response = await this.patientRecordService.findAll({
             doctorId,
