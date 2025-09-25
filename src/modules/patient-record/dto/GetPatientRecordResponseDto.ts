@@ -13,6 +13,17 @@ export class SeriesDto {
     type: SeriesType;
 
     @ApiProperty({ type: [Object] })
+    records: { id: string; datetime: Date; value: number }[];
+}
+
+export class UnidentifiedSeriesDto {
+    @ApiProperty()
+    title: string;
+
+    @ApiProperty({ enum: SERIES_TYPES })
+    type: SeriesType;
+
+    @ApiProperty({ type: [Object] })
     records: { datetime: Date; value: number }[];
 }
 

@@ -47,11 +47,11 @@ export default class PatientRecordService {
             record.patientId.toString(),
             record.summary,
             record.content,
-            recordSeries.map((serie) => ({
-                id: serie._id.toString(),
-                title: serie.title,
-                type: serie.type,
-                records: serie.records,
+            recordSeries.map((item) => ({
+                id: item._id.toString(),
+                title: item.title,
+                type: item.type,
+                records: item.records,
             })),
         );
     }
@@ -155,11 +155,15 @@ export default class PatientRecordService {
                 const createdPatientRecordSeries =
                     await this.patientRecordSeriesModel
                         .insertMany(
-                            model.series.map((serie) => ({
+                            model.series.map((item) => ({
                                 _id: new mongoose.Types.ObjectId(),
-                                title: serie.title,
-                                type: serie.type,
-                                records: serie.records,
+                                title: item.title,
+                                type: item.type,
+                                records: item.records.map((record) => ({
+                                    id: new mongoose.Types.ObjectId().toString(),
+                                    datetime: record.datetime,
+                                    value: record.value,
+                                })),
                                 createdAt: new Date(),
                                 updatedAt: new Date(),
                             })) || [],
@@ -174,7 +178,7 @@ export default class PatientRecordService {
                     createdPatientRecord._id,
                     {
                         seriesIds: createdPatientRecordSeries.map(
-                            (serie) => serie._id,
+                            (item) => item._id,
                         ),
                     },
                 );

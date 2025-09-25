@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SeriesDto } from './GetPatientRecordResponseDto';
+import { UnidentifiedSeriesDto } from './GetPatientRecordResponseDto';
 
 export default class InsertPatientRecordRequestDto {
     @ApiProperty({ required: true })
@@ -15,5 +15,5 @@ export default class InsertPatientRecordRequestDto {
     content: string;
 
     @ApiProperty({ required: true })
-    series: Omit<SeriesDto, 'id'>[];
+    series: UnidentifiedSeriesDto[];
 }

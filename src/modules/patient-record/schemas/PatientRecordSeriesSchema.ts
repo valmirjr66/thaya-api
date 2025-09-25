@@ -14,7 +14,7 @@ export class PatientRecordSeries extends BaseSchema {
     type: SeriesType;
 
     @Prop({ required: true })
-    records: { datetime: Date; value: number }[];
+    records: { id: string; datetime: Date; value: number }[];
 }
 
 export const PatientRecordSeriesSchema =
